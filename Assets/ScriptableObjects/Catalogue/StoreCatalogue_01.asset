@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9cbc74aa736fbe4483619a730dfc68f, type: 3}
+  m_Name: StoreCatalogue_01
+  m_EditorClassIdentifier: Assembly-CSharp::StoreCatalogue
+  catalogueName: General Store
+  entries:
+  - item: {fileID: 11400000, guid: d1e63f7b55a704943b0af3d8120a8273, type: 2}
+    startingStock: 8
+    maxStock: 8
+  - item: {fileID: 11400000, guid: c7558b50ba8ec244d8994af3ca95ac42, type: 2}
+    startingStock: 3
+    maxStock: 10
+  - item: {fileID: 11400000, guid: 0aa0bb9d6cfcd2b43b504636437f9bf7, type: 2}
+    startingStock: 10
+    maxStock: 10

@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags: []
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Interactables
+  - Crops
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Tilemap
+    uniqueID: 1373886813
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: FaunaFlora
+    uniqueID: 1664234825
+    locked: 0
+  - name: Tools
+    uniqueID: 3578839513
+    locked: 0
+  - name: Emoji
+    uniqueID: 3784192823
+    locked: 0
+  m_RenderingLayers:
+  - Default
