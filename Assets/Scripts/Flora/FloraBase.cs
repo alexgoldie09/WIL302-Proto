@@ -18,7 +18,7 @@ public enum FloraGrowthStage
 /// <summary>
 /// Serialisable data block for flora save state.
 /// </summary>
-[System.Serializable]
+[Serializable]
 public class FloraData
 {
     public float waterLevel;
@@ -34,8 +34,12 @@ public class FloraData
 /// harvesting, alert integration, and world-space stat bar display on tap.
 /// Subclasses implement GetOutputItem() and optionally override OnTapped().
 /// </summary>
-public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler
+public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiomeOccupant
 {
+    [Header("Flora Identity")]
+    [SerializeField, Tooltip("The biome this flora belongs to. ")]
+    private BiomeManager.BiomeType homeBiome;
+    
     [Header("Stats")]
     [SerializeField, Range(0f, 1f)] protected float waterLevel = 1f;
 
@@ -95,6 +99,9 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler
         new Vector2(0.5f, 1f), // For right-leaning sprites
         new Vector2(0.25f, 0.25f)
     };
+    
+    [Header("FX")]
+    [SerializeField] private ParticleSystem wateringFxPrefab;
 
     [Header("References")]
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -127,7 +134,8 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler
     protected Image GrowthFillImage     => growthFillImage;
     /// <summary>Returns true if the stat bars root is currently active.</summary>
     protected bool StatBarsActive       => statBarsRoot != null && statBarsRoot.activeSelf;
-
+    /// <summary>The biome this flora belongs to. Used by BiomeManager to track occupancy and apply biome effects.</summary>
+    public BiomeManager.BiomeType HomeBiome => homeBiome;
     /// <summary>
     /// Current stage progress as a 0-1 value derived from the stage timer.
     /// Use this for UI progress bars.
@@ -160,6 +168,8 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler
 
     protected virtual void Start()
     {
+        if (wateringFxPrefab == null)
+            wateringFxPrefab = GetComponentInChildren<ParticleSystem>(includeInactive: true);
         StartCoroutine(WaterTickLoop());
         UpdateSprite();
     }
@@ -167,6 +177,9 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler
     protected override void OnEnable()
     {
         base.OnEnable();
+        
+        BiomeManager.Instance?.RegisterOccupant(this);
+        
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap += HandleWorldTap;
     }
@@ -178,6 +191,13 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler
             InputManager.Instance.OnWorldTap -= HandleWorldTap;
     }
 
+    private void OnDestroy()
+    {
+        BiomeManager.Instance?.RemoveOccupant(this);
+        // Clear the parent slot so it becomes available for new placement.
+        _parentSlot?.Clear();
+    }
+    
     protected virtual void Update()
     {
         if (_isLost) return;
@@ -211,6 +231,7 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler
     public void SetSlot(Slot slot)
     {
         _parentSlot = slot;
+        homeBiome = slot.HomeBiome;
     }
 
     #endregion
@@ -394,7 +415,6 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler
         }
         else
         {
-            _parentSlot?.Clear();
             Destroy(gameObject);
         }
     }
@@ -439,7 +459,6 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler
         _isLost = true;
 
         AlertManager.Instance?.ClearAllAlerts(gameObject);
-        _parentSlot?.Clear();
 
         Debug.Log($"[{gameObject.name}] Lost due to dehydration.");
         OnLost?.Invoke();

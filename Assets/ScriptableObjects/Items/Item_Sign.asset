@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b5c3f5d3aff54feab32387713ca7abf, type: 3}
+  m_Name: Item_Sign
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
+  itemName: Sign
+  icon: {fileID: -348321361274656444, guid: 28a1dea68cb1c4d7ab93cf68a537e92d, type: 3}
+  itemType: 3
+  isAvailableForStorefront: 0
+  baseSellValue: 30
+  baseBuyValue: 50
+  isAvailableForFeeding: 0
+  baseFeedValue: 0
+  placeablePrefab: {fileID: 7017312086969987623, guid: 1abf7e084c11a45eabc2ce13295c95c6, type: 3}

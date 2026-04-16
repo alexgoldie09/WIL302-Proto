@@ -23,3 +23,6 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 0aa0bb9d6cfcd2b43b504636437f9bf7, type: 2}
     startingStock: 10
     maxStock: 10
+  - item: {fileID: 11400000, guid: b70834e0715424567a58eec98a1e36e8, type: 2}
+    startingStock: 3
+    maxStock: 3

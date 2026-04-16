@@ -2,10 +2,11 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Draggable tool that chops any Harvestable Tree it overlaps while dragged.
+/// Draggable tool that chops any Harvestable WoodTree it overlaps while dragged.
 /// Each time the blade enters a tree a swing coroutine plays — arcing from
-/// startAngle to endAngle — and calls Tree.Chop() at the impact point.
-/// Resets rotation on drag end or flora exit.
+/// swingStartAngle to swingEndAngle with an ease-in — and calls WoodTree.Chop()
+/// at the impact point. The swing loops while the blade stays over the tree
+/// and cancels immediately on exit or drag end.
 /// </summary>
 public class ChoppingAxe : ToolBase
 {
@@ -14,41 +15,62 @@ public class ChoppingAxe : ToolBase
     private float chopDamage = 1f;
 
     [Header("Swing Animation")]
-    [SerializeField, Tooltip("Starting Z rotation of the swing arc (degrees).")]
+    [SerializeField, Tooltip("Starting Z rotation of the swing arc (degrees). " +
+                             "The axe snaps here at the start of each swing.")]
     private float swingStartAngle = -45f;
-    [SerializeField, Tooltip("Ending Z rotation at impact point (degrees).")]
+    [SerializeField, Tooltip("Ending Z rotation at the impact point (degrees). " +
+                             "Chop() is called when this angle is reached.")]
     private float swingEndAngle = 60f;
-    [SerializeField, Tooltip("Time in seconds to complete one full swing.")]
+    [SerializeField, Tooltip("Time in seconds to complete one full swing arc.")]
     private float swingDuration = 0.2f;
     
     private Coroutine _swingCoroutine;
 
     #region ToolBase Overrides
-    protected override bool CanInteractWith(FloraBase flora)
+    /// <summary>
+    /// Only accepts WoodTree objects at Harvestable stage.
+    /// Non-harvestable trees and all other objects are ignored.
+    /// </summary>
+    protected override bool CanInteractWith(GameObject obj)
     {
-        // Axe only interacts with Trees at Harvestable stage.
-        return flora is WoodTree && flora.Stage == FloraGrowthStage.Harvestable;
+        var tree = obj.GetComponent<WoodTree>();
+        return tree != null && tree.Stage == FloraGrowthStage.Harvestable;
     }
 
-    protected override void OnFloraTouched(FloraBase flora)
+    /// <summary>
+    /// Shows the tree's chop health stat bar in persistent mode and starts the swing loop.
+    /// </summary>
+    protected override void OnObjectTouched(GameObject obj)
     {
-        flora.ShowStats(false);
-        StartSwing(flora as WoodTree);
+        var tree = obj.GetComponent<WoodTree>();
+        if (tree == null) return;
+
+        tree.ShowStats(false);
+        StartSwing(tree);
     }
 
-    protected override void OnFloraLeft(FloraBase flora)
+    /// <summary>
+    /// Hides the tree's stat bar and cancels the swing coroutine.
+    /// Called on trigger exit or drag end.
+    /// </summary>
+    protected override void OnObjectLeft(GameObject obj)
     {
-        flora.HideStats();
+        obj.GetComponent<WoodTree>()?.HideStats();
         CancelSwing();
     }
 
+    /// <summary>
+    /// Cancels any in-progress swing and resets rotation as a safety net
+    /// when the drag ends — covers the case where drag ends while over a tree.
+    /// </summary>
     protected override void OnDragEnded()
     {
         CancelSwing();
     }
     #endregion
 
-    #region Animation
+    #region Swing
+    /// <summary>Starts a fresh swing coroutine targeting the given tree.</summary>
     private void StartSwing(WoodTree tree)
     {
         if (_swingCoroutine != null)
@@ -57,6 +79,9 @@ public class ChoppingAxe : ToolBase
         _swingCoroutine = StartCoroutine(SwingCoroutine(tree));
     }
 
+    /// <summary>
+    /// Stops the swing coroutine and resets the axe to its neutral rotation.
+    /// </summary>
     private void CancelSwing()
     {
         if (_swingCoroutine != null)
@@ -69,35 +94,35 @@ public class ChoppingAxe : ToolBase
     }
 
     /// <summary>
-    /// Arcs from swingStartAngle to swingEndAngle over swingDuration.
-    /// Calls Chop() at the impact point (swingEndAngle), then loops back
-    /// to swingStartAngle to repeat while the blade remains over the tree.
+    /// Swing loop — runs while the blade overlaps the tree.
+    /// Each iteration snaps to swingStartAngle, eases in to swingEndAngle,
+    /// calls Chop() at impact, then pauses briefly before the next swing.
     /// </summary>
     private IEnumerator SwingCoroutine(WoodTree tree)
     {
         while (true)
         {
-            // Wind up to start angle instantly.
+            // Snap to wind-up angle at the start of each swing.
             transform.rotation = Quaternion.Euler(0f, 0f, swingStartAngle);
 
-            // Swing through to end angle.
+            // Arc toward the impact angle with an ease-in so the swing
+            // accelerates into the hit rather than moving at constant speed.
             float elapsed = 0f;
             while (elapsed < swingDuration)
             {
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / swingDuration);
-                // Ease in so the swing accelerates into the impact.
+                float t     = Mathf.Clamp01(elapsed / swingDuration);
                 float eased = t * t;
                 float angle = Mathf.LerpUnclamped(swingStartAngle, swingEndAngle, eased);
                 transform.rotation = Quaternion.Euler(0f, 0f, angle);
                 yield return null;
             }
 
-            // Impact — call Chop at the end of the arc.
+            // Hold at impact angle and deal damage.
             transform.rotation = Quaternion.Euler(0f, 0f, swingEndAngle);
             tree?.Chop(chopDamage);
 
-            // Brief pause at impact before next swing.
+            // Short pause at impact before winding up for the next swing.
             yield return new WaitForSeconds(swingDuration * 0.3f);
         }
     }

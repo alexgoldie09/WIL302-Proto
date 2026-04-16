@@ -1,31 +1,59 @@
 using UnityEngine;
 
 /// <summary>
-/// Abstract base class for all draggable tools (WateringCan, ChoppingAxe, etc.).
-/// Handles drag input via InputManager, origin snap on release, camera panner
-/// disable/enable, and flora trigger detection via a ToolTrigger child component.
+/// Abstract base class for all draggable tools (WateringCan, ChoppingAxe, ShearingTool, etc.).
+/// 
+/// Responsibilities:
+///   - Subscribes to InputManager world drag events to move the tool through the scene.
+///   - Raycasts on drag start to confirm the drag began on this tool's handle collider.
+///   - Snaps position and rotation back to origin when drag ends.
+///   - Disables CameraPanner while dragging so the camera does not pan simultaneously.
+///   - Listens to ToolTrigger events from the blade/spout child to detect world object overlap.
+///   - Exposes abstract callbacks so subclasses respond to contact without reimplementing input logic.
+/// 
+/// Expected GameObject hierarchy:
+///   ToolGameObject
+///   ├── [non-trigger Collider2D]  — handle/body, used for drag pickup raycast
+///   ├── ToolBase subclass
+///   └── BladeOrSpout (child GameObject)
+///       ├── [trigger Collider2D]  — active area, fires overlap events
+///       └── ToolTrigger
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
 public abstract class ToolBase : MonoBehaviour
 {
     [Header("Drag Detection")]
-    [SerializeField, Tooltip("Layer mask for the handle collider used to detect drag pickup.")]
+    [SerializeField, Tooltip("Layer mask matching the handle collider layer. " +
+                             "Only drags that start on this layer and this GameObject are owned.")]
     private LayerMask interactableLayer;
     
-    protected FloraBase _currentFlora;
+    /// <summary>
+    /// The GameObject currently overlapping the tool's active area.
+    /// Null when nothing is in contact. Subclasses use this to call
+    /// type-specific methods e.g. flora.Water(), sheep.Shear().
+    /// </summary>
+    protected GameObject _currentObject;
+
+    /// <summary>True while the player is actively dragging this tool.</summary>
     protected bool _isDragging;
 
+    /// <summary>World position at scene start — tool snaps back here on drag end.</summary>
     private Vector3 _originPosition;
+
+    /// <summary>World rotation at scene start — tool snaps back here on drag end.</summary>
     private Quaternion _originRotation;
+
+    /// <summary>The ToolTrigger found on the child blade/spout GameObject.</summary>
     private ToolTrigger _toolTrigger;
 
-    #region Unity Lifecycle
+    #region  Unity Lifecycle
     protected virtual void Awake()
     {
         _originPosition = transform.position;
         _originRotation = transform.rotation;
 
         _toolTrigger = GetComponentInChildren<ToolTrigger>();
+
         if (_toolTrigger == null)
             Debug.LogWarning($"[{GetType().Name}] No ToolTrigger found in children. " +
                              $"Add a child GameObject with a trigger Collider2D and ToolTrigger component.");
@@ -36,8 +64,8 @@ public abstract class ToolBase : MonoBehaviour
         if (InputManager.Instance != null)
         {
             InputManager.Instance.OnWorldDragStart += HandleDragStart;
-            InputManager.Instance.OnWorldDrag += HandleDrag;
-            InputManager.Instance.OnWorldDragEnd += HandleDragEnd;
+            InputManager.Instance.OnWorldDrag      += HandleDrag;
+            InputManager.Instance.OnWorldDragEnd   += HandleDragEnd;
         }
 
         if (_toolTrigger != null)
@@ -52,24 +80,29 @@ public abstract class ToolBase : MonoBehaviour
         if (InputManager.Instance != null)
         {
             InputManager.Instance.OnWorldDragStart -= HandleDragStart;
-            InputManager.Instance.OnWorldDrag -= HandleDrag;
-            InputManager.Instance.OnWorldDragEnd -= HandleDragEnd;
+            InputManager.Instance.OnWorldDrag      -= HandleDrag;
+            InputManager.Instance.OnWorldDragEnd   -= HandleDragEnd;
         }
 
         if (_toolTrigger != null)
         {
             _toolTrigger.OnTriggerEntered -= HandleTriggerEnter;
-            _toolTrigger.OnTriggerExited -= HandleTriggerExit;
+            _toolTrigger.OnTriggerExited  -= HandleTriggerExit;
         }
 
+        // Always restore camera panning — guards against tool being disabled mid-drag.
         CameraPanner.Instance?.SetPanEnabled(true);
     }
     #endregion
 
-    #region Input Handling
+    #region Input Handlers
+    /// <summary>
+    /// Fires when any drag begins in the world.
+    /// Raycasts at the start position — only takes ownership if the hit is
+    /// this tool's own GameObject on the interactableLayer.
+    /// </summary>
     private void HandleDragStart(Vector2 worldPos)
     {
-        // Only own the drag if it started on the handle collider.
         RaycastHit2D hit = Physics2D.Raycast(worldPos, Vector2.zero, 0f, interactableLayer);
         if (hit.collider == null || hit.collider.gameObject != gameObject) return;
 
@@ -78,22 +111,31 @@ public abstract class ToolBase : MonoBehaviour
         OnDragStarted();
     }
 
+    /// <summary>
+    /// Fires every frame the drag moves.
+    /// Moves the tool to the current world position while this tool owns the drag.
+    /// </summary>
     private void HandleDrag(Vector2 worldPos)
     {
         if (!_isDragging) return;
         transform.position = new Vector3(worldPos.x, worldPos.y, transform.position.z);
     }
 
+    /// <summary>
+    /// Fires when the drag is released.
+    /// Clears the current contact, snaps back to origin, re-enables the camera panner.
+    /// </summary>
     private void HandleDragEnd(Vector2 worldPos)
     {
         if (!_isDragging) return;
 
         _isDragging = false;
 
-        if (_currentFlora != null)
+        // Notify subclass that contact is ending before clearing the reference.
+        if (_currentObject != null)
         {
-            OnFloraLeft(_currentFlora);
-            _currentFlora = null;
+            OnObjectLeft(_currentObject);
+            _currentObject = null;
         }
 
         transform.position = _originPosition;
@@ -103,48 +145,72 @@ public abstract class ToolBase : MonoBehaviour
         OnDragEnded();
     }
     #endregion
-
-    #region Collision Handling
+    
+    #region Collision Detection
+    /// <summary>
+    /// Fires when the tool's active area enters a collider.
+    /// Passes the hit GameObject to CanInteractWith — if valid, stores the reference
+    /// and notifies the subclass via OnObjectTouched.
+    /// </summary>
     private void HandleTriggerEnter(Collider2D other)
     {
         if (!_isDragging) return;
 
-        var flora = other.GetComponent<FloraBase>();
-        if (flora != null && !flora.IsLost && CanInteractWith(flora))
+        GameObject hit = other.gameObject;
+        if (CanInteractWith(hit))
         {
-            _currentFlora = flora;
-            OnFloraTouched(flora);
+            _currentObject = hit;
+            OnObjectTouched(_currentObject);
         }
     }
 
+    /// <summary>
+    /// Fires when the tool's active area exits a collider.
+    /// Clears the current contact and notifies the subclass via OnObjectLeft.
+    /// </summary>
     private void HandleTriggerExit(Collider2D other)
     {
-        if (_currentFlora != null && other.gameObject == _currentFlora.gameObject)
+        if (_currentObject != null && other.gameObject == _currentObject)
         {
-            OnFloraLeft(_currentFlora);
-            _currentFlora = null;
+            OnObjectLeft(_currentObject);
+            _currentObject = null;
         }
     }
     #endregion
     
-    #region Abstract Methods
+    #region Abstract methods
     /// <summary>
-    /// Filter which flora this tool can interact with.
-    /// Override to restrict interaction e.g. only Harvestable stage for axe.
-    /// Default accepts any non-lost flora.
+    /// Filter which GameObjects this tool can interact with.
+    /// Called on every trigger enter — return false to ignore the contact entirely.
+    /// Override to restrict by component type, state, or any other condition.
+    /// Default accepts any GameObject.
     /// </summary>
-    protected virtual bool CanInteractWith(FloraBase flora) => true;
+    protected virtual bool CanInteractWith(GameObject obj) => true;
 
-    /// <summary>Called when the drag is first confirmed on this tool's handle.</summary>
+    /// <summary>
+    /// Called once when the drag is first confirmed on this tool's handle collider.
+    /// Override for any setup that should happen at drag start.
+    /// </summary>
     protected virtual void OnDragStarted() { }
 
-    /// <summary>Called when the drag ends and the tool snaps back to origin.</summary>
+    /// <summary>
+    /// Called once when the drag ends and the tool snaps back to origin.
+    /// Override to clean up animations, stop coroutines, or reset rotation.
+    /// </summary>
     protected virtual void OnDragEnded() { }
 
-    /// <summary>Called when the tool's active area enters a valid flora collider.</summary>
-    protected abstract void OnFloraTouched(FloraBase flora);
+    /// <summary>
+    /// Called when the tool's active area enters a valid object's collider.
+    /// The subclass receives the raw GameObject — cast to the expected type
+    /// (FloraBase, FaunaBase, Sheep, etc.) to call type-specific methods.
+    /// </summary>
+    protected abstract void OnObjectTouched(GameObject obj);
 
-    /// <summary>Called when the tool's active area exits a flora collider, or drag ends while overlapping.</summary>
-    protected abstract void OnFloraLeft(FloraBase flora);
+    /// <summary>
+    /// Called when the tool's active area exits a valid object's collider,
+    /// or when the drag ends while still overlapping an object.
+    /// Use this to stop coroutines, hide stat bars, reset visuals etc.
+    /// </summary>
+    protected abstract void OnObjectLeft(GameObject obj);
     #endregion
 }

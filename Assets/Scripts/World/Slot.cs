@@ -7,7 +7,7 @@ using UnityEngine;
 /// collider takes over for interaction.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
-public class Slot : MonoBehaviour, IHandler
+public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
 {
     public enum SlotState { Empty, Occupied }
 
@@ -30,7 +30,8 @@ public class Slot : MonoBehaviour, IHandler
     public SlotState State => _state;
     public bool IsOccupied => _state == SlotState.Occupied;
     public GameObject CurrentOccupant => _currentOccupant;
-    public BiomeManager.BiomeType ParentBiome => parentBiome;
+    /// <summary>The biome this slot belongs to. Used by BiomeManager to track occupancy and apply biome effects.</summary>
+    public BiomeManager.BiomeType HomeBiome => parentBiome;
 
     #region  Unity Lifecycle
     private void Awake()
@@ -41,6 +42,8 @@ public class Slot : MonoBehaviour, IHandler
 
     private void OnEnable()
     {
+        BiomeManager.Instance?.RegisterOccupant(this);
+        
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap += HandleWorldTap;
     }
@@ -49,6 +52,11 @@ public class Slot : MonoBehaviour, IHandler
     {
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap -= HandleWorldTap;
+    }
+
+    private void OnDestroy()
+    {
+        BiomeManager.Instance?.RemoveOccupant(this);
     }
     #endregion
 
@@ -163,10 +171,16 @@ public class Slot : MonoBehaviour, IHandler
         _state = SlotState.Occupied;
         _collider.enabled = false;
 
-        // Notify any FloraBase on the occupant which slot it belongs to so it
-        // can call slot.Clear() on its own destruction.
+        // Notify FloraBase or StructureBase or FaunaBase on the occupant which slot it belongs
+        // to so they can call slot.Clear() on their own destruction.
         var flora = occupant.GetComponent<FloraBase>();
         if (flora != null) flora.SetSlot(this);
+        
+        var fauna = occupant.GetComponent<FaunaBase>();
+        if (fauna != null) fauna.SetSlot(this);
+
+        var structure = occupant.GetComponent<StructureBase>();
+        if (structure != null) structure.SetSlot(this);
 
         Debug.Log($"[Slot] {name} occupied by {item.ItemName}.");
     }

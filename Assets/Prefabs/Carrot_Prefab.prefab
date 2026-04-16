@@ -193,6 +193,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7558178126693061648}
+  - {fileID: 1856373965975717334}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &492237944157579962
@@ -270,6 +271,7 @@ MonoBehaviour:
   isStatic: 0
   prefabKey: 
   saveTransform: 1
+  homeBiome: 0
   waterLevel: 1
   waterDecayRate: 0.4
   waterTickInterval: 10
@@ -294,6 +296,7 @@ MonoBehaviour:
   - {x: 0.5, y: 0.8}
   - {x: 0.5, y: 0.8}
   - {x: 0.5, y: 0.8}
+  wateringFxPrefab: {fileID: 4566190999993806086}
   spriteRenderer: {fileID: 492237944157579962}
   interactableLayer:
     serializedVersion: 2
@@ -420,3 +423,74 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1001 &685898277650347851
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2145793846590726724}
+    m_Modifications:
+    - target: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8914582628060601922, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_Name
+      value: SprinklerFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 8914582628060601922, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+--- !u!4 &1856373965975717334 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1173159734826676893, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+  m_PrefabInstance: {fileID: 685898277650347851}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &4566190999993806086 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 3952632550636247629, guid: ca972ced2aac94d5eb970f5d094a949f, type: 3}
+  m_PrefabInstance: {fileID: 685898277650347851}
+  m_PrefabAsset: {fileID: 0}

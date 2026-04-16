@@ -7,21 +7,10 @@ using TMPro;
 
 public class StoreFrontUI : MonoBehaviour
 {
-    [Header("Sell Page")]
-    [SerializeField] private Transform sellInventoryGrid;
-    [SerializeField] private DropZoneHandler dropZone;
-    [SerializeField] private TextMeshProUGUI totalSummaryText;
-    [SerializeField] private Button confirmSellButton;
-    [SerializeField] private Transform buybackGridContainer;
-    [SerializeField] private Canvas rootCanvas;
-
-    private readonly Dictionary<ItemDefinition, int> _sellBasket = new();
-    
     [Header("References")]
     [SerializeField] private StoreFrontManager storeFrontManager;
     [SerializeField] private RectTransform panel;
     [SerializeField] private GameObject biomePanel;
-    [SerializeField] private InventoryUI inventoryUI;
 
     [Header("Header")]
     [SerializeField] private TextMeshProUGUI coinDisplay;
@@ -35,6 +24,14 @@ public class StoreFrontUI : MonoBehaviour
     [Header("Buy Page")]
     [SerializeField] private Transform buyGridContainer;
 
+    [Header("Sell Page")]
+    [SerializeField] private Transform sellInventoryGrid;
+    [SerializeField] private DropZoneHandler dropZone;
+    [SerializeField] private TextMeshProUGUI totalSummaryText;
+    [SerializeField] private Button confirmSellButton;
+    [SerializeField] private Transform buybackGridContainer;
+    [SerializeField] private Canvas rootCanvas;
+
     [Header("Slide Animation")]
     [SerializeField] private float slideDuration = 0.3f;
 
@@ -42,6 +39,7 @@ public class StoreFrontUI : MonoBehaviour
     private Vector2 _shownPos;
     private bool _isOpen = false;
     private Coroutine _anim;
+    private readonly Dictionary<ItemDefinition, int> _sellBasket = new();
 
     private void Awake()
     {
@@ -51,7 +49,6 @@ public class StoreFrontUI : MonoBehaviour
 
         buyTab.onClick.AddListener(() => SetPage(true));
         sellTab.onClick.AddListener(() => SetPage(false));
-        
         dropZone.OnItemDropped += OnItemDroppedInZone;
         confirmSellButton.onClick.AddListener(OnConfirmSell);
 
@@ -63,6 +60,7 @@ public class StoreFrontUI : MonoBehaviour
         storeFrontManager.OnStorefrontToggled += SetOpen;
         storeFrontManager.OnBalanceChanged += UpdateCoinDisplay;
         storeFrontManager.OnStockChanged += OnStockChanged;
+        storeFrontManager.OnRecipeStockChanged += OnRecipeStockChanged;
     }
 
     private void OnDisable()
@@ -70,6 +68,7 @@ public class StoreFrontUI : MonoBehaviour
         storeFrontManager.OnStorefrontToggled -= SetOpen;
         storeFrontManager.OnBalanceChanged -= UpdateCoinDisplay;
         storeFrontManager.OnStockChanged -= OnStockChanged;
+        storeFrontManager.OnRecipeStockChanged -= OnRecipeStockChanged;
     }
 
     private void Update()
@@ -84,19 +83,9 @@ public class StoreFrontUI : MonoBehaviour
     {
         if (_isOpen == open) return;
         _isOpen = open;
-        
+
         biomePanel.SetActive(!_isOpen);
-        
-        if (_isOpen && inventoryUI != null)
-        {
-            inventoryUI.SetOpen(false);
-            inventoryUI.ToggleButton.SetActive(false);
-        }
-        else
-        {
-            inventoryUI.ToggleButton.SetActive(true);
-        }
-        
+
         if (_isOpen)
         {
             panel.gameObject.SetActive(true);
@@ -133,119 +122,291 @@ public class StoreFrontUI : MonoBehaviour
             RefreshSellPage();
     }
 
+    #region Buy Page
+
     private void RefreshBuyPage()
     {
         foreach (Transform child in buyGridContainer)
             Destroy(child.gameObject);
 
-        foreach (var item in storeFrontManager.GetBuyableItems())
-        {
-            var cell = new GameObject("BuyCell", typeof(RectTransform));
-            cell.transform.SetParent(buyGridContainer, false);
-
-            // Card background
-            var cardGO = new GameObject("CardBackground", typeof(Image));
-            cardGO.transform.SetParent(cell.transform, false);
-            var cardRect = cardGO.GetComponent<RectTransform>();
-            cardRect.anchorMin = Vector2.zero;
-            cardRect.anchorMax = Vector2.one;
-            cardRect.offsetMin = Vector2.zero;
-            cardRect.offsetMax = Vector2.zero;
-            cardGO.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.4f);
-
-            // Icon
-            var iconGO = new GameObject("Icon", typeof(Image));
-            iconGO.transform.SetParent(cell.transform, false);
-            var iconRect = iconGO.GetComponent<RectTransform>();
-            iconRect.anchorMin = new Vector2(0, 0.35f);
-            iconRect.anchorMax = new Vector2(1, 0.8f);
-            iconRect.offsetMin = new Vector2(8, 0);
-            iconRect.offsetMax = new Vector2(-8, -8);
-            var iconImage = iconGO.GetComponent<Image>();
-            iconImage.sprite = item.Icon;
-            iconImage.enabled = item.Icon != null;
-
-            // Item name
-            var nameGO = new GameObject("ItemName", typeof(TextMeshProUGUI));
-            nameGO.transform.SetParent(cell.transform, false);
-            var nameRect = nameGO.GetComponent<RectTransform>();
-            nameRect.anchorMin = new Vector2(0, 0.6f);
-            nameRect.anchorMax = new Vector2(1, 0.8f);
-            nameRect.offsetMin = new Vector2(4, 0);
-            nameRect.offsetMax = new Vector2(-4, 0);
-            var nameText = nameGO.GetComponent<TextMeshProUGUI>();
-            nameText.text = item.ItemName;
-            nameText.fontSize = 12;
-            nameText.fontStyle = FontStyles.Bold;
-            nameText.color = Color.white;
-            nameText.alignment = TextAlignmentOptions.Center;
-            nameText.overflowMode = TextOverflowModes.Ellipsis;
-
-            // Price
-            var priceGO = new GameObject("Price", typeof(TextMeshProUGUI));
-            priceGO.transform.SetParent(cell.transform, false);
-            var priceRect = priceGO.GetComponent<RectTransform>();
-            priceRect.anchorMin = new Vector2(0, 0.8f);
-            priceRect.anchorMax = new Vector2(1, 1f);
-            priceRect.offsetMin = new Vector2(4, 0);
-            priceRect.offsetMax = new Vector2(-4, 0);
-            var priceText = priceGO.GetComponent<TextMeshProUGUI>();
-            priceText.text = $"{item.BaseBuyValue:F0} coins";
-            priceText.fontSize = 11;
-            priceText.color = Color.yellow;
-            priceText.alignment = TextAlignmentOptions.Center;
-
-            // Stock
-            int stock = storeFrontManager.GetStock(item);
-            int maxStock = storeFrontManager.GetMaxStock(item);
-            var stockGO = new GameObject("Stock", typeof(TextMeshProUGUI));
-            stockGO.transform.SetParent(cell.transform, false);
-            var stockRect = stockGO.GetComponent<RectTransform>();
-            stockRect.anchorMin = new Vector2(0, 0.18f);
-            stockRect.anchorMax = new Vector2(1, 0.35f);
-            stockRect.offsetMin = new Vector2(4, 0);
-            stockRect.offsetMax = new Vector2(-4, 0);
-            var stockText = stockGO.GetComponent<TextMeshProUGUI>();
-            stockText.text = $"{stock}/{maxStock}";
-            stockText.fontSize = 11;
-            stockText.color = stock > 0 ? Color.white : Color.red;
-            stockText.alignment = TextAlignmentOptions.Center;
-
-            // Buy button
-            var btnGO = new GameObject("BuyButton", typeof(Image), typeof(Button));
-            btnGO.transform.SetParent(cell.transform, false);
-            var btnRect = btnGO.GetComponent<RectTransform>();
-            btnRect.anchorMin = new Vector2(0.1f, 0f);
-            btnRect.anchorMax = new Vector2(0.9f, 0.18f);
-            btnRect.offsetMin = new Vector2(0, 4);
-            btnRect.offsetMax = new Vector2(0, -4);
-            btnGO.GetComponent<Image>().color = stock > 0
-                ? new Color(0.2f, 0.6f, 0.2f)
-                : new Color(0.4f, 0.4f, 0.4f);
-            var btnTextGO = new GameObject("Text", typeof(TextMeshProUGUI));
-            btnTextGO.transform.SetParent(btnGO.transform, false);
-            var btnTextRect = btnTextGO.GetComponent<RectTransform>();
-            btnTextRect.anchorMin = Vector2.zero;
-            btnTextRect.anchorMax = Vector2.one;
-            btnTextRect.offsetMin = Vector2.zero;
-            btnTextRect.offsetMax = Vector2.zero;
-            var btnText = btnTextGO.GetComponent<TextMeshProUGUI>();
-            btnText.text = stock > 0 ? "Buy" : "Sold Out";
-            btnText.fontSize = 12;
-            btnText.fontStyle = FontStyles.Bold;
-            btnText.color = Color.white;
-            btnText.alignment = TextAlignmentOptions.Center;
-
-            var capturedItem = item;
-            var btn = btnGO.GetComponent<Button>();
-            btn.interactable = stock > 0;
-            btn.onClick.AddListener(() =>
-            {
-                if (storeFrontManager.Buy(capturedItem, 1))
-                    RefreshBuyPage();
-            });
-        }
+        BuildItemsSection();
+        BuildRecipesSection();
     }
+
+    private void BuildItemsSection()
+    {
+        var items = storeFrontManager.GetBuyableItems();
+        if (items.Count == 0) return;
+
+        // Section label
+        BuildSectionLabel("Items", buyGridContainer);
+
+        foreach (var item in items)
+            BuildItemCell(item);
+    }
+
+    private void BuildRecipesSection()
+    {
+        var recipes = storeFrontManager.GetBuyableRecipes();
+        if (recipes.Count == 0) return;
+
+        // Section label
+        BuildSectionLabel("Recipes", buyGridContainer);
+
+        foreach (var recipe in recipes)
+            BuildRecipeCell(recipe);
+    }
+
+    private void BuildSectionLabel(string text, Transform parent)
+    {
+        var labelGO = new GameObject($"Label_{text}", typeof(TextMeshProUGUI));
+        labelGO.transform.SetParent(parent, false);
+
+        // Force full width by breaking out of grid
+        var labelRect = labelGO.GetComponent<RectTransform>();
+        labelRect.sizeDelta = new Vector2(0, 30);
+
+        var label = labelGO.GetComponent<TextMeshProUGUI>();
+        label.text = text.ToUpper();
+        label.fontSize = 13;
+        label.fontStyle = FontStyles.Bold;
+        label.color = new Color(0.7f, 0.7f, 0.7f);
+        label.alignment = TextAlignmentOptions.MidlineLeft;
+
+        // Add layout element to make it span full width
+        var layout = labelGO.AddComponent<LayoutElement>();
+        layout.preferredWidth = 9999;
+        layout.preferredHeight = 30;
+        layout.flexibleWidth = 1;
+    }
+
+    private void BuildItemCell(ItemDefinition item)
+    {
+        int stock = storeFrontManager.GetStock(item);
+        int maxStock = storeFrontManager.GetMaxStock(item);
+
+        var cell = new GameObject("BuyCell", typeof(RectTransform));
+        cell.transform.SetParent(buyGridContainer, false);
+
+        // Card background
+        var cardGO = new GameObject("CardBackground", typeof(Image));
+        cardGO.transform.SetParent(cell.transform, false);
+        var cardRect = cardGO.GetComponent<RectTransform>();
+        cardRect.anchorMin = Vector2.zero;
+        cardRect.anchorMax = Vector2.one;
+        cardRect.offsetMin = Vector2.zero;
+        cardRect.offsetMax = Vector2.zero;
+        cardGO.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.4f);
+
+        // Icon
+        var iconGO = new GameObject("Icon", typeof(Image));
+        iconGO.transform.SetParent(cell.transform, false);
+        var iconRect = iconGO.GetComponent<RectTransform>();
+        iconRect.anchorMin = new Vector2(0, 0.35f);
+        iconRect.anchorMax = new Vector2(1, 1f);
+        iconRect.offsetMin = new Vector2(8, 0);
+        iconRect.offsetMax = new Vector2(-8, -8);
+        var iconImage = iconGO.GetComponent<Image>();
+        iconImage.sprite = item.Icon;
+        iconImage.enabled = item.Icon != null;
+
+        // Price
+        var priceGO = new GameObject("Price", typeof(TextMeshProUGUI));
+        priceGO.transform.SetParent(cell.transform, false);
+        var priceRect = priceGO.GetComponent<RectTransform>();
+        priceRect.anchorMin = new Vector2(0, 0.8f);
+        priceRect.anchorMax = new Vector2(1, 1f);
+        priceRect.offsetMin = new Vector2(4, 0);
+        priceRect.offsetMax = new Vector2(-4, 0);
+        var priceText = priceGO.GetComponent<TextMeshProUGUI>();
+        priceText.text = $"{item.BaseBuyValue:F0} coins";
+        priceText.fontSize = 11;
+        priceText.color = Color.yellow;
+        priceText.alignment = TextAlignmentOptions.Center;
+
+        // Item name
+        var nameGO = new GameObject("ItemName", typeof(TextMeshProUGUI));
+        nameGO.transform.SetParent(cell.transform, false);
+        var nameRect = nameGO.GetComponent<RectTransform>();
+        nameRect.anchorMin = new Vector2(0, 0.6f);
+        nameRect.anchorMax = new Vector2(1, 0.8f);
+        nameRect.offsetMin = new Vector2(4, 0);
+        nameRect.offsetMax = new Vector2(-4, 0);
+        var nameText = nameGO.GetComponent<TextMeshProUGUI>();
+        nameText.text = item.ItemName;
+        nameText.fontSize = 12;
+        nameText.fontStyle = FontStyles.Bold;
+        nameText.color = Color.white;
+        nameText.alignment = TextAlignmentOptions.Center;
+        nameText.overflowMode = TextOverflowModes.Ellipsis;
+
+        // Stock
+        var stockGO = new GameObject("Stock", typeof(TextMeshProUGUI));
+        stockGO.transform.SetParent(cell.transform, false);
+        var stockRect = stockGO.GetComponent<RectTransform>();
+        stockRect.anchorMin = new Vector2(0, 0.18f);
+        stockRect.anchorMax = new Vector2(1, 0.35f);
+        stockRect.offsetMin = new Vector2(4, 0);
+        stockRect.offsetMax = new Vector2(-4, 0);
+        var stockText = stockGO.GetComponent<TextMeshProUGUI>();
+        stockText.text = $"{stock}/{maxStock}";
+        stockText.fontSize = 11;
+        stockText.color = stock > 0 ? Color.white : Color.red;
+        stockText.alignment = TextAlignmentOptions.Center;
+
+        // Buy button
+        var btnGO = new GameObject("BuyButton", typeof(Image), typeof(Button));
+        btnGO.transform.SetParent(cell.transform, false);
+        var btnRect = btnGO.GetComponent<RectTransform>();
+        btnRect.anchorMin = new Vector2(0.1f, 0f);
+        btnRect.anchorMax = new Vector2(0.9f, 0.18f);
+        btnRect.offsetMin = new Vector2(0, 4);
+        btnRect.offsetMax = new Vector2(0, -4);
+        btnGO.GetComponent<Image>().color = stock > 0
+            ? new Color(0.2f, 0.6f, 0.2f)
+            : new Color(0.4f, 0.4f, 0.4f);
+        var btnTextGO = new GameObject("Text", typeof(TextMeshProUGUI));
+        btnTextGO.transform.SetParent(btnGO.transform, false);
+        var btnTextRect = btnTextGO.GetComponent<RectTransform>();
+        btnTextRect.anchorMin = Vector2.zero;
+        btnTextRect.anchorMax = Vector2.one;
+        btnTextRect.offsetMin = Vector2.zero;
+        btnTextRect.offsetMax = Vector2.zero;
+        var btnText = btnTextGO.GetComponent<TextMeshProUGUI>();
+        btnText.text = stock > 0 ? "Buy" : "Sold Out";
+        btnText.fontSize = 12;
+        btnText.fontStyle = FontStyles.Bold;
+        btnText.color = Color.white;
+        btnText.alignment = TextAlignmentOptions.Center;
+
+        var capturedItem = item;
+        var btn = btnGO.GetComponent<Button>();
+        btn.interactable = stock > 0;
+        btn.onClick.AddListener(() =>
+        {
+            if (storeFrontManager.Buy(capturedItem, 1))
+                RefreshBuyPage();
+        });
+    }
+
+    private void BuildRecipeCell(RecipeDefinition recipe)
+    {
+        bool alreadyOwned = CraftingManager.Instance != null &&
+                            CraftingManager.Instance.HasRecipe(recipe);
+        int stock = storeFrontManager.GetRecipeStock(recipe);
+        bool canBuy = !alreadyOwned && stock > 0;
+
+        var cell = new GameObject("RecipeCell", typeof(RectTransform));
+        cell.transform.SetParent(buyGridContainer, false);
+
+        // Card background
+        var cardGO = new GameObject("CardBackground", typeof(Image));
+        cardGO.transform.SetParent(cell.transform, false);
+        var cardRect = cardGO.GetComponent<RectTransform>();
+        cardRect.anchorMin = Vector2.zero;
+        cardRect.anchorMax = Vector2.one;
+        cardRect.offsetMin = Vector2.zero;
+        cardRect.offsetMax = Vector2.zero;
+        cardGO.GetComponent<Image>().color = new Color(0.1f, 0.05f, 0.2f, 0.6f);
+
+        // Icon
+        var iconGO = new GameObject("Icon", typeof(Image));
+        iconGO.transform.SetParent(cell.transform, false);
+        var iconRect = iconGO.GetComponent<RectTransform>();
+        iconRect.anchorMin = new Vector2(0, 0.35f);
+        iconRect.anchorMax = new Vector2(1, 1f);
+        iconRect.offsetMin = new Vector2(8, 0);
+        iconRect.offsetMax = new Vector2(-8, -8);
+        var iconImage = iconGO.GetComponent<Image>();
+        iconImage.sprite = recipe.Icon;
+        iconImage.enabled = recipe.Icon != null;
+
+        // Price
+        var priceGO = new GameObject("Price", typeof(TextMeshProUGUI));
+        priceGO.transform.SetParent(cell.transform, false);
+        var priceRect = priceGO.GetComponent<RectTransform>();
+        priceRect.anchorMin = new Vector2(0, 0.8f);
+        priceRect.anchorMax = new Vector2(1, 1f);
+        priceRect.offsetMin = new Vector2(4, 0);
+        priceRect.offsetMax = new Vector2(-4, 0);
+        var priceText = priceGO.GetComponent<TextMeshProUGUI>();
+        priceText.text = alreadyOwned ? "Owned" : $"{recipe.BuyPrice:F0} coins";
+        priceText.fontSize = 11;
+        priceText.color = alreadyOwned ? Color.green : Color.yellow;
+        priceText.alignment = TextAlignmentOptions.Center;
+
+        // Recipe name
+        var nameGO = new GameObject("RecipeName", typeof(TextMeshProUGUI));
+        nameGO.transform.SetParent(cell.transform, false);
+        var nameRect = nameGO.GetComponent<RectTransform>();
+        nameRect.anchorMin = new Vector2(0, 0.6f);
+        nameRect.anchorMax = new Vector2(1, 0.8f);
+        nameRect.offsetMin = new Vector2(4, 0);
+        nameRect.offsetMax = new Vector2(-4, 0);
+        var nameText = nameGO.GetComponent<TextMeshProUGUI>();
+        nameText.text = recipe.RecipeName;
+        nameText.fontSize = 12;
+        nameText.fontStyle = FontStyles.Bold;
+        nameText.color = Color.white;
+        nameText.alignment = TextAlignmentOptions.Center;
+        nameText.overflowMode = TextOverflowModes.Ellipsis;
+
+        // Ingredients preview
+        var ingGO = new GameObject("Ingredients", typeof(TextMeshProUGUI));
+        ingGO.transform.SetParent(cell.transform, false);
+        var ingRect = ingGO.GetComponent<RectTransform>();
+        ingRect.anchorMin = new Vector2(0, 0.18f);
+        ingRect.anchorMax = new Vector2(1, 0.6f);
+        ingRect.offsetMin = new Vector2(4, 0);
+        ingRect.offsetMax = new Vector2(-4, 0);
+        var ingText = ingGO.GetComponent<TextMeshProUGUI>();
+        var ingLines = new System.Text.StringBuilder();
+        foreach (var ing in recipe.Ingredients)
+            ingLines.AppendLine($"{ing.item?.ItemName} x{ing.quantity}");
+        ingText.text = ingLines.ToString().TrimEnd();
+        ingText.fontSize = 10;
+        ingText.color = new Color(0.8f, 0.8f, 0.8f);
+        ingText.alignment = TextAlignmentOptions.Center;
+        ingText.overflowMode = TextOverflowModes.Ellipsis;
+
+        // Buy button
+        var btnGO = new GameObject("BuyButton", typeof(Image), typeof(Button));
+        btnGO.transform.SetParent(cell.transform, false);
+        var btnRect = btnGO.GetComponent<RectTransform>();
+        btnRect.anchorMin = new Vector2(0.1f, 0f);
+        btnRect.anchorMax = new Vector2(0.9f, 0.18f);
+        btnRect.offsetMin = new Vector2(0, 4);
+        btnRect.offsetMax = new Vector2(0, -4);
+        btnGO.GetComponent<Image>().color = canBuy
+            ? new Color(0.4f, 0.2f, 0.8f)
+            : new Color(0.4f, 0.4f, 0.4f);
+        var btnTextGO = new GameObject("Text", typeof(TextMeshProUGUI));
+        btnTextGO.transform.SetParent(btnGO.transform, false);
+        var btnTextRect = btnTextGO.GetComponent<RectTransform>();
+        btnTextRect.anchorMin = Vector2.zero;
+        btnTextRect.anchorMax = Vector2.one;
+        btnTextRect.offsetMin = Vector2.zero;
+        btnTextRect.offsetMax = Vector2.zero;
+        var btnText = btnTextGO.GetComponent<TextMeshProUGUI>();
+        btnText.text = alreadyOwned ? "Owned" : stock <= 0 ? "Out of Stock" : "Buy Recipe";
+        btnText.fontSize = 12;
+        btnText.fontStyle = FontStyles.Bold;
+        btnText.color = Color.white;
+        btnText.alignment = TextAlignmentOptions.Center;
+
+        var capturedRecipe = recipe;
+        var btn = btnGO.GetComponent<Button>();
+        btn.interactable = canBuy;
+        btn.onClick.AddListener(() =>
+        {
+            if (storeFrontManager.BuyRecipe(capturedRecipe))
+                RefreshBuyPage();
+        });
+    }
+
+    #endregion
+
+    #region Sell Page
 
     private void RefreshSellPage()
     {
@@ -328,7 +489,6 @@ public class StoreFrontUI : MonoBehaviour
             countText.color = Color.white;
             countText.alignment = TextAlignmentOptions.Center;
 
-            // Draggable
             var draggable = cell.AddComponent<DraggableItem>();
             draggable.Initialise(kvp.Key, kvp.Value, rootCanvas, countText);
         }
@@ -472,31 +632,16 @@ public class StoreFrontUI : MonoBehaviour
 
     private void OnConfirmSell()
     {
-        bool anyFailed = false;
-
         foreach (var kvp in _sellBasket)
-        {
-            if (!storeFrontManager.Sell(kvp.Key, kvp.Value))
-            {
-                anyFailed = true;
-                // Add back to cell count if sell failed
-                foreach (Transform cell in sellInventoryGrid)
-                {
-                    var draggable = cell.GetComponent<DraggableItem>();
-                    if (draggable != null && draggable.Item == kvp.Key)
-                    {
-                        for (int i = 0; i < kvp.Value; i++)
-                            draggable.IncrementCount();
-                        break;
-                    }
-                }
-            }
-        }
+            storeFrontManager.Sell(kvp.Key, kvp.Value);
 
         _sellBasket.Clear();
-        RefreshBuybackGrid();
-        UpdateSellSummary();
+        RefreshSellPage();
     }
+
+    #endregion
+
+    #region Events
 
     private void UpdateCoinDisplay(float balance)
     {
@@ -509,8 +654,19 @@ public class StoreFrontUI : MonoBehaviour
             RefreshBuyPage();
     }
 
+    private void OnRecipeStockChanged(RecipeDefinition recipe, int newStock)
+    {
+        if (_isOpen && buyPage.activeSelf)
+            RefreshBuyPage();
+    }
+
+    #endregion
+
+    #region Animation
+
     private IEnumerator SlidePanel(Vector2 target)
     {
+        panel.gameObject.SetActive(true);
         Vector2 start = panel.anchoredPosition;
         float elapsed = 0f;
 
@@ -533,6 +689,16 @@ public class StoreFrontUI : MonoBehaviour
         return 1f - (1f - t) * (1f - t);
     }
 
+    #endregion
+
     [ContextMenu("Debug/Toggle Storefront")]
-    private void DebugToggle() => SetOpen(!_isOpen);
+    private void DebugToggle()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("[StoreFrontUI] Enter play mode first.");
+            return;
+        }
+        SetOpen(!_isOpen);
+    }
 }

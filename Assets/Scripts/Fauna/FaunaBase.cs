@@ -29,8 +29,12 @@ public class FaunaData
 /// Handles hunger/happiness decay, growth stage, grace period, and sprite swapping.
 /// Subclasses implement Feed, Grow, OnTapped, and ProduceOutput.
 /// </summary>
-public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler
+public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler, IBiomeOccupant
 {
+    [Header("Fauna Identity")]
+    [SerializeField, Tooltip("The biome this fauna belongs to. ")]
+    private BiomeManager.BiomeType homeBiome;
+    
     [Header("Stats")]
     [SerializeField, Range(0f, 1f)] protected float hunger = 1f;
     [SerializeField, Range(0f, 1f)] protected float happiness = 1f;
@@ -68,6 +72,7 @@ public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler
     private float _gracePeriodTimer;
     private bool _inGracePeriod;
     private bool _isLost;
+    private Slot _parentSlot;
 
     // Events
     public event System.Action<float> OnHungerChanged;
@@ -84,7 +89,8 @@ public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler
     public bool IsLost => _isLost;
     protected float GracePeriodTimer => _gracePeriodTimer;
     protected bool InGracePeriod => _inGracePeriod;
-
+    /// <summary>The biome this fauna belongs to. Used by BiomeManager to track occupancy and apply biome effects.</summary>
+    public BiomeManager.BiomeType HomeBiome => homeBiome;
     #endregion
 
     #region Unity Lifecycle
@@ -99,6 +105,8 @@ public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler
     protected override void OnEnable()
     {
         base.OnEnable();
+        BiomeManager.Instance?.RegisterOccupant(this);
+        
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap += HandleWorldTap;
     }
@@ -108,6 +116,13 @@ public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler
         base.OnDisable();
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap -= HandleWorldTap;
+    }
+
+    private void OnDestroy()
+    {
+        BiomeManager.Instance?.RemoveOccupant(this);
+        // Clear the parent slot so it becomes available for new placement.
+        _parentSlot?.Clear();
     }
 
     protected virtual void Update()
@@ -187,6 +202,7 @@ public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler
     {
         if (_isLost) return;
         _isLost = true;
+        _parentSlot?.Clear();
         Debug.Log($"[{gameObject.name}] Lost due to starvation.");
         OnLost?.Invoke();
         Destroy(gameObject);
@@ -250,6 +266,19 @@ public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler
             OnTapped();
     }
 
+    #endregion
+    
+    #region Slot
+    /// <summary>
+    /// Assigns the slot this fauna occupies.
+    /// Called by Slot.Place() immediately after instantiation.
+    /// Only relevant for slot-bound fauna (Clam, Cow) — mobile fauna ignore it.
+    /// </summary>
+    public void SetSlot(Slot slot)
+    {
+        _parentSlot = slot;
+        homeBiome = slot.HomeBiome;
+    }
     #endregion
 
     #region SaveableBehaviour
