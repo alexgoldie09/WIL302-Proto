@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+using UnityEngine.Serialization;
 
 public class StoreFrontUI : MonoBehaviour
 {
@@ -14,18 +15,24 @@ public class StoreFrontUI : MonoBehaviour
 
     [Header("Header")]
     [SerializeField] private TextMeshProUGUI coinDisplay;
+    [SerializeField] private TMP_FontAsset defaultFont;
     [SerializeField] private Button buyTab;
     [SerializeField] private Button sellTab;
+    [SerializeField] private Button upgradeTab;
 
     [Header("Pages")]
     [SerializeField] private GameObject buyPage;
     [SerializeField] private GameObject sellPage;
+    [SerializeField] private GameObject upgradePage;
+
+    [Header("Upgrade Page")]
+    [SerializeField] private Transform upgradeGridContainer;
 
     [Header("Buy Page")]
     [SerializeField] private Transform buyGridContainer;
-
+    
     [Header("Sell Page")]
-    [SerializeField] private Transform sellInventoryGrid;
+    [SerializeField] private Transform sellGridContainer;
     [SerializeField] private DropZoneHandler dropZone;
     [SerializeField] private TextMeshProUGUI totalSummaryText;
     [SerializeField] private Button confirmSellButton;
@@ -41,18 +48,22 @@ public class StoreFrontUI : MonoBehaviour
     private Coroutine _anim;
     private readonly Dictionary<ItemDefinition, int> _sellBasket = new();
 
+    private enum StorePage { Buy, Sell, Upgrades }
+    private StorePage _currentPage = StorePage.Buy;
+
     private void Awake()
     {
         _shownPos = panel.anchoredPosition;
         _hiddenPos = _shownPos - new Vector2(0, panel.rect.height + 50f);
         panel.anchoredPosition = _hiddenPos;
 
-        buyTab.onClick.AddListener(() => SetPage(true));
-        sellTab.onClick.AddListener(() => SetPage(false));
+        buyTab.onClick.AddListener(() => SetPage(StorePage.Buy));
+        sellTab.onClick.AddListener(() => SetPage(StorePage.Sell));
+        upgradeTab.onClick.AddListener(() => SetPage(StorePage.Upgrades));
         dropZone.OnItemDropped += OnItemDroppedInZone;
         confirmSellButton.onClick.AddListener(OnConfirmSell);
 
-        SetPage(true);
+        SetPage(StorePage.Buy);
     }
 
     private void OnEnable()
@@ -61,6 +72,9 @@ public class StoreFrontUI : MonoBehaviour
         storeFrontManager.OnBalanceChanged += UpdateCoinDisplay;
         storeFrontManager.OnStockChanged += OnStockChanged;
         storeFrontManager.OnRecipeStockChanged += OnRecipeStockChanged;
+
+        if (UpgradeManager.Instance != null)
+            UpgradeManager.Instance.OnUpgradeApplied += OnUpgradeApplied;
     }
 
     private void OnDisable()
@@ -69,6 +83,9 @@ public class StoreFrontUI : MonoBehaviour
         storeFrontManager.OnBalanceChanged -= UpdateCoinDisplay;
         storeFrontManager.OnStockChanged -= OnStockChanged;
         storeFrontManager.OnRecipeStockChanged -= OnRecipeStockChanged;
+
+        if (UpgradeManager.Instance != null)
+            UpgradeManager.Instance.OnUpgradeApplied -= OnUpgradeApplied;
     }
 
     private void Update()
@@ -101,13 +118,20 @@ public class StoreFrontUI : MonoBehaviour
         _anim = StartCoroutine(SlidePanel(_isOpen ? _shownPos : _hiddenPos));
     }
 
-    private void SetPage(bool isBuyPage)
+    private void SetPage(StorePage page)
     {
-        buyPage.SetActive(isBuyPage);
-        sellPage.SetActive(!isBuyPage);
+        _currentPage = page;
 
-        buyTab.image.color = isBuyPage ? Color.white : new Color(0.6f, 0.6f, 0.6f);
-        sellTab.image.color = isBuyPage ? new Color(0.6f, 0.6f, 0.6f) : Color.white;
+        buyPage.SetActive(page == StorePage.Buy);
+        sellPage.SetActive(page == StorePage.Sell);
+        upgradePage.SetActive(page == StorePage.Upgrades);
+
+        var activeColor   = Color.white;
+        var inactiveColor = new Color(0.6f, 0.6f, 0.6f);
+
+        buyTab.image.color     = page == StorePage.Buy      ? activeColor : inactiveColor;
+        sellTab.image.color    = page == StorePage.Sell     ? activeColor : inactiveColor;
+        upgradeTab.image.color = page == StorePage.Upgrades ? activeColor : inactiveColor;
 
         RefreshCurrentPage();
     }
@@ -116,10 +140,12 @@ public class StoreFrontUI : MonoBehaviour
     {
         if (!_isOpen) return;
 
-        if (buyPage.activeSelf)
-            RefreshBuyPage();
-        else
-            RefreshSellPage();
+        switch (_currentPage)
+        {
+            case StorePage.Buy:      RefreshBuyPage();      break;
+            case StorePage.Sell:     RefreshSellPage();     break;
+            case StorePage.Upgrades: RefreshUpgradesPage(); break;
+        }
     }
 
     #region Buy Page
@@ -169,6 +195,7 @@ public class StoreFrontUI : MonoBehaviour
         var label = labelGO.GetComponent<TextMeshProUGUI>();
         label.text = text.ToUpper();
         label.fontSize = 13;
+        label.font = defaultFont;
         label.fontStyle = FontStyles.Bold;
         label.color = new Color(0.7f, 0.7f, 0.7f);
         label.alignment = TextAlignmentOptions.MidlineLeft;
@@ -202,12 +229,14 @@ public class StoreFrontUI : MonoBehaviour
         var iconGO = new GameObject("Icon", typeof(Image));
         iconGO.transform.SetParent(cell.transform, false);
         var iconRect = iconGO.GetComponent<RectTransform>();
-        iconRect.anchorMin = new Vector2(0, 0.35f);
-        iconRect.anchorMax = new Vector2(1, 1f);
-        iconRect.offsetMin = new Vector2(8, 0);
-        iconRect.offsetMax = new Vector2(-8, -8);
+        iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+        iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+        iconRect.pivot = new Vector2(0.5f, 0.5f);
+        iconRect.anchoredPosition = new Vector2(0, 30f);
+        iconRect.sizeDelta = new Vector2(64, 64);  
         var iconImage = iconGO.GetComponent<Image>();
         iconImage.sprite = item.Icon;
+        iconImage.preserveAspect = true;
         iconImage.enabled = item.Icon != null;
 
         // Price
@@ -220,9 +249,21 @@ public class StoreFrontUI : MonoBehaviour
         priceRect.offsetMax = new Vector2(-4, 0);
         var priceText = priceGO.GetComponent<TextMeshProUGUI>();
         priceText.text = $"{item.BaseBuyValue:F0} coins";
+        priceText.font = defaultFont;
         priceText.fontSize = 11;
         priceText.color = Color.yellow;
         priceText.alignment = TextAlignmentOptions.Center;
+
+        // Item name gradient — sits behind the name text to improve legibility
+        // over the icon. Same offset pattern as sell cell gradient.
+        var buyGradientGO = new GameObject("NameGradient", typeof(Image));
+        buyGradientGO.transform.SetParent(cell.transform, false);
+        var buyGradientRect = buyGradientGO.GetComponent<RectTransform>();
+        buyGradientRect.anchorMin = new Vector2(0, 0.55f);
+        buyGradientRect.anchorMax = new Vector2(1, 0.8f);
+        buyGradientRect.offsetMin = new Vector2(0, -70f);
+        buyGradientRect.offsetMax = new Vector2(0, -70f);
+        buyGradientGO.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.55f);
 
         // Item name
         var nameGO = new GameObject("ItemName", typeof(TextMeshProUGUI));
@@ -230,10 +271,11 @@ public class StoreFrontUI : MonoBehaviour
         var nameRect = nameGO.GetComponent<RectTransform>();
         nameRect.anchorMin = new Vector2(0, 0.6f);
         nameRect.anchorMax = new Vector2(1, 0.8f);
-        nameRect.offsetMin = new Vector2(4, 0);
-        nameRect.offsetMax = new Vector2(-4, 0);
+        nameRect.offsetMin = new Vector2(4, -65f);
+        nameRect.offsetMax = new Vector2(-4, -65f);
         var nameText = nameGO.GetComponent<TextMeshProUGUI>();
         nameText.text = item.ItemName;
+        nameText.font = defaultFont;
         nameText.fontSize = 12;
         nameText.fontStyle = FontStyles.Bold;
         nameText.color = Color.white;
@@ -250,6 +292,7 @@ public class StoreFrontUI : MonoBehaviour
         stockRect.offsetMax = new Vector2(-4, 0);
         var stockText = stockGO.GetComponent<TextMeshProUGUI>();
         stockText.text = $"{stock}/{maxStock}";
+        stockText.font = defaultFont;
         stockText.fontSize = 11;
         stockText.color = stock > 0 ? Color.white : Color.red;
         stockText.alignment = TextAlignmentOptions.Center;
@@ -274,6 +317,7 @@ public class StoreFrontUI : MonoBehaviour
         btnTextRect.offsetMax = Vector2.zero;
         var btnText = btnTextGO.GetComponent<TextMeshProUGUI>();
         btnText.text = stock > 0 ? "Buy" : "Sold Out";
+        btnText.font = defaultFont;
         btnText.fontSize = 12;
         btnText.fontStyle = FontStyles.Bold;
         btnText.color = Color.white;
@@ -281,7 +325,8 @@ public class StoreFrontUI : MonoBehaviour
 
         var capturedItem = item;
         var btn = btnGO.GetComponent<Button>();
-        btn.interactable = stock > 0;
+        bool canAfford = storeFrontManager.CoinBalance >= item.BaseBuyValue;
+        btn.interactable = stock > 0 && canAfford;
         btn.onClick.AddListener(() =>
         {
             if (storeFrontManager.Buy(capturedItem, 1))
@@ -294,7 +339,8 @@ public class StoreFrontUI : MonoBehaviour
         bool alreadyOwned = CraftingManager.Instance != null &&
                             CraftingManager.Instance.HasRecipe(recipe);
         int stock = storeFrontManager.GetRecipeStock(recipe);
-        bool canBuy = !alreadyOwned && stock > 0;
+        bool canAfford = storeFrontManager.CoinBalance >= recipe.BuyPrice;
+        bool canBuy = !alreadyOwned && stock > 0 && canAfford;
 
         var cell = new GameObject("RecipeCell", typeof(RectTransform));
         cell.transform.SetParent(buyGridContainer, false);
@@ -313,12 +359,14 @@ public class StoreFrontUI : MonoBehaviour
         var iconGO = new GameObject("Icon", typeof(Image));
         iconGO.transform.SetParent(cell.transform, false);
         var iconRect = iconGO.GetComponent<RectTransform>();
-        iconRect.anchorMin = new Vector2(0, 0.35f);
-        iconRect.anchorMax = new Vector2(1, 1f);
-        iconRect.offsetMin = new Vector2(8, 0);
-        iconRect.offsetMax = new Vector2(-8, -8);
+        iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+        iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+        iconRect.pivot = new Vector2(0.5f, 0.5f);
+        iconRect.anchoredPosition = new Vector2(0, 30f);
+        iconRect.sizeDelta = new Vector2(64, 64);         
         var iconImage = iconGO.GetComponent<Image>();
         iconImage.sprite = recipe.Icon;
+        iconImage.preserveAspect = true;
         iconImage.enabled = recipe.Icon != null;
 
         // Price
@@ -331,9 +379,20 @@ public class StoreFrontUI : MonoBehaviour
         priceRect.offsetMax = new Vector2(-4, 0);
         var priceText = priceGO.GetComponent<TextMeshProUGUI>();
         priceText.text = alreadyOwned ? "Owned" : $"{recipe.BuyPrice:F0} coins";
+        priceText.font = defaultFont;
         priceText.fontSize = 11;
         priceText.color = alreadyOwned ? Color.green : Color.yellow;
         priceText.alignment = TextAlignmentOptions.Center;
+        
+        // Recipe name gradient
+        var recipeGradientGO = new GameObject("NameGradient", typeof(Image));
+        recipeGradientGO.transform.SetParent(cell.transform, false);
+        var recipeGradientRect = recipeGradientGO.GetComponent<RectTransform>();
+        recipeGradientRect.anchorMin = new Vector2(0, 0.55f);
+        recipeGradientRect.anchorMax = new Vector2(1, 0.8f);
+        recipeGradientRect.offsetMin = new Vector2(0, -70f);
+        recipeGradientRect.offsetMax = new Vector2(0, -70f);
+        recipeGradientGO.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.55f);
 
         // Recipe name
         var nameGO = new GameObject("RecipeName", typeof(TextMeshProUGUI));
@@ -341,10 +400,11 @@ public class StoreFrontUI : MonoBehaviour
         var nameRect = nameGO.GetComponent<RectTransform>();
         nameRect.anchorMin = new Vector2(0, 0.6f);
         nameRect.anchorMax = new Vector2(1, 0.8f);
-        nameRect.offsetMin = new Vector2(4, 0);
-        nameRect.offsetMax = new Vector2(-4, 0);
+        nameRect.offsetMin = new Vector2(4, -65f);
+        nameRect.offsetMax = new Vector2(-4, -65f);
         var nameText = nameGO.GetComponent<TextMeshProUGUI>();
         nameText.text = recipe.RecipeName;
+        nameText.font = defaultFont;
         nameText.fontSize = 12;
         nameText.fontStyle = FontStyles.Bold;
         nameText.color = Color.white;
@@ -357,13 +417,14 @@ public class StoreFrontUI : MonoBehaviour
         var ingRect = ingGO.GetComponent<RectTransform>();
         ingRect.anchorMin = new Vector2(0, 0.18f);
         ingRect.anchorMax = new Vector2(1, 0.6f);
-        ingRect.offsetMin = new Vector2(4, 0);
-        ingRect.offsetMax = new Vector2(-4, 0);
+        ingRect.offsetMin = new Vector2(4, -22f);
+        ingRect.offsetMax = new Vector2(-4, -22f);
         var ingText = ingGO.GetComponent<TextMeshProUGUI>();
         var ingLines = new System.Text.StringBuilder();
         foreach (var ing in recipe.Ingredients)
             ingLines.AppendLine($"{ing.item?.ItemName} x{ing.quantity}");
         ingText.text = ingLines.ToString().TrimEnd();
+        ingText.font = defaultFont;
         ingText.fontSize = 10;
         ingText.color = new Color(0.8f, 0.8f, 0.8f);
         ingText.alignment = TextAlignmentOptions.Center;
@@ -389,6 +450,7 @@ public class StoreFrontUI : MonoBehaviour
         btnTextRect.offsetMax = Vector2.zero;
         var btnText = btnTextGO.GetComponent<TextMeshProUGUI>();
         btnText.text = alreadyOwned ? "Owned" : stock <= 0 ? "Out of Stock" : "Buy Recipe";
+        btnText.font = defaultFont;
         btnText.fontSize = 12;
         btnText.fontStyle = FontStyles.Bold;
         btnText.color = Color.white;
@@ -417,7 +479,7 @@ public class StoreFrontUI : MonoBehaviour
 
     private void RefreshSellInventoryGrid()
     {
-        foreach (Transform child in sellInventoryGrid)
+        foreach (Transform child in sellGridContainer)
             Destroy(child.gameObject);
 
         foreach (var kvp in PlayerInventory.Instance.GetAllItems())
@@ -425,7 +487,7 @@ public class StoreFrontUI : MonoBehaviour
             if (!kvp.Key.IsAvailableForStorefront) continue;
 
             var cell = new GameObject("SellCell", typeof(RectTransform));
-            cell.transform.SetParent(sellInventoryGrid, false);
+            cell.transform.SetParent(sellGridContainer, false);
 
             // Card background
             var cardGO = new GameObject("CardBackground", typeof(Image));
@@ -447,16 +509,19 @@ public class StoreFrontUI : MonoBehaviour
             iconRect.offsetMax = new Vector2(-8, -8);
             var iconImage = iconGO.GetComponent<Image>();
             iconImage.sprite = kvp.Key.Icon;
+            iconImage.preserveAspect = true;
             iconImage.enabled = kvp.Key.Icon != null;
 
-            // Gradient overlay
+            // Gradient overlay — sits between icon bottom and text top.
+            // offsetMin.y = 22 and offsetMax.y = -22 give the text breathing room
+            // so the overlay does not bleed over the name label below it.
             var gradientGO = new GameObject("GradientOverlay", typeof(Image));
             gradientGO.transform.SetParent(cell.transform, false);
             var gradientRect = gradientGO.GetComponent<RectTransform>();
             gradientRect.anchorMin = new Vector2(0, 0.3f);
             gradientRect.anchorMax = new Vector2(1, 0.55f);
-            gradientRect.offsetMin = Vector2.zero;
-            gradientRect.offsetMax = Vector2.zero;
+            gradientRect.offsetMin = new Vector2(0, -22f);
+            gradientRect.offsetMax = new Vector2(0, -22f);
             gradientGO.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.55f);
 
             // Item name
@@ -469,6 +534,7 @@ public class StoreFrontUI : MonoBehaviour
             nameRect.offsetMax = new Vector2(-4, 0);
             var nameText = nameGO.GetComponent<TextMeshProUGUI>();
             nameText.text = kvp.Key.ItemName;
+            nameText.font = defaultFont;
             nameText.fontSize = 11;
             nameText.fontStyle = FontStyles.Bold;
             nameText.color = Color.white;
@@ -485,6 +551,7 @@ public class StoreFrontUI : MonoBehaviour
             countRect.offsetMax = new Vector2(-4, -2);
             var countText = countGO.GetComponent<TextMeshProUGUI>();
             countText.text = $"x{kvp.Value}";
+            countText.font = defaultFont;
             countText.fontSize = 11;
             countText.color = Color.white;
             countText.alignment = TextAlignmentOptions.Center;
@@ -530,6 +597,7 @@ public class StoreFrontUI : MonoBehaviour
             iconRect.offsetMax = new Vector2(-8, -8);
             var iconImage = iconGO.GetComponent<Image>();
             iconImage.sprite = item.Icon;
+            iconImage.preserveAspect = true;
             iconImage.enabled = item.Icon != null;
 
             // Item name
@@ -542,6 +610,7 @@ public class StoreFrontUI : MonoBehaviour
             nameRect.offsetMax = new Vector2(-4, 0);
             var nameText = nameGO.GetComponent<TextMeshProUGUI>();
             nameText.text = item.ItemName;
+            nameText.font = defaultFont;
             nameText.fontSize = 11;
             nameText.fontStyle = FontStyles.Bold;
             nameText.color = Color.white;
@@ -558,6 +627,7 @@ public class StoreFrontUI : MonoBehaviour
             priceRect.offsetMax = new Vector2(-4, 0);
             var priceText = priceGO.GetComponent<TextMeshProUGUI>();
             priceText.text = $"{price:F0} coins  x{count}";
+            priceText.font = defaultFont;
             priceText.fontSize = 11;
             priceText.color = Color.yellow;
             priceText.alignment = TextAlignmentOptions.Center;
@@ -580,6 +650,7 @@ public class StoreFrontUI : MonoBehaviour
             btnTextRect.offsetMax = Vector2.zero;
             var btnText = btnTextGO.GetComponent<TextMeshProUGUI>();
             btnText.text = "Buyback";
+            btnText.font = defaultFont;
             btnText.fontSize = 11;
             btnText.fontStyle = FontStyles.Bold;
             btnText.color = Color.white;
@@ -641,6 +712,176 @@ public class StoreFrontUI : MonoBehaviour
 
     #endregion
 
+    #region Upgrades Page
+
+    private void RefreshUpgradesPage()
+    {
+        foreach (Transform child in upgradeGridContainer)
+            Destroy(child.gameObject);
+
+        if (UpgradeManager.Instance == null) return;
+
+        var upgrades = UpgradeManager.Instance.GetAllUpgrades();
+        if (upgrades.Count == 0)
+        {
+            BuildSectionLabel("No upgrades available", upgradeGridContainer);
+            return;
+        }
+
+        int currentBiomeTier = BiomeManager.Instance != null
+            ? BiomeManager.Instance.GetBiomeTier(BiomeManager.Instance.ActiveBiomeData.biomeType)
+            : 1;
+
+        bool anyVisible = false;
+        foreach (var upgrade in upgrades)
+        {
+            // Hide upgrades whose biome tier prerequisite hasn't been met yet.
+            if (upgrade.RequiredBiomeTier > currentBiomeTier) continue;
+
+            BuildUpgradeCard(upgrade);
+            anyVisible = true;
+        }
+
+        if (!anyVisible)
+            BuildSectionLabel("Upgrade your biome to unlock more", upgradeGridContainer);
+    }
+
+    private void BuildUpgradeCard(UpgradeDefinition upgrade)
+    {
+        bool isApplied  = UpgradeManager.Instance.IsUpgradeApplied(upgrade);
+        bool canBuy     = !isApplied && storeFrontManager.CanBuyUpgrade(upgrade);
+
+        // Full-width card — upgrade cards are rows not grid cells since they have
+        // more info (name, description, cost breakdown) than item cells.
+        var card = new GameObject("UpgradeCard", typeof(RectTransform), typeof(Image));
+        card.transform.SetParent(upgradeGridContainer, false);
+
+        var cardLayout = card.AddComponent<VerticalLayoutGroup>();
+        cardLayout.padding = new RectOffset(12, 12, 10, 10);
+        cardLayout.spacing = 4;
+        cardLayout.childControlWidth = true;
+        cardLayout.childControlHeight = true;
+        cardLayout.childForceExpandWidth = true;
+        cardLayout.childForceExpandHeight = false;
+
+        var cardLayoutEl = card.AddComponent<LayoutElement>();
+        cardLayoutEl.preferredWidth = 9999;
+        cardLayoutEl.flexibleWidth = 1;
+
+        card.GetComponent<Image>().color = isApplied
+            ? new Color(0.05f, 0.2f, 0.05f, 0.6f)   // green tint when owned
+            : new Color(0.05f, 0.05f, 0.15f, 0.6f);  // dark blue when available
+
+        // Header row — icon + name
+        var headerGO = new GameObject("Header", typeof(RectTransform));
+        headerGO.transform.SetParent(card.transform, false);
+        var headerLayout = headerGO.AddComponent<HorizontalLayoutGroup>();
+        headerLayout.spacing = 8;
+        headerLayout.childControlHeight = true;
+        headerLayout.childControlWidth = true;
+        headerLayout.childForceExpandHeight = false;
+
+        if (upgrade.Icon != null)
+        {
+            var iconGO = new GameObject("Icon", typeof(RectTransform), typeof(Image));
+            iconGO.transform.SetParent(headerGO.transform, false);
+            var iconLayout = iconGO.AddComponent<LayoutElement>();
+            iconLayout.preferredWidth = 28;
+            iconLayout.preferredHeight = 28;
+            iconLayout.minWidth = 28;
+            iconLayout.minHeight = 28;
+            iconGO.GetComponent<Image>().sprite = upgrade.Icon;
+            iconGO.GetComponent<Image>().preserveAspect = true;
+        }
+
+        var nameGO = new GameObject("Name", typeof(RectTransform), typeof(TextMeshProUGUI));
+        nameGO.transform.SetParent(headerGO.transform, false);
+        nameGO.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 100);
+        var nameTxt = nameGO.GetComponent<TextMeshProUGUI>();
+        nameTxt.text = upgrade.UpgradeName;
+        nameTxt.font = defaultFont;
+        nameTxt.fontSize = 15;
+        nameTxt.fontStyle = FontStyles.Bold;
+        nameTxt.color = Color.white;
+        nameGO.AddComponent<LayoutElement>().flexibleWidth = 1;
+
+        // Description
+        if (!string.IsNullOrEmpty(upgrade.Description))
+        {
+            var descGO = new GameObject("Description", typeof(RectTransform), typeof(TextMeshProUGUI));
+            descGO.transform.SetParent(card.transform, false);
+            var descTxt = descGO.GetComponent<TextMeshProUGUI>();
+            descTxt.text = upgrade.Description;
+            descTxt.font = defaultFont;
+            descTxt.fontSize = 12;
+            descTxt.color = new Color(0.75f, 0.75f, 0.75f);
+        }
+
+        // Cost line — coins + materials if any
+        if (!isApplied)
+        {
+            var costGO = new GameObject("Cost", typeof(RectTransform), typeof(TextMeshProUGUI));
+            costGO.transform.SetParent(card.transform, false);
+            var costTxt = costGO.GetComponent<TextMeshProUGUI>();
+
+            var costStr = new System.Text.StringBuilder();
+            costStr.Append($"{upgrade.CoinCost:F0} coins");
+
+            foreach (var ing in upgrade.MaterialCost)
+            {
+                if (ing.item == null) continue;
+                int have = PlayerInventory.Instance?.GetCount(ing.item) ?? 0;
+                string hex = have >= ing.quantity ? "#50FF50" : "#FF5050";
+                costStr.Append($"  +  <color={hex}>{ing.item.ItemName} x{ing.quantity}</color>");
+            }
+
+            costTxt.text = costStr.ToString();
+            costTxt.font = defaultFont;
+            costTxt.fontSize = 12;
+            costTxt.color = Color.yellow;
+            costTxt.richText = true;
+        }
+
+        // Purchase button
+        var btnGO = new GameObject("PurchaseButton", typeof(RectTransform), typeof(Image), typeof(Button));
+        btnGO.transform.SetParent(card.transform, false);
+        var btnLayout = btnGO.AddComponent<LayoutElement>();
+        btnLayout.preferredHeight = 32;
+        btnLayout.flexibleWidth = 1;
+        btnGO.GetComponent<Image>().color = isApplied
+            ? new Color(0.1f, 0.5f, 0.1f)
+            : canBuy
+                ? new Color(0.2f, 0.5f, 0.85f)
+                : new Color(0.3f, 0.3f, 0.3f);
+
+        var btnTextGO = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
+        btnTextGO.transform.SetParent(btnGO.transform, false);
+        var btnTextLayout = btnTextGO.AddComponent<LayoutElement>();
+        btnTextLayout.flexibleWidth = 1;
+        btnTextLayout.flexibleHeight = 1;
+        var btnTxt = btnTextGO.GetComponent<TextMeshProUGUI>();
+        btnTxt.text = isApplied
+            ? "Owned"
+            : canBuy ? "Purchase" : "Can't Afford";
+        btnTxt.font = defaultFont;
+        btnTxt.fontSize = 13;
+        btnTxt.fontStyle = FontStyles.Bold;
+        btnTxt.color = Color.white;
+        btnTxt.alignment = TextAlignmentOptions.Center;
+
+        var btn = btnGO.GetComponent<Button>();
+        btn.interactable = canBuy;
+
+        var capturedUpgrade = upgrade;
+        btn.onClick.AddListener(() =>
+        {
+            if (storeFrontManager.BuyUpgrade(capturedUpgrade))
+                RefreshUpgradesPage();
+        });
+    }
+
+    #endregion
+
     #region Events
 
     private void UpdateCoinDisplay(float balance)
@@ -650,14 +891,20 @@ public class StoreFrontUI : MonoBehaviour
 
     private void OnStockChanged(ItemDefinition item, int newStock)
     {
-        if (_isOpen && buyPage.activeSelf)
+        if (_isOpen && _currentPage == StorePage.Buy)
             RefreshBuyPage();
     }
 
     private void OnRecipeStockChanged(RecipeDefinition recipe, int newStock)
     {
-        if (_isOpen && buyPage.activeSelf)
+        if (_isOpen && _currentPage == StorePage.Buy)
             RefreshBuyPage();
+    }
+
+    private void OnUpgradeApplied(UpgradeDefinition upgrade)
+    {
+        if (_isOpen && _currentPage == StorePage.Upgrades)
+            RefreshUpgradesPage();
     }
 
     #endregion

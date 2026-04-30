@@ -271,8 +271,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 831563883333d4a4695f85774eb30c60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WateringCan
+  parentBiome: 0
+  toolId: Watering Can
   interactableLayer:
     serializedVersion: 2
     m_Bits: 64
-  waterPerSecond: 0.3
+  waterPerSecond: 0.1
+  waterUpgrade: 0.2
   tiltAngle: 35

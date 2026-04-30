@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Item_Wood
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Wood
-  icon: {fileID: -928452794175279194, guid: 646b543ad2fca4e3fac5cfa12395a56d, type: 3}
+  icon: {fileID: 6342035021856124945, guid: 2120dd2dd6618425c853d128837c0e87, type: 3}
   itemType: 2
   isAvailableForStorefront: 1
   baseSellValue: 5
   baseBuyValue: 10
   isAvailableForFeeding: 0
   baseFeedValue: 0
+  placeablePrefab: {fileID: 0}

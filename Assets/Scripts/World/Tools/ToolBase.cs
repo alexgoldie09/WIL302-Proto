@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -8,7 +9,7 @@ using UnityEngine;
 ///   - Raycasts on drag start to confirm the drag began on this tool's handle collider.
 ///   - Snaps position and rotation back to origin when drag ends.
 ///   - Disables CameraPanner while dragging so the camera does not pan simultaneously.
-///   - Listens to ToolTrigger events from the blade/spout child to detect world object overlap.
+///   - Listens to ItemTrigger events from the blade/spout child to detect world object overlap.
 ///   - Exposes abstract callbacks so subclasses respond to contact without reimplementing input logic.
 /// 
 /// Expected GameObject hierarchy:
@@ -17,11 +18,19 @@ using UnityEngine;
 ///   ├── ToolBase subclass
 ///   └── BladeOrSpout (child GameObject)
 ///       ├── [trigger Collider2D]  — active area, fires overlap events
-///       └── ToolTrigger
+///       └── ItemTrigger
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
-public abstract class ToolBase : MonoBehaviour
+public abstract class ToolBase : MonoBehaviour, IBiomeOccupant, IUpgradeable
 {
+    
+    [Header("Tool Identity")]
+    [SerializeField, Tooltip("The biome this tool belongs to. Used to validate upgrades.")]
+    private BiomeManager.BiomeType parentBiome;
+    [SerializeField, Tooltip("The upgrade type ID for this tool. Matches UpgradeDefinition.UpgradeTypeId." +
+                             "Used to apply upgrades purchased before this tool was placed.")]
+    private string toolId;
+    
     [Header("Drag Detection")]
     [SerializeField, Tooltip("Layer mask matching the handle collider layer. " +
                              "Only drags that start on this layer and this GameObject are owned.")]
@@ -43,8 +52,15 @@ public abstract class ToolBase : MonoBehaviour
     /// <summary>World rotation at scene start — tool snaps back here on drag end.</summary>
     private Quaternion _originRotation;
 
-    /// <summary>The ToolTrigger found on the child blade/spout GameObject.</summary>
-    private ToolTrigger _toolTrigger;
+    /// <summary>The ItemTrigger found on the child blade/spout GameObject.</summary>
+    private ItemTrigger _itemTrigger;
+    
+    #region Accessors
+    /// <summary>The biome this tool belongs to. Used by BiomeManager to track occupancy and apply biome effects.</summary>
+    public BiomeManager.BiomeType HomeBiome => parentBiome;
+    /// <summary> The unique id for this tool. </summary>
+    public string UpgradeTypeId => toolId;
+    #endregion
 
     #region  Unity Lifecycle
     protected virtual void Awake()
@@ -52,15 +68,22 @@ public abstract class ToolBase : MonoBehaviour
         _originPosition = transform.position;
         _originRotation = transform.rotation;
 
-        _toolTrigger = GetComponentInChildren<ToolTrigger>();
+        _itemTrigger = GetComponentInChildren<ItemTrigger>();
 
-        if (_toolTrigger == null)
-            Debug.LogWarning($"[{GetType().Name}] No ToolTrigger found in children. " +
-                             $"Add a child GameObject with a trigger Collider2D and ToolTrigger component.");
+        if (_itemTrigger == null)
+            Debug.LogWarning($"[{GetType().Name}] No ItemTrigger found in children. " +
+                             $"Add a child GameObject with a trigger Collider2D and ItemTrigger component.");
+    }
+
+    private void Start()
+    {
+        CheckAndApplySelfUpgrade(toolId);
     }
 
     protected virtual void OnEnable()
     {
+        BiomeManager.Instance?.RegisterOccupant(this);
+        
         if (InputManager.Instance != null)
         {
             InputManager.Instance.OnWorldDragStart += HandleDragStart;
@@ -68,10 +91,10 @@ public abstract class ToolBase : MonoBehaviour
             InputManager.Instance.OnWorldDragEnd   += HandleDragEnd;
         }
 
-        if (_toolTrigger != null)
+        if (_itemTrigger != null)
         {
-            _toolTrigger.OnTriggerEntered += HandleTriggerEnter;
-            _toolTrigger.OnTriggerExited  += HandleTriggerExit;
+            _itemTrigger.OnTriggerEntered += HandleTriggerEnter;
+            _itemTrigger.OnTriggerExited  += HandleTriggerExit;
         }
     }
 
@@ -84,14 +107,19 @@ public abstract class ToolBase : MonoBehaviour
             InputManager.Instance.OnWorldDragEnd   -= HandleDragEnd;
         }
 
-        if (_toolTrigger != null)
+        if (_itemTrigger != null)
         {
-            _toolTrigger.OnTriggerEntered -= HandleTriggerEnter;
-            _toolTrigger.OnTriggerExited  -= HandleTriggerExit;
+            _itemTrigger.OnTriggerEntered -= HandleTriggerEnter;
+            _itemTrigger.OnTriggerExited  -= HandleTriggerExit;
         }
 
         // Always restore camera panning — guards against tool being disabled mid-drag.
         CameraPanner.Instance?.SetPanEnabled(true);
+    }
+    
+    private void OnDestroy()
+    {
+        BiomeManager.Instance?.RemoveOccupant(this);
     }
     #endregion
 
@@ -178,7 +206,7 @@ public abstract class ToolBase : MonoBehaviour
     }
     #endregion
     
-    #region Abstract methods
+    #region Abstract Methods
     /// <summary>
     /// Filter which GameObjects this tool can interact with.
     /// Called on every trigger enter — return false to ignore the contact entirely.
@@ -212,5 +240,29 @@ public abstract class ToolBase : MonoBehaviour
     /// Use this to stop coroutines, hide stat bars, reset visuals etc.
     /// </summary>
     protected abstract void OnObjectLeft(GameObject obj);
+    
+    public virtual void ApplyUpgrade(UpgradeDefinition upgrade) { }
+    #endregion
+    
+    #region Upgrade Methods
+    /// <summary>
+    /// Checks if this object's upgrade has already been purchased and applies it
+    /// if so. Call from Start on any subclass that implements IUpgradeable.
+    /// Handles the case where an object is placed after its upgrade was purchased.
+    /// </summary>
+    protected void CheckAndApplySelfUpgrade(string upgradeTypeId)
+    {
+        if (UpgradeManager.Instance == null) return;
+
+        foreach (var upgrade in UpgradeManager.Instance.GetAllUpgrades())
+        {
+            if (upgrade.UpgradeTypeId == upgradeTypeId &&
+                UpgradeManager.Instance.IsUpgradeApplied(upgrade))
+            {
+                (this as IUpgradeable)?.ApplyUpgrade(upgrade);
+                return;
+            }
+        }
+    }
     #endregion
 }

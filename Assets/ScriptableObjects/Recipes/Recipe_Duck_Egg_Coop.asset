@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 502d8796ca8335948b10d9658be0c6de, type: 3}
+  m_Name: Recipe_Duck_Egg_Coop
+  m_EditorClassIdentifier: Assembly-CSharp::RecipeDefinition
+  recipeName: Duck Egg Coop
+  icon: {fileID: -7516772517063754986, guid: 240d9fb39dd4e426ca97b36c66fa3f00, type: 3}
+  description: Builds a duck egg coop.
+  ingredients:
+  - item: {fileID: 11400000, guid: b70834e0715424567a58eec98a1e36e8, type: 2}
+    quantity: 2
+  - item: {fileID: 11400000, guid: d1e63f7b55a704943b0af3d8120a8273, type: 2}
+    quantity: 1
+  outputItem: {fileID: 11400000, guid: 0afde43b4982e437cb5baba48ae453ee, type: 2}
+  outputQuantity: 1
+  craftingDuration: 5
+  isAvailableInStore: 1
+  buyPrice: 20

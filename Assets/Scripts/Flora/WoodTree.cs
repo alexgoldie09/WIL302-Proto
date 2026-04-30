@@ -10,10 +10,24 @@ using UnityEngine.UI;
 /// </summary>
 public class WoodTree : FloraBase
 {
+    enum TreeType
+    {
+        Wood,
+        Apple,
+        Orange
+    }
+    
     [Header("Tree Output")]
+    [SerializeField, Tooltip("The type of tree this is. Used for saving and upgrade application.")]
+    private TreeType treeType;
     [SerializeField, Tooltip("The item this tree produces when chopped down. " +
                              "Determines what tree this is (e.g. Apple, Wood Log).")]
     private ItemDefinition outputItem;
+    [SerializeField, Tooltip("Maximum amount of the output item produced when harvested.")]
+    private int maxHarvestAmount = 4;
+    [SerializeField, Tooltip("How many of the output item are produced when harvested. " +
+                             "Upgrades are applied additively and capped at 10.")]
+    private int harvestAmountIncrease = 1;
 
     [Header("Chop")]
     [SerializeField, Tooltip("Total chop health. Axe reduces this on each Chop() call.")]
@@ -24,10 +38,9 @@ public class WoodTree : FloraBase
     
     private float _chopHealth;
     
-    public override string RecordType => "Tree";
     protected override ItemDefinition GetOutputItem() => outputItem;
 
-    #region  Unity Lifecycle Overrides
+    #region  FloraBase Overrides
     protected override void Start()
     {
         base.Start();
@@ -46,6 +59,11 @@ public class WoodTree : FloraBase
         if (newStage == FloraGrowthStage.Harvestable)
             ResetChopHealth();
     }
+
+    public override void ApplyUpgrade(UpgradeDefinition upgrade)
+    {
+        harvestAmount = Mathf.Clamp(harvestAmount + harvestAmountIncrease, 1, 10);
+    }
     #endregion
 
     #region IHandler Overrides
@@ -58,6 +76,10 @@ public class WoodTree : FloraBase
     #region Stats Overrides
     protected override void UpdateStatFills()
     {
+        // Don't touch water or growth fills while the hoe is active.
+        if (IsBeingRemoved) 
+            return;
+        
         if (Stage == FloraGrowthStage.Harvestable)
         {
             if (WaterFillImage != null)
@@ -116,7 +138,10 @@ public class WoodTree : FloraBase
             UpdateStatFills();
 
         if (_chopHealth <= 0f)
+        {
+            harvestAmount = Random.Range(harvestAmount, maxHarvestAmount + 1);
             Harvest();
+        }
     }
     #endregion
 
@@ -142,6 +167,14 @@ public class WoodTree : FloraBase
         ResetChopHealth();
         // TODO: Restore outputItem reference from ItemRegistry using saved name.
     }
+    
+    public override string RecordType => treeType switch
+    {
+        TreeType.Wood => "Wood",
+        TreeType.Apple => "Apple",
+        TreeType.Orange => "Orange",
+        _ => "Unknown"
+    };
     #endregion
     
     #region Debug Methods

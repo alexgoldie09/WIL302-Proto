@@ -8,6 +8,7 @@ public class FeedPanelUI : MonoBehaviour
     public static FeedPanelUI Instance { get; private set; }
 
     [Header("References")]
+    [SerializeField] private TMP_FontAsset defaultFont;
     [SerializeField] private RectTransform panel;
     [SerializeField] private Canvas rootCanvas;
 
@@ -99,10 +100,11 @@ public class FeedPanelUI : MonoBehaviour
         var btnTextRect = btnTextGO.GetComponent<RectTransform>();
         btnTextRect.anchorMin = Vector2.zero;
         btnTextRect.anchorMax = Vector2.one;
-        btnTextRect.offsetMin = Vector2.zero;
+        btnTextRect.offsetMin = (Vector2.zero);
         btnTextRect.offsetMax = Vector2.zero;
         _confirmButtonText = btnTextGO.GetComponent<TextMeshProUGUI>();
         _confirmButtonText.text = "Select a food";
+        _confirmButtonText.font = defaultFont;
         _confirmButtonText.fontSize = 14;
         _confirmButtonText.fontStyle = FontStyles.Bold;
         _confirmButtonText.color = Color.white;
@@ -156,6 +158,7 @@ public class FeedPanelUI : MonoBehaviour
             emptyGO.transform.SetParent(_gridContainer.transform, false);
             var emptyText = emptyGO.GetComponent<TextMeshProUGUI>();
             emptyText.text = "No food in inventory!";
+            emptyText.font = defaultFont;
             emptyText.fontSize = 13;
             emptyText.color = Color.white;
             emptyText.alignment = TextAlignmentOptions.Center;
@@ -198,8 +201,8 @@ public class FeedPanelUI : MonoBehaviour
             var gradientRect = gradientGO.GetComponent<RectTransform>();
             gradientRect.anchorMin = new Vector2(0, 0.35f);
             gradientRect.anchorMax = new Vector2(1, 0.55f);
-            gradientRect.offsetMin = Vector2.zero;
-            gradientRect.offsetMax = Vector2.zero;
+            gradientRect.offsetMin = new Vector2(0, -19.5f);
+            gradientRect.offsetMax = new Vector2(0, -19.5f);
             gradientGO.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.55f);
 
             // Item name
@@ -212,6 +215,7 @@ public class FeedPanelUI : MonoBehaviour
             nameRect.offsetMax = new Vector2(-4, 0);
             var nameText = nameGO.GetComponent<TextMeshProUGUI>();
             nameText.text = item.ItemName;
+            nameText.font = defaultFont;
             nameText.fontSize = 11;
             nameText.fontStyle = FontStyles.Bold;
             nameText.color = Color.white;
@@ -229,6 +233,7 @@ public class FeedPanelUI : MonoBehaviour
             countRect.sizeDelta = new Vector2(40, 20);
             var countText = countGO.GetComponent<TextMeshProUGUI>();
             countText.text = count > 1 ? $"x{count}" : string.Empty;
+            countText.font = defaultFont;
             countText.fontSize = 12;
             countText.fontStyle = FontStyles.Bold;
             countText.color = Color.white;
@@ -264,6 +269,7 @@ public class FeedPanelUI : MonoBehaviour
         _confirmButton.interactable = hasSelection;
         _confirmButtonImage.color = hasSelection ? _confirmActiveColor : _confirmInactiveColor;
         _confirmButtonText.text = hasSelection ? $"Feed {_selectedItem.ItemName}" : "Select a food";
+        _confirmButtonText.font = defaultFont;
     }
 
     private void OnConfirmFeed()

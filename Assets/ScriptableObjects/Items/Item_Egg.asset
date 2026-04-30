@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_Egg
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Egg
-  icon: {fileID: 6267581331857406615, guid: 9a28649185646974083115fd0472fcb2, type: 3}
+  icon: {fileID: -5451810990636132135, guid: 240d9fb39dd4e426ca97b36c66fa3f00, type: 3}
   itemType: 4
   isAvailableForStorefront: 1
   baseSellValue: 5

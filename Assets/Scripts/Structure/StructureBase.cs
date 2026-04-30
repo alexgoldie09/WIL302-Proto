@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Base class for all placeable structures (functional and aesthetic).
@@ -16,7 +17,7 @@ using UnityEngine;
 /// Functional structures override OnBuilt() and OnTapped() to implement behaviour.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
-public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant
+public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant, IUpgradeable
 {
     public enum StructureStage { UnderConstruction, Built }
     
@@ -24,6 +25,8 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant
     [SerializeField, Tooltip("The biome this structure belongs to. " +
                              "Must match the Slot it is placed in.")]
     private BiomeManager.BiomeType homeBiome;
+    [SerializeField, Tooltip("The upgrade type ID for this structure. Matches UpgradeDefinition.UpgradeTypeId.")]
+    private string structureId;
 
     [Header("Construction")]
     [SerializeField, Tooltip("Time in seconds to complete construction.")]
@@ -34,15 +37,23 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant
     private Sprite constructionSprite;
     [SerializeField, Tooltip("Sprite shown once the structure is fully built.")]
     private Sprite builtSprite;
+    
+    [Header("Construction UI")]
+    [SerializeField] private Image constructionFillImage;
+    [SerializeField] private GameObject statBarsRoot;
+    [SerializeField] private float showStatsDuration = 3f;
 
     [Header("References")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] protected LayerMask interactableLayer;
     
+    protected Collider2D _collider2D;
     private StructureStage _stage = StructureStage.UnderConstruction;
     private float _constructionTimer;
+    private Coroutine _hideStatsCoroutine;
     private Slot _parentSlot;
     
+    #region Accessors
     /// <summary>Fired when construction completes and the structure becomes active.</summary>
     public event Action OnConstructionComplete;
     
@@ -56,11 +67,19 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant
 
     /// <summary>The biome this structure belongs to. Used by BiomeManager to track occupancy and apply biome effects.</summary>
     public BiomeManager.BiomeType HomeBiome => homeBiome;
+    /// <summary> The unique id for this structure. </summary>
+    public string UpgradeTypeId => structureId;
+    #endregion
 
     #region Unity Lifecycle
     protected virtual void Start()
     {
         UpdateSprite();
+        CheckAndApplySelfUpgrade(structureId);
+        if (statBarsRoot != null)
+            statBarsRoot.SetActive(false);
+        if (_collider2D == null)
+            _collider2D = GetComponent<Collider2D>();
         StartCoroutine(ConstructionRoutine());
     }
 
@@ -105,13 +124,19 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant
         if (hit.collider != null && hit.collider.gameObject == gameObject)
             OnTapped();
     }
-    
+
     /// <summary>
     /// Called when the structure is tapped.
     /// Override in functional subclasses to open UI or trigger behaviour.
     /// Aesthetic structures leave this empty.
     /// </summary>
-    public virtual void OnTapped() { }
+    public virtual void OnTapped()
+    {
+        if (_stage == StructureStage.Built)
+            return;
+
+        ShowStats();
+    }
     #endregion
 
     #region Construction Methods
@@ -129,14 +154,30 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant
         while (_constructionTimer < constructionDuration)
         {
             _constructionTimer += Time.deltaTime;
+            if (statBarsRoot != null && statBarsRoot.activeSelf)
+            {
+                UpdateStatFills();
+            }
             yield return null;
         }
 
         _constructionTimer = constructionDuration;
+        CompleteConstruction();
+    }
+    
+    /// <summary>
+    /// Transitions the structure to the Built stage, updates the sprite,
+    /// hides construction UI, and fires the OnConstructionComplete event.
+    /// </summary>
+    private void CompleteConstruction()
+    {
         _stage = StructureStage.Built;
         UpdateSprite();
+        
+        HideStats();
 
         Debug.Log($"[{gameObject.name}] Construction complete.");
+
         OnConstructionComplete?.Invoke();
         OnBuilt();
     }
@@ -149,6 +190,69 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant
         spriteRenderer.sprite = _stage == StructureStage.Built ? builtSprite : constructionSprite;
     }
     #endregion
+    
+    #region UI Methods
+    /// <summary>
+    /// Shows the construction progress UI.
+    /// If autoHide is true, will automatically hide after a delay.
+    /// </summary>
+    /// <param name="autoHide"></param>
+    public void ShowStats(bool autoHide = true)
+    {
+        if (statBarsRoot == null) return;
+        
+        UpdateStatFills();
+        statBarsRoot.SetActive(true);
+
+        if (_hideStatsCoroutine != null)
+            StopCoroutine(_hideStatsCoroutine);
+
+        if (autoHide)
+            _hideStatsCoroutine = StartCoroutine(HideStatsAfterDelay());
+    }
+
+    /// <summary>
+    /// Immediately hides the construction progress UI and cancels any pending auto-hide.
+    /// Can be called by subclasses when opening a more detailed UI to prevent overlap.
+    /// </summary>
+    public void HideStats()
+    {
+        if (_hideStatsCoroutine != null)
+        {
+            StopCoroutine(_hideStatsCoroutine);
+            _hideStatsCoroutine = null;
+        }
+
+        if (statBarsRoot != null)
+            statBarsRoot.SetActive(false);
+    }
+    
+    /// <summary>
+    /// Updates the fill amounts of the construction progress bars based on the current construction progress.
+    /// </summary>
+    private void UpdateStatFills()
+    {
+        if (constructionFillImage != null && !IsBuilt)
+            constructionFillImage.fillAmount = ConstructionProgress;
+        else
+            if (constructionFillImage != null)
+                constructionFillImage.gameObject.SetActive(false);
+    }
+    
+    /// <summary>
+    /// Coroutine to hide the construction progress UI after a delay.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator HideStatsAfterDelay()
+    {
+        yield return new WaitForSeconds(showStatsDuration);
+
+        if (statBarsRoot != null)
+            statBarsRoot.SetActive(false);
+
+        _hideStatsCoroutine = null;
+    }
+    #endregion
 
     #region Abstract methods
     /// <summary>
@@ -158,6 +262,30 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant
     /// Leave unimplemented for aesthetic structures.
     /// </summary>
     protected virtual void OnBuilt() { }
+    
+    public virtual void ApplyUpgrade(UpgradeDefinition upgrade) { }
+    #endregion
+    
+    #region Upgrade Methods
+    /// <summary>
+    /// Checks if this object's upgrade has already been purchased and applies it
+    /// if so. Call from Start on any subclass that implements IUpgradeable.
+    /// Handles the case where an object is placed after its upgrade was purchased.
+    /// </summary>
+    protected void CheckAndApplySelfUpgrade(string upgradeTypeId)
+    {
+        if (UpgradeManager.Instance == null) return;
+
+        foreach (var upgrade in UpgradeManager.Instance.GetAllUpgrades())
+        {
+            if (upgrade.UpgradeTypeId == upgradeTypeId &&
+                UpgradeManager.Instance.IsUpgradeApplied(upgrade))
+            {
+                (this as IUpgradeable)?.ApplyUpgrade(upgrade);
+                return;
+            }
+        }
+    }
     #endregion
 
     #region Debug Method

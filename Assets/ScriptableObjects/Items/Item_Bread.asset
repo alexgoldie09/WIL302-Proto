@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Item_Bread
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Bread
-  icon: {fileID: 0}
+  icon: {fileID: -3400699557494221747, guid: 240d9fb39dd4e426ca97b36c66fa3f00, type: 3}
   itemType: 1
-  isAvailableForStorefront: 0
-  baseSellValue: 0
-  baseBuyValue: 0
+  isAvailableForStorefront: 1
+  baseSellValue: 25
+  baseBuyValue: 30
   isAvailableForFeeding: 1
   baseFeedValue: 1
   placeablePrefab: {fileID: 0}

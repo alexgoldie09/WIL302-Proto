@@ -34,11 +34,13 @@ public class FloraData
 /// harvesting, alert integration, and world-space stat bar display on tap.
 /// Subclasses implement GetOutputItem() and optionally override OnTapped().
 /// </summary>
-public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiomeOccupant
+public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiomeOccupant, IUpgradeable
 {
     [Header("Flora Identity")]
     [SerializeField, Tooltip("The biome this flora belongs to. ")]
     private BiomeManager.BiomeType homeBiome;
+    [SerializeField, Tooltip("The upgrade type ID for this flora. Matches UpgradeDefinition.UpgradeTypeId.")]
+    private string plantId;
     
     [Header("Stats")]
     [SerializeField, Range(0f, 1f)] protected float waterLevel = 1f;
@@ -74,6 +76,8 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
     [SerializeField, Tooltip("If true the crop resets to Seed after harvest. " +
                              "If false the slot is cleared and the crop is destroyed.")]
     protected bool resetOnHarvest = true;
+    [SerializeField, Tooltip("The amount of the output item given to the player on harvest.")] 
+    protected int harvestAmount = 1;
 
     [Header("Stage Sprites")]
     [SerializeField] private Sprite seedSprite;
@@ -86,6 +90,8 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
     private Image waterFillImage;
     [SerializeField, Tooltip("World-space Image fill representing growth progress in current stage.")]
     private Image growthFillImage;
+    [SerializeField, Tooltip("World-space Image fill representing removal progress when holding to remove.")]
+    private Image removeFillImage;
     [SerializeField, Tooltip("Root GameObject containing both stat bars. Shown on tap, hidden after delay.")]
     private GameObject statBarsRoot;
     [SerializeField, Tooltip("Seconds the stat bars stay visible after a tap.")]
@@ -102,6 +108,7 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
     
     [Header("FX")]
     [SerializeField] private ParticleSystem wateringFxPrefab;
+    [SerializeField] private ParticleSystem removeFxPrefab;
 
     [Header("References")]
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -119,23 +126,28 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
     public event Action<FloraGrowthStage> OnStageChanged;
     public event Action OnLost;
 
-    #region Accessors
+    #region Mutators and Accessors
 
-    public float WaterLevel             => waterLevel;
-    public FloraGrowthStage Stage       => stage;
-    public bool IsInGracePeriod         => _inGracePeriod;
-    public bool IsLost                  => _isLost;
-    protected float GracePeriodTimer    => _gracePeriodTimer;
-    protected bool InGracePeriod        => _inGracePeriod;
+    public float WaterLevel => waterLevel;
+    public FloraGrowthStage Stage => stage;
+    public bool IsInGracePeriod => _inGracePeriod;
+    public bool IsLost => _isLost;
+    protected float GracePeriodTimer => _gracePeriodTimer;
+    protected bool InGracePeriod  => _inGracePeriod;
+    protected bool IsBeingRemoved { get; private set; }
 
     /// <summary>Protected accessor so subclasses can read the water fill image for stat bar overrides.</summary>
-    protected Image WaterFillImage      => waterFillImage;
+    protected Image WaterFillImage => waterFillImage;
     /// <summary>Protected accessor so subclasses can read the growth fill image for stat bar overrides.</summary>
-    protected Image GrowthFillImage     => growthFillImage;
+    protected Image GrowthFillImage => growthFillImage;
     /// <summary>Returns true if the stat bars root is currently active.</summary>
-    protected bool StatBarsActive       => statBarsRoot != null && statBarsRoot.activeSelf;
+    protected bool StatBarsActive => statBarsRoot != null && statBarsRoot.activeSelf;
     /// <summary>The biome this flora belongs to. Used by BiomeManager to track occupancy and apply biome effects.</summary>
     public BiomeManager.BiomeType HomeBiome => homeBiome;
+    /// <summary>The Slot this flora occupies. Set by Slot.Place() immediately after instantiation.</summary>
+    public Slot ParentSlot => _parentSlot;
+    /// <summary> The unique id for this plant. </summary>
+    public string UpgradeTypeId => plantId;
     /// <summary>
     /// Current stage progress as a 0-1 value derived from the stage timer.
     /// Use this for UI progress bars.
@@ -156,7 +168,37 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
         FloraGrowthStage.Mature  => matureDuration,
         _                        => float.MaxValue
     };
+    
+    /// <summary>
+    /// Activates or deactivates the watering particle effect.
+    /// Called by WateringCan when starting or stopping watering.
+    /// Subclasses can also call this in OnWatered() for additional feedback.
+    /// </summary>
+    /// <param name="active"></param>
+    public void SetWateringFx(bool active)
+    {
+        if (wateringFxPrefab != null)
+            wateringFxPrefab.gameObject.SetActive(active);
+    }
+    
+    // Progress fill for the removal hold — 0-1 drives a fill image in statBarsRoot
+    public void SetRemoveProgress(float progress)
+    {
+        if (removeFillImage == null) return;
 
+        IsBeingRemoved = progress > 0f;
+
+        if (waterFillImage != null)
+            waterFillImage.gameObject.SetActive(!IsBeingRemoved);
+        if (growthFillImage != null)
+            growthFillImage.gameObject.SetActive(!IsBeingRemoved);
+
+        removeFillImage.gameObject.SetActive(IsBeingRemoved);
+        removeFillImage.fillAmount = progress;
+        
+        if (removeFxPrefab != null)
+            removeFxPrefab.gameObject.SetActive(IsBeingRemoved);
+    }
     #endregion
 
     #region Unity Lifecycle
@@ -172,6 +214,7 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
             wateringFxPrefab = GetComponentInChildren<ParticleSystem>(includeInactive: true);
         StartCoroutine(WaterTickLoop());
         UpdateSprite();
+        CheckAndApplySelfUpgrade(plantId);
     }
 
     protected override void OnEnable()
@@ -403,7 +446,12 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
             return;
         }
 
-        PlayerInventory.Instance.Add(output, 1);
+        PlayerInventory.Instance.Add(output, harvestAmount);
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.HarvestItem,
+            GetOutputItem()?.ItemName,
+            harvestAmount
+        );
         AlertManager.Instance?.ClearAllAlerts(gameObject);
         HideStats();
         Debug.Log($"[{gameObject.name}] Harvested {output.ItemName}.");
@@ -564,7 +612,31 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
     /// Implement in subclass by returning the serialized output item field.
     /// </summary>
     protected abstract ItemDefinition GetOutputItem();
+    public ItemDefinition GetOutputItemPublic() => GetOutputItem();
 
+    public virtual void ApplyUpgrade(UpgradeDefinition upgrade) { }
+    #endregion
+    
+    #region Upgrade Methods
+    /// <summary>
+    /// Checks if this object's upgrade has already been purchased and applies it
+    /// if so. Call from Start on any subclass that implements IUpgradeable.
+    /// Handles the case where an object is placed after its upgrade was purchased.
+    /// </summary>
+    protected void CheckAndApplySelfUpgrade(string upgradeTypeId)
+    {
+        if (UpgradeManager.Instance == null) return;
+
+        foreach (var upgrade in UpgradeManager.Instance.GetAllUpgrades())
+        {
+            if (upgrade.UpgradeTypeId == upgradeTypeId &&
+                UpgradeManager.Instance.IsUpgradeApplied(upgrade))
+            {
+                (this as IUpgradeable)?.ApplyUpgrade(upgrade);
+                return;
+            }
+        }
+    }
     #endregion
 
     #region Helper Method

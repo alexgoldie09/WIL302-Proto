@@ -7,15 +7,30 @@ using UnityEngine;
 /// </summary>
 public class Crop : FloraBase
 {
+    enum CropType
+    {
+        Carrot,
+        Pineapple,
+        Eggplant
+    }
+    
     [Header("Crop Output")]
+    [SerializeField, Tooltip("The type of crop this is. Used for saving and upgrade application.")]
+    private CropType cropType;
     [SerializeField, Tooltip("The item this crop produces on harvest. " +
                              "Determines what crop this is (e.g. Carrot, Eggplant).")]
     private ItemDefinition outputItem;
+    [SerializeField, Tooltip("How many of the output item are produced when harvested. " +
+                             "Upgrades are applied additively and capped at 10.")]
+    private int harvestAmountIncrease = 1;
 
     #region FloraBase Implementation
-    public override string RecordType => "Crop";
-
     protected override ItemDefinition GetOutputItem() => outputItem;
+    
+    public override void ApplyUpgrade(UpgradeDefinition upgrade)
+    {
+        harvestAmount = Mathf.Clamp(harvestAmount + harvestAmountIncrease, 1, 10);
+    }
     #endregion
     
     #region SaveableBehaviour
@@ -33,5 +48,14 @@ public class Crop : FloraBase
         base.ApplyData(data, context);
         // TODO: Restore outputItem reference from ItemRegistry using saved name.
     }
+    
+    public override string RecordType => cropType switch
+    {
+        CropType.Carrot => "Carrot",
+        CropType.Pineapple => "Pineapple",
+        CropType.Eggplant => "Eggplant",
+        _ => "Unknown"
+    };
+    
     #endregion
 }

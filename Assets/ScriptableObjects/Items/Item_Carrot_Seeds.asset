@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_Carrot_Seeds
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Carrot Seeds
-  icon: {fileID: -1370131731, guid: 90d26099754df4a90a7c68c01c1a4027, type: 3}
+  icon: {fileID: -8720861922609457383, guid: d914302f9741d40049157f3e17cae0ab, type: 3}
   itemType: 3
   isAvailableForStorefront: 1
   baseSellValue: 2

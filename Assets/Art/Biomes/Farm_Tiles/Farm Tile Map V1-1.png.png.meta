@@ -1,0 +1,1231 @@
+fileFormatVersion: 2
+guid: 00bdcaef94ba74ff78995ac6069e396c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2372905167431230196
+    second: Farm Tile Map V1-1.png_0
+  - first:
+      213: -4962276011099779541
+    second: Farm Tile Map V1-1.png_1
+  - first:
+      213: 2107858175782276178
+    second: Farm Tile Map V1-1.png_2
+  - first:
+      213: 5098831087745669575
+    second: Farm Tile Map V1-1.png_3
+  - first:
+      213: 1507667955351001733
+    second: Farm Tile Map V1-1.png_4
+  - first:
+      213: 1320104036856916157
+    second: Farm Tile Map V1-1.png_5
+  - first:
+      213: -234521133344203177
+    second: Farm Tile Map V1-1.png_6
+  - first:
+      213: -8326752820433846689
+    second: Farm Tile Map V1-1.png_7
+  - first:
+      213: 680027139255694932
+    second: Farm Tile Map V1-1.png_8
+  - first:
+      213: -4849683667238604797
+    second: Farm Tile Map V1-1.png_9
+  - first:
+      213: -4153354474731605022
+    second: Farm Tile Map V1-1.png_10
+  - first:
+      213: -6807167177057217123
+    second: Farm Tile Map V1-1.png_11
+  - first:
+      213: -6192516756881623387
+    second: Farm Tile Map V1-1.png_12
+  - first:
+      213: 1883713609914387916
+    second: Farm Tile Map V1-1.png_13
+  - first:
+      213: -8125594922422234941
+    second: Farm Tile Map V1-1.png_14
+  - first:
+      213: 1449441818346790152
+    second: Farm Tile Map V1-1.png_15
+  - first:
+      213: 4731106318900162093
+    second: Farm Tile Map V1-1.png_16
+  - first:
+      213: 4644222686182083781
+    second: Farm Tile Map V1-1.png_17
+  - first:
+      213: -3638161179819214853
+    second: Farm Tile Map V1-1.png_18
+  - first:
+      213: 9148125900270913942
+    second: Farm Tile Map V1-1.png_19
+  - first:
+      213: 5574701064007711644
+    second: Farm Tile Map V1-1.png_20
+  - first:
+      213: 1077240145744977588
+    second: Farm Tile Map V1-1.png_21
+  - first:
+      213: -7840460614121085941
+    second: Farm Tile Map V1-1.png_22
+  - first:
+      213: -8166043503307255654
+    second: Farm Tile Map V1-1.png_23
+  - first:
+      213: 8538598132367683600
+    second: Farm Tile Map V1-1.png_24
+  - first:
+      213: 2234150384053534323
+    second: Farm Tile Map V1-1.png_25
+  - first:
+      213: -4194296863043667998
+    second: Farm Tile Map V1-1.png_26
+  - first:
+      213: 2410123795603629351
+    second: Farm Tile Map V1-1.png_27
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 480
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2976
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f26d667da04ee020800000000000000
+      internalID: 2372905167431230196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_1
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 2976
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2e84f85244722bb0800000000000000
+      internalID: -4962276011099779541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_2
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 2976
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25cc76cc7dd904d10800000000000000
+      internalID: 2107858175782276178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2481
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c99cca0cdfa2c640800000000000000
+      internalID: 5098831087745669575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_4
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 2481
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58a9fe574005ce410800000000000000
+      internalID: 1507667955351001733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_5
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 2481
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db86a6790a3f15210800000000000000
+      internalID: 1320104036856916157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_6
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 2481
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75e52b29540debcf0800000000000000
+      internalID: -234521133344203177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_7
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 2481
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5efe854d6e617c80800000000000000
+      internalID: -8326752820433846689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_8
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 2481
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 456f5f88411ff6900800000000000000
+      internalID: 680027139255694932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_9
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 2481
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 300ba3d366672bcb0800000000000000
+      internalID: -4849683667238604797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1986
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e3f7535c125c56c0800000000000000
+      internalID: -4153354474731605022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_11
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 1986
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d955ec4b4851881a0800000000000000
+      internalID: -6807167177057217123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_12
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 1986
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a6ba68a1d2cf0aa0800000000000000
+      internalID: -6192516756881623387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_13
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 1986
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccd04814c8b442a10800000000000000
+      internalID: 1883713609914387916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_14
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 1986
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c01e4428761c3f80800000000000000
+      internalID: -8125594922422234941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_15
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 1986
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80d182187a37d1410800000000000000
+      internalID: 1449441818346790152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_16
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 1986
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2e66ac612448a140800000000000000
+      internalID: 4731106318900162093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1491
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cc81bb4de7937040800000000000000
+      internalID: 4644222686182083781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_18
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 1491
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf77249cea7a28dc0800000000000000
+      internalID: -3638161179819214853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_19
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 1491
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 699c236990ca4fe70800000000000000
+      internalID: 9148125900270913942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_20
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 1491
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9bfb29e4115d5d40800000000000000
+      internalID: 5574701064007711644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_21
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 1491
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4be5be0843023fe00800000000000000
+      internalID: 1077240145744977588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_22
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 1491
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b042fdbac96113390800000000000000
+      internalID: -7840460614121085941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_23
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 1491
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a901cf403b26cae80800000000000000
+      internalID: -8166043503307255654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 996
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 010f69f03c13f7670800000000000000
+      internalID: 8538598132367683600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_25
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 996
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37e3050ffeb410f10800000000000000
+      internalID: 2234150384053534323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_26
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 996
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e73fb3b93ddac5c0800000000000000
+      internalID: -4194296863043667998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_27
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 996
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 725abad92da727120800000000000000
+      internalID: 2410123795603629351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_28
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 996
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5dfb7940a66d2491aa3c21603b87900f
+      internalID: 766117858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_29
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 996
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2adb5b6cc61914ccd9f75a4c323f91d6
+      internalID: 1238163524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_30
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 996
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7d0c5b49ddfa49cc93020b7c8beac9f
+      internalID: 262064987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_31
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 501
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e01231d004b1a4744a312f0aac690c6e
+      internalID: 694663640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_32
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 501
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d9380307132a42469f0f9650490d432
+      internalID: -252745209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_33
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 501
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c523b60f22a914ef9aff91944b1dc6ce
+      internalID: 1953806887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_34
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 501
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f86de1c2ef8f48afa300353042913a5
+      internalID: -1142045273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_35
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 501
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7e63f11078f2458b9ddc1ac42a38f30
+      internalID: -1392147867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_36
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 501
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6d6f13ad6cf34fe686e12e399131167
+      internalID: -421654010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_37
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 501
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba103e2cfa8114e75a807d6b13c32681
+      internalID: -1269587632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_38
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 6
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfea6c46b53b04eea924509c6a12a436
+      internalID: -1508035365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_39
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 6
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60b545649708b45ff9ce62ae7425241d
+      internalID: -146860157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_40
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 6
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f33ce7f5e5d514e9dad3fb59d87d932d
+      internalID: 1942652761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_41
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 6
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4041f9bbf04eb4e4186caf27db07ba01
+      internalID: -936237989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Farm Tile Map V1-1.png_42
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 6
+        width: 496
+        height: 495
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7840fb95f223a4ea8962757284e88a75
+      internalID: -1647233532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d1bb64c6b033e4c6a98e7d9b2b7e1f9b
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":7.0,"y":7.0},"gridSpriteSize":{"x":496.0,"y":495.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Farm Tile Map V1-1.png_0: 2372905167431230196
+      Farm Tile Map V1-1.png_1: -4962276011099779541
+      Farm Tile Map V1-1.png_10: -4153354474731605022
+      Farm Tile Map V1-1.png_11: -6807167177057217123
+      Farm Tile Map V1-1.png_12: -6192516756881623387
+      Farm Tile Map V1-1.png_13: 1883713609914387916
+      Farm Tile Map V1-1.png_14: -8125594922422234941
+      Farm Tile Map V1-1.png_15: 1449441818346790152
+      Farm Tile Map V1-1.png_16: 4731106318900162093
+      Farm Tile Map V1-1.png_17: 4644222686182083781
+      Farm Tile Map V1-1.png_18: -3638161179819214853
+      Farm Tile Map V1-1.png_19: 9148125900270913942
+      Farm Tile Map V1-1.png_2: 2107858175782276178
+      Farm Tile Map V1-1.png_20: 5574701064007711644
+      Farm Tile Map V1-1.png_21: 1077240145744977588
+      Farm Tile Map V1-1.png_22: -7840460614121085941
+      Farm Tile Map V1-1.png_23: -8166043503307255654
+      Farm Tile Map V1-1.png_24: 8538598132367683600
+      Farm Tile Map V1-1.png_25: 2234150384053534323
+      Farm Tile Map V1-1.png_26: -4194296863043667998
+      Farm Tile Map V1-1.png_27: 2410123795603629351
+      Farm Tile Map V1-1.png_28: 766117858
+      Farm Tile Map V1-1.png_29: 1238163524
+      Farm Tile Map V1-1.png_3: 5098831087745669575
+      Farm Tile Map V1-1.png_30: 262064987
+      Farm Tile Map V1-1.png_31: 694663640
+      Farm Tile Map V1-1.png_32: -252745209
+      Farm Tile Map V1-1.png_33: 1953806887
+      Farm Tile Map V1-1.png_34: -1142045273
+      Farm Tile Map V1-1.png_35: -1392147867
+      Farm Tile Map V1-1.png_36: -421654010
+      Farm Tile Map V1-1.png_37: -1269587632
+      Farm Tile Map V1-1.png_38: -1508035365
+      Farm Tile Map V1-1.png_39: -146860157
+      Farm Tile Map V1-1.png_4: 1507667955351001733
+      Farm Tile Map V1-1.png_40: 1942652761
+      Farm Tile Map V1-1.png_41: -936237989
+      Farm Tile Map V1-1.png_42: -1647233532
+      Farm Tile Map V1-1.png_5: 1320104036856916157
+      Farm Tile Map V1-1.png_6: -234521133344203177
+      Farm Tile Map V1-1.png_7: -8326752820433846689
+      Farm Tile Map V1-1.png_8: 680027139255694932
+      Farm Tile Map V1-1.png_9: -4849683667238604797
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

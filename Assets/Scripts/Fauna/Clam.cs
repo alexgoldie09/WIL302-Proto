@@ -31,6 +31,8 @@ public class Clam : FaunaBase
     [Header("Clam - Feeding")]
     [SerializeField, Tooltip("Base happiness restored by any feedable item.")]
     private float baseHappinessRestore = 0.1f;
+    [SerializeField, Tooltip("Additional happiness restore amount added by each upgrade, applied additively and capped at 1.0.")]
+    private float happinessUpgradeAmountIncrease = 0.2f;
     [SerializeField, Tooltip("Happiness multiplier applied when fed plankton.")]
     private float planktonHappinessMultiplier = 2.5f;
     [SerializeField, Tooltip("The plankton ItemDefinition.")]
@@ -247,7 +249,11 @@ public class Clam : FaunaBase
         SetPearlReady(true);
         Debug.Log($"[Clam] Pearl is ready to collect.");
     }
-
+    
+    public override void ApplyUpgrade(UpgradeDefinition upgrade)
+    {
+        baseHappinessRestore = Mathf.Clamp(baseHappinessRestore + happinessUpgradeAmountIncrease, 0f, 1f);
+    }
     #endregion
 
     #region Pearl Collection

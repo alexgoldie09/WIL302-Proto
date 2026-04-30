@@ -30,6 +30,8 @@ public class Duck : FaunaBase
     [Header("Duck - Feeding")]
     [SerializeField, Tooltip("Base happiness restored by any feedable item.")]
     private float baseHappinessRestore = 0.1f;
+    [SerializeField, Tooltip("Additional happiness restore amount added by each upgrade, applied additively and capped at 1.0.")]
+    private float happinessUpgradeAmountIncrease = 0.2f;
     [SerializeField, Tooltip("Happiness multiplier applied when fed bread.")]
     private float breadHappinessMultiplier = 2.5f;
     [SerializeField, Tooltip("The bread ItemDefinition.")]
@@ -50,6 +52,8 @@ public class Duck : FaunaBase
     [Header("Duck - Wandering")]
     [SerializeField, Tooltip("The Pond tilemap used to validate wander positions.")]
     private Tilemap pondTilemap;
+    [SerializeField, Tooltip("Invisible collision tilemap — tiles painted here block animal movement.")]
+    private Tilemap collisionTilemap;
     [SerializeField, Tooltip("Time in seconds the duck waits before picking a new tile.")]
     private float wanderInterval = 3f;
     [SerializeField, Tooltip("Random variation on wander interval (±seconds).")]
@@ -118,6 +122,12 @@ public class Duck : FaunaBase
     protected override void OnEnable()
     {
         base.OnEnable();
+        
+        if (pondTilemap == null)
+            pondTilemap = BiomeManager.Instance?.GetBiomeByType(HomeBiome)?.groundTilemap;
+        
+        if (collisionTilemap == null)
+            collisionTilemap = BiomeManager.Instance?.GetBiomeByType(HomeBiome)?.collisionTilemap;
 
         if (_wanderCoroutine != null)
             StopCoroutine(_wanderCoroutine);
@@ -223,8 +233,6 @@ public class Duck : FaunaBase
             return;
         }
 
-        PlayerInventory.Instance.Add(item, 1);
-
         if (eggPrefab != null)
             SpawnEggInWorld();
 
@@ -233,6 +241,11 @@ public class Duck : FaunaBase
             AlertManager.Instance.ShowAlert(gameObject, AlertType.ReadyToCollect, alertOffset);
 
         Debug.Log($"[Duck] Produced 1x {item.ItemName}.");
+    }
+
+    public override void ApplyUpgrade(UpgradeDefinition upgrade)
+    {
+        baseHappinessRestore = Mathf.Clamp(baseHappinessRestore + happinessUpgradeAmountIncrease, 0f, 1f);
     }
 
     #endregion
@@ -347,7 +360,8 @@ public class Duck : FaunaBase
         Vector3Int chosenCell = candidates[Random.Range(0, candidates.Count)];
         Vector3 spawnPos = pondTilemap.GetCellCenterWorld(chosenCell);
         spawnPos.z = transform.position.z;
-        Instantiate(eggPrefab, spawnPos, Quaternion.identity);
+        var biomeRoot = BiomeManager.Instance?.GetBiomeByType(HomeBiome)?.rootObject?.transform;
+        Instantiate(eggPrefab, spawnPos, Quaternion.identity, biomeRoot);
 
         Debug.Log($"[Duck] Egg spawned at tile {chosenCell}.");
     }
@@ -422,7 +436,8 @@ public class Duck : FaunaBase
 
         foreach (var dir in directions)
         {
-            if (pondTilemap.HasTile(dir))
+            if (pondTilemap.HasTile(dir) && 
+                (collisionTilemap == null || !collisionTilemap.HasTile(dir)))
                 return dir;
         }
 

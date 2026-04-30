@@ -37,6 +37,9 @@ public class BiomeManager : MonoBehaviour
 
         [Tooltip("Decoration / foreground Tilemap (optional).")]
         public Tilemap decorTilemap;
+        
+        [Tooltip("Tilemap for collisions.")]
+        public Tilemap collisionTilemap;
 
         [Tooltip("UI Button that switches to this biome.")]
         public Button switchButton;
@@ -46,6 +49,11 @@ public class BiomeManager : MonoBehaviour
 
         [Tooltip("Extra padding added to the ground tilemap bounds.")]
         public Vector2 boundsPadding = Vector2.zero;
+        
+        /// <summary>
+        /// Maximum number of fauna allowed in this biome at once.
+        /// </summary>
+        public int maxFauna = 4;
 
         /// <summary>
         /// Current upgrade tier for this biome. Starts at 1.
@@ -158,6 +166,22 @@ public class BiomeManager : MonoBehaviour
         // All Canvas components under the biome root — world space UI on flora/fauna
         foreach (var canvas in biome.rootObject.GetComponentsInChildren<Canvas>(true))
             canvas.enabled = visible;
+        
+        // Re-disable SpriteRenderers on tier-locked slots that the general
+        // sweep above may have incorrectly re-enabled.
+        if (visible)
+        {
+            foreach (var slot in biome.rootObject.GetComponentsInChildren<Slot>(true))
+            {
+                if (slot.TryGetComponent<SpriteRenderer>(out var sr))
+                {
+                    // Keep renderer off if slot is tier-locked OR currently occupied.
+                    // Occupied slots hide their own renderer so the occupant's sprite shows.
+                    if (!slot.IsVisuallyActive || slot.IsOccupied)
+                        sr.enabled = false;
+                }
+            }
+        }
     }
     #endregion
 

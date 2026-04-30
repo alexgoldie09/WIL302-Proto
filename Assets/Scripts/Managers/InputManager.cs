@@ -105,6 +105,10 @@ public class InputManager : MonoBehaviour
 
     private void UpdateDrag(Vector2 currentPos)
     {
+        // In InputManager, before firing OnWorldDragStart and OnWorldDrag
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return;
+        
         // Promote to drag once the finger/cursor moves past the tap threshold
         if (!_isDragging && Vector2.Distance(_startPos, currentPos) > tapThresholdPixels)
         {

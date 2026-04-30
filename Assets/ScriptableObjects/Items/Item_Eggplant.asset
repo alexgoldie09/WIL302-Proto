@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Item_Eggplant
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Eggplant
-  icon: {fileID: 21300000, guid: b0848d6e7a553704496519cb57ed017a, type: 3}
+  icon: {fileID: 7915098879720928394, guid: 240d9fb39dd4e426ca97b36c66fa3f00, type: 3}
   itemType: 1
   isAvailableForStorefront: 1
-  baseSellValue: 10
-  baseBuyValue: 20
+  baseSellValue: 15
+  baseBuyValue: 25
   isAvailableForFeeding: 1
   baseFeedValue: 0.5
+  placeablePrefab: {fileID: 0}

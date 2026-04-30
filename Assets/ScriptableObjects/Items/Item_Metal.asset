@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Item_Metal
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Metal
-  icon: {fileID: -928452794175279194, guid: 646b543ad2fca4e3fac5cfa12395a56d, type: 3}
+  icon: {fileID: 8360840620191920333, guid: 2120dd2dd6618425c853d128837c0e87, type: 3}
   itemType: 2
   isAvailableForStorefront: 1
   baseSellValue: 10
   baseBuyValue: 20
   isAvailableForFeeding: 0
   baseFeedValue: 0
+  placeablePrefab: {fileID: 0}

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b5c3f5d3aff54feab32387713ca7abf, type: 3}
+  m_Name: Item_Apple_Tree_Seeds
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
+  itemName: Apple Tree Seeds
+  icon: {fileID: -415155829161746557, guid: d914302f9741d40049157f3e17cae0ab, type: 3}
+  itemType: 3
+  isAvailableForStorefront: 1
+  baseSellValue: 5
+  baseBuyValue: 10
+  isAvailableForFeeding: 0
+  baseFeedValue: 0
+  placeablePrefab: {fileID: 7017312086969987623, guid: 58ac3573d96244edaa0fc52351fb9ee9, type: 3}

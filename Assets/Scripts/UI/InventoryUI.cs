@@ -7,6 +7,7 @@ using TMPro;
 public class InventoryUI : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private TMP_FontAsset defaultFont;
     [SerializeField] private Button toggleButton;
     [SerializeField] private RectTransform panel;
     [SerializeField] private Transform gridContainer;
@@ -125,6 +126,7 @@ public class InventoryUI : MonoBehaviour
             nameRect.offsetMax = new Vector2(-4, -2);
             var nameText = nameGO.GetComponent<TextMeshProUGUI>();
             nameText.text = kvp.Key.ItemName;
+            nameText.font = defaultFont;
             nameText.fontSize = 14;
             nameText.fontStyle = FontStyles.Bold;
             nameText.color = Color.white;
@@ -143,6 +145,7 @@ public class InventoryUI : MonoBehaviour
             var countText = countGO.GetComponent<TextMeshProUGUI>();
             countText.fontSize = 22;
             countText.fontStyle = FontStyles.Bold;
+            countText.font = defaultFont;
             countText.color = Color.white;
             countText.alignment = TextAlignmentOptions.TopRight;
             bool hideCount = kvp.Value <= 1 && kvp.Key.ItemType == ItemType.Collectible;

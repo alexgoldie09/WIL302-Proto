@@ -13,10 +13,15 @@ public class DebugTappable : MonoBehaviour, IHandler
     [SerializeField] private Transform endPoint;
 
     [Header("Alert Debug")]
+    [SerializeField] private bool canAlert = false;
     [SerializeField] private AlertType debugAlertType = AlertType.Hungry;
     [SerializeField] private Vector2 alertOffset = new Vector2(0.75f, 1f);
     [SerializeField] private float minAlertInterval = 4f;
     [SerializeField] private float maxAlertInterval = 10f;
+    
+    [Header("Destroy Debug")]
+    [SerializeField] private bool canDestroy = false;
+    [SerializeField] private float destroyTime = 6f;
 
     private float _nextAlertTime;
 
@@ -38,6 +43,9 @@ public class DebugTappable : MonoBehaviour, IHandler
     {
         if(canMove && startPoint != null)
             transform.position = startPoint.position;
+        
+        if (canDestroy)
+            Destroy(gameObject, destroyTime);
     }
     
     private void Update()
@@ -47,7 +55,7 @@ public class DebugTappable : MonoBehaviour, IHandler
             transform.position = Vector2.Lerp(startPoint.position, endPoint.position, (Mathf.Sin(Time.time * moveSpeed) + 1f) / 2f);
         }
         
-        if (AlertManager.Instance == null) return;
+        if (AlertManager.Instance == null || !canAlert) return;
 
         if (Time.time >= _nextAlertTime)
         {

@@ -2,57 +2,51 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Manages the player's coin balance and all storefront trading.
-/// Exists as a world object that opens/closes the StoreFrontUI when tapped.
-/// The store maintains finite stock per catalogue entry — buying depletes supply.
-/// Selling is always open; the player can always offload their goods which will apply in the buyback.
-/// Buyback allows the player to buy back the items they sold at the same price they sold it for.
-/// Note: Will extend SaveableBehaviour<CurrencyData> when save system is integrated.
-/// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
 {
     [Header("StoreFront Identity")]
-    [SerializeField, Tooltip("The biome this object belongs to. Used to validate placement.")]
-    private BiomeManager.BiomeType parentBiome;
-    
+    [Tooltip("The biome this storefront belongs to. Determines when tier 2 items/recipes are added to the store.")]
+    [SerializeField] private BiomeManager.BiomeType parentBiome;
+
     [Header("Storefront Settings")]
-    [SerializeField, Tooltip("Layer mask for tap detection.")]
-    private LayerMask interactableLayer;
-    [SerializeField, Tooltip("Starting coin balance for the player.")]
-    private float startingCoinBalance = 0f;
-    [SerializeField, Tooltip("The catalogue of items this store stocks for the player to buy.")]
-    private StoreCatalogue catalogue;
-    [SerializeField, Tooltip("The recipe book this store stocks for the player to buy.")]
-    private RecipeBook recipeBook;
+    [Tooltip("LayerMask used to detect taps on the storefront. Should be set to a layer that the storefront's collider is on.")]
+    [SerializeField] private LayerMask interactableLayer;
+    [Tooltip("The amount of coins the player starts with when the game begins. Can be set to 0 for a 'broke' start, or higher for testing purposes.")]
+    [SerializeField] private float startingCoinBalance = 0f;
 
-    /// <summary>Fired whenever coinBalance changes.</summary>
+    [Header("Tiered Data (Data Sources Only)")]
+    [Tooltip("Catalogue of items available for purchase in this store at tier 1. Items in this catalogue are available for purchase as soon as the game starts.")]
+    [SerializeField] private StoreCatalogue tier1Catalogue;
+    [Tooltip("Catalogue of items available for purchase in this store at tier 2. " +
+             "Items in this catalogue are added to the store when the biome reaches tier 2.")]
+    [SerializeField] private StoreCatalogue tier2Catalogue;
+    [Tooltip("The recipe book defining recipes available for purchase in this store at tier 1. Recipes in this book are available for purchase as soon as the game starts.")]
+    [SerializeField] private RecipeBook tier1RecipeBook;
+    [Tooltip("The recipe book defining recipes available for purchase in this store at tier 2. " +
+             "Recipes in this book are added to the store when the biome reaches tier 2.")]
+    [SerializeField] private RecipeBook tier2RecipeBook;
+
+    // Actions
     public event Action<float> OnBalanceChanged;
-
-    /// <summary>Fired when the storefront is opened or closed.</summary>
     public event Action<bool> OnStorefrontToggled;
-
-    /// <summary>Fired whenever a stock count changes.</summary>
     public event Action<ItemDefinition, int> OnStockChanged;
-
-    /// <summary>Fired whenever the buyback changes.</summary>
     public event Action<ItemDefinition, int> OnBuybackChanged;
-
-    /// <summary>Fired whenever recipe stock changes.</summary>
     public event Action<RecipeDefinition, int> OnRecipeStockChanged;
 
     private float _coinBalance;
     private bool _isOpen;
 
+    // Runtime
     private readonly Dictionary<ItemDefinition, int> _stock = new();
     private readonly Dictionary<ItemDefinition, int> _maxStock = new();
-
     private readonly Dictionary<ItemDefinition, BuybackEntry> _buyback = new();
-
-    /// <summary>Runtime stock levels for recipes.</summary>
     private readonly Dictionary<RecipeDefinition, int> _recipeStock = new();
 
+    /// <summary>
+    /// Struct to track buyback items. Stores the count of the item in the buyback pool, and the price per unit (based on the price it was sold to the store for).
+    /// This allows the player to buy back items they sold, at the same price they sold them for, until that buyback stock runs out.
+    /// </summary>
     private struct BuybackEntry
     {
         public int count;
@@ -63,39 +57,19 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
 
     public float CoinBalance => _coinBalance;
     public bool IsOpen => _isOpen;
+    public BiomeManager.BiomeType HomeBiome => parentBiome;
 
-    public int GetStock(ItemDefinition item)
-    {
-        if (item == null) return 0;
-        return _stock.GetValueOrDefault(item, 0);
-    }
-
-    public int GetMaxStock(ItemDefinition item)
-    {
-        if (item == null) return 0;
-        return _maxStock.GetValueOrDefault(item, 0);
-    }
+    public int GetStock(ItemDefinition item) => item == null ? 0 : _stock.GetValueOrDefault(item, 0);
+    public int GetMaxStock(ItemDefinition item) => item == null ? 0 : _maxStock.GetValueOrDefault(item, 0);
 
     public int GetBuybackCount(ItemDefinition item)
-    {
-        if (item == null) return 0;
-        return _buyback.TryGetValue(item, out var entry) ? entry.count : 0;
-    }
+        => item == null ? 0 : (_buyback.TryGetValue(item, out var e) ? e.count : 0);
 
     public float GetBuybackPrice(ItemDefinition item)
-    {
-        if (item == null) return 0f;
-        return _buyback.TryGetValue(item, out var entry) ? entry.pricePerUnit : 0f;
-    }
+        => item == null ? 0f : (_buyback.TryGetValue(item, out var e) ? e.pricePerUnit : 0f);
 
     public int GetRecipeStock(RecipeDefinition recipe)
-    {
-        if (recipe == null) return 0;
-        return _recipeStock.GetValueOrDefault(recipe, 0);
-    }
-    
-    /// <summary>The biome this slot belongs to. Used by BiomeManager to track occupancy and apply biome effects.</summary>
-    public BiomeManager.BiomeType HomeBiome => parentBiome;
+        => recipe == null ? 0 : _recipeStock.GetValueOrDefault(recipe, 0);
 
     #endregion
 
@@ -111,13 +85,19 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
     private void OnEnable()
     {
         BiomeManager.Instance?.RegisterOccupant(this);
-        
+
+        if (BiomeManager.Instance != null)
+            BiomeManager.Instance.OnBiomeTierChanged += HandleBiomeTierChanged;
+
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap += HandleWorldTap;
     }
 
     private void OnDisable()
     {
+        if (BiomeManager.Instance != null)
+            BiomeManager.Instance.OnBiomeTierChanged -= HandleBiomeTierChanged;
+
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap -= HandleWorldTap;
     }
@@ -129,7 +109,7 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
 
     #endregion
 
-    #region IHandler
+    #region Input Handling
 
     private void HandleWorldTap(Vector2 worldPos)
     {
@@ -141,41 +121,35 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
     public void OnTapped()
     {
         _isOpen = !_isOpen;
-        Debug.Log($"[StoreFrontManager] Storefront {(_isOpen ? "opened" : "closed")}.");
         OnStorefrontToggled?.Invoke(_isOpen);
     }
 
     #endregion
 
-    #region Public API - UI
-
-    public List<ItemDefinition> GetSellableItems()
-    {
-        if (PlayerInventory.Instance == null)
-        {
-            Debug.LogWarning("[StoreFrontManager] No PlayerInventory instance found.");
-            return new List<ItemDefinition>();
-        }
-        return PlayerInventory.Instance.GetSellableItems();
-    }
-
+    #region UI API (Runtime Driven)
+    /// <summary>
+    /// Returns a list of items that are currently available for purchase in the store (i.e. have stock > 0).
+    /// This is used by the UI to display the store's inventory.
+    /// </summary>
     public List<ItemDefinition> GetBuyableItems()
     {
-        if (catalogue == null)
-        {
-            Debug.LogWarning("[StoreFrontManager] No StoreCatalogue assigned.");
-            return new List<ItemDefinition>();
-        }
-
-        var result = new List<ItemDefinition>();
-        foreach (var entry in catalogue.GetEntries())
-        {
-            if (entry.item != null)
-                result.Add(entry.item);
-        }
-        return result;
+        return new List<ItemDefinition>(_stock.Keys);
     }
 
+    /// <summary>
+    /// Returns a list of items that the player currently has in their inventory that are sellable to the store
+    /// (i.e. have count > 0 and ItemDefinition.IsAvailableForStorefront is true).
+    /// </summary>
+    /// <returns></returns>
+    public List<ItemDefinition> GetSellableItems()
+    {
+        return PlayerInventory.Instance?.GetSellableItems() ?? new List<ItemDefinition>();
+    }
+
+    /// <summary>
+    /// Returns a list of items that are currently in the buyback pool (i.e. have count > 0).
+    /// </summary>
+    /// <returns></returns>
     public List<ItemDefinition> GetBuybackItems()
     {
         var result = new List<ItemDefinition>();
@@ -188,188 +162,216 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
     }
 
     /// <summary>
-    /// Returns all recipes available in the store regardless of stock.
-    /// Stock per recipe should be checked via GetRecipeStock().
+    /// Returns a list of recipes that are currently available for purchase in the store (i.e. have stock > 0).
+    /// Used by the UI to display the store's recipe inventory.
     /// </summary>
+    /// <returns></returns>
     public List<RecipeDefinition> GetBuyableRecipes()
     {
-        if (recipeBook == null)
-        {
-            Debug.LogWarning("[StoreFrontManager] No RecipeBook assigned.");
-            return new List<RecipeDefinition>();
-        }
-        return recipeBook.GetStoreRecipes();
+        return new List<RecipeDefinition>(_recipeStock.Keys);
     }
 
     #endregion
 
-    #region Public API - Trading
-
+    #region Trading
+    /// <summary>
+    /// Attempts to sell the given item from the player's inventory to the store.
+    /// Validates that the item is sellable, that the player has enough of it, and that the store can accept it (e.g. not exceeding max stock).
+    /// If successful, removes the item from the player's inventory, adds coins to the player's balance based on the item's BaseSellValue,
+    /// and adds the item to the buyback pool at that price.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="amount"></param>
+    /// <returns></returns>
     public bool Sell(ItemDefinition item, int amount = 1)
     {
         if (item == null || amount <= 0) return false;
+        if (PlayerInventory.Instance == null) return false;
 
-        if (PlayerInventory.Instance == null)
-        {
-            Debug.LogWarning("[StoreFrontManager] No PlayerInventory instance found.");
-            return false;
-        }
+        if (!PlayerInventory.Instance.Remove(item, amount)) return false;
 
-        if (!PlayerInventory.Instance.Remove(item, amount))
-        {
-            Debug.LogWarning($"[StoreFrontManager] Sell failed - not enough {item.ItemName} in inventory.");
-            return false;
-        }
+        float price = item.BaseSellValue;
+        float earned = price * amount;
 
-        float pricePerUnit = item.BaseSellValue;
-        float earned = pricePerUnit * amount;
         SetBalance(_coinBalance + earned);
-        AddToBuyback(item, amount, pricePerUnit);
+        AddToBuyback(item, amount, price);
 
-        Debug.Log($"[StoreFrontManager] Sold {amount}x {item.ItemName} for {earned} coins. " +
-                  $"Balance: {_coinBalance}");
-        return true;
-    }
-
-    public bool Buy(ItemDefinition item, int amount = 1)
-    {
-        if (item == null || amount <= 0) return false;
-
-        if (!_stock.TryGetValue(item, out var currentStock))
-        {
-            Debug.LogWarning($"[StoreFrontManager] Buy failed - {item.ItemName} is not in the catalogue.");
-            return false;
-        }
-
-        if (currentStock < amount)
-        {
-            Debug.LogWarning($"[StoreFrontManager] Buy failed - not enough stock for {item.ItemName}. " +
-                             $"Requested: {amount}, Available: {currentStock}");
-            return false;
-        }
-
-        float cost = item.BaseBuyValue * amount;
-        if (_coinBalance < cost)
-        {
-            Debug.LogWarning($"[StoreFrontManager] Buy failed - insufficient coins for " +
-                             $"{amount}x {item.ItemName} (costs {cost}, have {_coinBalance}).");
-            return false;
-        }
-
-        SetStock(item, currentStock - amount);
-        SpendCoins(cost);
-        PlayerInventory.Instance.Add(item, amount);
-
-        Debug.Log($"[StoreFrontManager] Bought {amount}x {item.ItemName} for {cost} coins. " +
-                  $"Stock remaining: {_stock[item]}. Balance: {_coinBalance}");
         return true;
     }
 
     /// <summary>
-    /// Buys a recipe from the store, unlocks it in CraftingManager, and deducts coins.
-    /// Returns false if not in stock, already owned, or insufficient coins.
+    /// Attempts to buy the given item from the store and add it to the player's inventory.
+    /// Validates that the item is in stock, that the player has enough coins, and that the store has enough stock to fulfill the purchase.
+    /// If successful, deducts coins from the player's balance based on the item's BaseBuyValue, reduces the store's stock of that item,
+    /// and adds the item to the player's inventory.
     /// </summary>
+    /// <param name="item"></param>
+    /// <param name="amount"></param>
+    /// <returns></returns>
+    public bool Buy(ItemDefinition item, int amount = 1)
+    {
+        if (item == null || amount <= 0) return false;
+        if (!_stock.TryGetValue(item, out var currentStock)) return false;
+        if (currentStock < amount) return false;
+
+        float cost = item.BaseBuyValue * amount;
+        if (_coinBalance < cost) return false;
+
+        SetStock(item, currentStock - amount);
+        SpendCoins(cost);
+        PlayerInventory.Instance.Add(item, amount);
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.BuyItem,
+            item.ItemName,
+            amount
+        );
+
+        return true;
+    }
+
+    /// <summary>
+    /// Attempts to buy the given recipe from the store and add it to the player's known recipes in the CraftingManager.
+    /// Validates that the recipe is in stock, that the player has enough coins, and that the player doesn't already know the recipe.
+    /// If successful, deducts coins from the player's balance based on the recipe's BuyPrice, reduces the store's stock of that recipe,
+    /// and unlocks the recipe in the CraftingManager so the player can craft it.
+    /// </summary>
+    /// <param name="recipe"></param>
+    /// <returns></returns>
     public bool BuyRecipe(RecipeDefinition recipe)
     {
         if (recipe == null) return false;
-
-        if (CraftingManager.Instance == null)
-        {
-            Debug.LogWarning("[StoreFrontManager] No CraftingManager instance found.");
-            return false;
-        }
-
-        if (CraftingManager.Instance.HasRecipe(recipe))
-        {
-            Debug.LogWarning($"[StoreFrontManager] BuyRecipe failed - already owns: {recipe.RecipeName}");
-            return false;
-        }
+        if (CraftingManager.Instance == null) return false;
+        if (CraftingManager.Instance.HasRecipe(recipe)) return false;
 
         if (!_recipeStock.TryGetValue(recipe, out int stock) || stock <= 0)
-        {
-            Debug.LogWarning($"[StoreFrontManager] BuyRecipe failed - out of stock: {recipe.RecipeName}");
             return false;
-        }
 
-        if (_coinBalance < recipe.BuyPrice)
-        {
-            Debug.LogWarning($"[StoreFrontManager] BuyRecipe failed - insufficient coins for " +
-                             $"{recipe.RecipeName} (costs {recipe.BuyPrice}, have {_coinBalance}).");
-            return false;
-        }
+        if (_coinBalance < recipe.BuyPrice) return false;
 
         SetRecipeStock(recipe, stock - 1);
         SpendCoins(recipe.BuyPrice);
         CraftingManager.Instance.UnlockRecipe(recipe);
 
-        Debug.Log($"[StoreFrontManager] Bought recipe: {recipe.RecipeName} for {recipe.BuyPrice} coins. " +
-                  $"Balance: {_coinBalance}");
         return true;
     }
 
+    /// <summary>
+    /// Attempts to buy back the given item from the buyback pool and add it to the player's inventory.
+    /// Validates that the item is in the buyback pool, that the player has enough coins, and that the buyback pool has enough of that item to fulfill the purchase.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="amount"></param>
+    /// <returns></returns>
     public bool Buyback(ItemDefinition item, int amount = 1)
     {
         if (item == null || amount <= 0) return false;
-
-        if (!_buyback.TryGetValue(item, out var entry) || entry.count <= 0)
-        {
-            Debug.LogWarning($"[StoreFrontManager] Buyback failed - {item.ItemName} is not in the buyback pool.");
-            return false;
-        }
-
-        if (entry.count < amount)
-        {
-            Debug.LogWarning($"[StoreFrontManager] Buyback failed - not enough in buyback pool for " +
-                             $"{item.ItemName}. Requested: {amount}, Available: {entry.count}");
-            return false;
-        }
+        if (!_buyback.TryGetValue(item, out var entry) || entry.count < amount) return false;
 
         float cost = entry.pricePerUnit * amount;
-        if (_coinBalance < cost)
-        {
-            Debug.LogWarning($"[StoreFrontManager] Buyback failed - insufficient coins for " +
-                             $"{amount}x {item.ItemName} (costs {cost}, have {_coinBalance}).");
-            return false;
-        }
+        if (_coinBalance < cost) return false;
 
         RemoveFromBuyback(item, amount);
         SpendCoins(cost);
         PlayerInventory.Instance.Add(item, amount);
 
-        Debug.Log($"[StoreFrontManager] Bought back {amount}x {item.ItemName} for {cost} coins. " +
-                  $"Balance: {_coinBalance}");
+        return true;
+    }
+    
+    /// <summary>
+    /// Returns true if the player can afford the given upgrade — checks coin balance,
+    /// material ingredients in inventory, and UpgradeManager prerequisites.
+    /// Called by StoreFrontUI to drive the purchase button state on each upgrade card.
+    /// </summary>
+    public bool CanBuyUpgrade(UpgradeDefinition upgrade)
+    {
+        if (upgrade == null) return false;
+        if (UpgradeManager.Instance == null) return false;
+
+        // Prerequisite check — biome tier and already-applied guard.
+        if (!UpgradeManager.Instance.MeetsPrerequisites(upgrade)) return false;
+
+        // Coin check.
+        if (_coinBalance < upgrade.CoinCost) return false;
+
+        // Material ingredient check.
+        if (PlayerInventory.Instance != null)
+        {
+            foreach (var ingredient in upgrade.MaterialCost)
+            {
+                if (ingredient.item == null) continue;
+                if (PlayerInventory.Instance.GetCount(ingredient.item) < ingredient.quantity)
+                    return false;
+            }
+        }
+
         return true;
     }
 
-    public bool SpendCoins(float cost)
+    /// <summary>
+    /// Attempts to purchase an upgrade. Validates affordability, deducts coin and
+    /// material cost, then delegates effect application to UpgradeManager.
+    /// Returns false if any check fails — no partial deductions occur.
+    /// </summary>
+    public bool BuyUpgrade(UpgradeDefinition upgrade)
     {
-        if (cost <= 0) return false;
+        if (!CanBuyUpgrade(upgrade)) return false;
 
-        if (_coinBalance < cost)
+        // Deduct coin cost.
+        if (upgrade.CoinCost > 0)
+            SpendCoins(upgrade.CoinCost);
+
+        // Deduct material cost.
+        if (PlayerInventory.Instance != null)
         {
-            Debug.LogWarning($"[StoreFrontManager] SpendCoins failed - need {cost}, have {_coinBalance}.");
-            return false;
+            foreach (var ingredient in upgrade.MaterialCost)
+            {
+                if (ingredient.item == null) continue;
+                PlayerInventory.Instance.Remove(ingredient.item, ingredient.quantity);
+            }
         }
 
+        // Apply the upgrade effect via UpgradeManager.
+        return UpgradeManager.Instance.ApplyUpgrade(upgrade);
+    }
+
+    /// <summary>
+    /// Attempts to spend the given amount of coins from the player's balance.
+    /// Validates that the amount is positive and that the player has enough coins.
+    /// </summary>
+    /// <param name="cost"></param>
+    /// <returns></returns>
+    public bool SpendCoins(float cost)
+    {
+        if (cost <= 0 || _coinBalance < cost) return false;
         SetBalance(_coinBalance - cost);
-        Debug.Log($"[StoreFrontManager] Spent {cost} coins. Balance: {_coinBalance}");
         return true;
     }
 
     #endregion
 
-    #region Private Helpers
+    #region Initialisation (Data → Runtime)
 
     private void InitialiseStock()
     {
         _stock.Clear();
         _maxStock.Clear();
 
-        if (catalogue == null)
-        {
-            Debug.LogWarning("[StoreFrontManager] No StoreCatalogue assigned — stock not initialised.");
-            return;
-        }
+        LoadCatalogueIntoStock(tier1Catalogue);
+    }
+
+    private void InitialiseRecipeStock()
+    {
+        _recipeStock.Clear();
+        LoadRecipeBookIntoStock(tier1RecipeBook);
+    }
+
+    /// <summary>
+    /// Loads the items from the given catalogue into the store's runtime stock dictionaries, using the starting stock and max stock defined in each entry.
+    /// </summary>
+    /// <param name="catalogue"></param>
+    private void LoadCatalogueIntoStock(StoreCatalogue catalogue)
+    {
+        if (catalogue == null) return;
 
         foreach (var entry in catalogue.GetEntries())
         {
@@ -378,50 +380,99 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
             int max = Mathf.Max(0, entry.maxStock);
             int starting = Mathf.Clamp(entry.startingStock, 0, max);
 
-            if (entry.startingStock > max)
-                Debug.LogWarning($"[StoreFrontManager] {entry.item.ItemName} startingStock " +
-                                 $"({entry.startingStock}) exceeds maxStock ({max}). Clamped to {starting}.");
-
             _stock[entry.item] = starting;
             _maxStock[entry.item] = max;
         }
-
-        Debug.Log($"[StoreFrontManager] Stock initialised from '{catalogue.CatalogueName}' " +
-                  $"({_stock.Count} items).");
     }
 
-    private void InitialiseRecipeStock()
+    /// <summary>
+    /// Loads the recipes from the given recipe book into the store's runtime recipe stock dictionary, using the starting stock defined in each recipe (or 1 if not defined).
+    /// </summary>
+    /// <param name="book"></param>
+    private void LoadRecipeBookIntoStock(RecipeBook book)
     {
-        _recipeStock.Clear();
+        if (book == null) return;
 
-        if (recipeBook == null)
-        {
-            Debug.LogWarning("[StoreFrontManager] No RecipeBook assigned — recipe stock not initialised.");
-            return;
-        }
-
-        foreach (var recipe in recipeBook.GetStoreRecipes())
+        foreach (var recipe in book.GetStoreRecipes())
         {
             if (recipe == null) continue;
-            _recipeStock[recipe] = 1; // one copy available per recipe by default
+            _recipeStock[recipe] = 1;
         }
-
-        Debug.Log($"[StoreFrontManager] Recipe stock initialised ({_recipeStock.Count} recipes).");
     }
 
-    private void AddToBuyback(ItemDefinition item, int amount, float pricePerUnit)
+    #endregion
+
+    #region Tier Handling
+    /// <summary>
+    /// Called when biome tier changes.
+    /// If the change is for this storefront's parent biome, and the new tier is 2 or higher, merges the tier 2 catalogue
+    /// and recipe book into the store's runtime stock.
+    /// </summary>
+    /// <param name="biome"></param>
+    /// <param name="tier"></param>
+    private void HandleBiomeTierChanged(BiomeManager.BiomeType biome, int tier)
+    {
+        if (biome != parentBiome) return;
+        if (tier < 2) return;
+
+        MergeTier2Catalogue();
+        MergeTier2RecipeBook();
+    }
+
+    private void MergeTier2Catalogue()
+    {
+        if (tier2Catalogue == null) return;
+
+        foreach (var entry in tier2Catalogue.GetEntries())
+        {
+            if (entry.item == null) continue;
+            if (_stock.ContainsKey(entry.item)) continue;
+
+            int max = Mathf.Max(0, entry.maxStock);
+            int starting = Mathf.Clamp(entry.startingStock, 0, max);
+
+            _stock[entry.item] = starting;
+            _maxStock[entry.item] = max;
+
+            OnStockChanged?.Invoke(entry.item, starting);
+        }
+    }
+
+    private void MergeTier2RecipeBook()
+    {
+        if (tier2RecipeBook == null) return;
+
+        foreach (var recipe in tier2RecipeBook.GetStoreRecipes())
+        {
+            if (recipe == null) continue;
+            if (_recipeStock.ContainsKey(recipe)) continue;
+
+            _recipeStock[recipe] = 1;
+            OnRecipeStockChanged?.Invoke(recipe, 1);
+        }
+    }
+
+    #endregion
+
+    #region Helpers
+
+    private void AddToBuyback(ItemDefinition item, int amount, float price)
     {
         if (_buyback.TryGetValue(item, out var existing))
         {
             _buyback[item] = new BuybackEntry
             {
                 count = existing.count + amount,
-                pricePerUnit = pricePerUnit
+                pricePerUnit = price
             };
         }
         else
         {
-            _buyback[item] = new BuybackEntry { count = amount, pricePerUnit = pricePerUnit };
+            _buyback[item] = new BuybackEntry
+            {
+                count = amount,
+                pricePerUnit = price
+            };
         }
 
         OnBuybackChanged?.Invoke(item, _buyback[item].count);
@@ -432,6 +483,7 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
         if (!_buyback.TryGetValue(item, out var entry)) return;
 
         int newCount = entry.count - amount;
+
         if (newCount <= 0)
             _buyback.Remove(item);
         else
@@ -440,99 +492,23 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
         OnBuybackChanged?.Invoke(item, Mathf.Max(0, newCount));
     }
 
-    private void SetStock(ItemDefinition item, int newStock)
+    private void SetStock(ItemDefinition item, int value)
     {
-        _stock[item] = Mathf.Max(0, newStock);
+        _stock[item] = Mathf.Max(0, value);
         OnStockChanged?.Invoke(item, _stock[item]);
     }
 
-    private void SetRecipeStock(RecipeDefinition recipe, int newStock)
+    private void SetRecipeStock(RecipeDefinition recipe, int value)
     {
-        _recipeStock[recipe] = Mathf.Max(0, newStock);
+        _recipeStock[recipe] = Mathf.Max(0, value);
         OnRecipeStockChanged?.Invoke(recipe, _recipeStock[recipe]);
     }
 
-    private void SetBalance(float newBalance)
+    private void SetBalance(float value)
     {
-        _coinBalance = Mathf.Max(0f, newBalance);
+        _coinBalance = Mathf.Max(0f, value);
         OnBalanceChanged?.Invoke(_coinBalance);
     }
 
-    #endregion
-
-    #region Debug Methods
-#if UNITY_EDITOR
-    [ContextMenu("Debug/Add 100 Coins")]
-    private void DebugAdd100Coins()
-    {
-        SetBalance(_coinBalance + 100f);
-        Debug.Log($"[StoreFrontManager] Debug: Added 100 coins. Balance: {_coinBalance}");
-    }
-
-    [ContextMenu("Debug/Reset Balance")]
-    private void DebugResetBalance()
-    {
-        SetBalance(0f);
-        Debug.Log("[StoreFrontManager] Debug: Balance reset to 0.");
-    }
-
-    [ContextMenu("Debug/Sell First Available Item")]
-    private void DebugSellFirstItem()
-    {
-        if (PlayerInventory.Instance == null)
-        {
-            Debug.LogWarning("[StoreFrontManager] No PlayerInventory instance found.");
-            return;
-        }
-
-        var sellable = PlayerInventory.Instance.GetSellableItems();
-        if (sellable == null || sellable.Count == 0)
-        {
-            Debug.LogWarning("[StoreFrontManager] No sellable items in inventory.");
-            return;
-        }
-
-        Sell(sellable[0], 1);
-    }
-
-    [ContextMenu("Debug/Buy First Available Item")]
-    private void DebugBuyFirstItem()
-    {
-        var buyable = GetBuyableItems();
-        if (buyable == null || buyable.Count == 0)
-        {
-            Debug.LogWarning("[StoreFrontManager] No items in catalogue to buy.");
-            return;
-        }
-
-        Buy(buyable[0], 1);
-    }
-
-    [ContextMenu("Debug/Buyback First Available Item")]
-    private void DebugBuybackFirstItem()
-    {
-        var buyback = GetBuybackItems();
-        if (buyback == null || buyback.Count == 0)
-        {
-            Debug.LogWarning("[StoreFrontManager] No items in buyback pool.");
-            return;
-        }
-
-        Buyback(buyback[0], 1);
-    }
-
-    [ContextMenu("Debug/Buy First Available Recipe")]
-    private void DebugBuyFirstRecipe()
-    {
-        var recipes = GetBuyableRecipes();
-        if (recipes == null || recipes.Count == 0)
-        {
-            Debug.LogWarning("[StoreFrontManager] No recipes in store.");
-            return;
-        }
-
-        BuyRecipe(recipes[0]);
-    }
-#endif
     #endregion
 }

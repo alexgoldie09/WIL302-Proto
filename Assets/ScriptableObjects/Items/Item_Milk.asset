@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Item_Milk
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Milk
-  icon: {fileID: 21300000, guid: b0848d6e7a553704496519cb57ed017a, type: 3}
+  icon: {fileID: -4467633259543520378, guid: 240d9fb39dd4e426ca97b36c66fa3f00, type: 3}
   itemType: 1
   isAvailableForStorefront: 1
   baseSellValue: 3
   baseBuyValue: 6
   isAvailableForFeeding: 1
   baseFeedValue: 0.5
+  placeablePrefab: {fileID: 0}

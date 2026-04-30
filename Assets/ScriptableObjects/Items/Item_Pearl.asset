@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_Pearl
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Pearl
-  icon: {fileID: 0}
+  icon: {fileID: 3102255002573734043, guid: 2120dd2dd6618425c853d128837c0e87, type: 3}
   itemType: 4
   isAvailableForStorefront: 1
   baseSellValue: 40

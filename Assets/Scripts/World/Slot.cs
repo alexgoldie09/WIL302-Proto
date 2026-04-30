@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -14,44 +15,101 @@ public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
     [Header("Slot Identity")]
     [SerializeField, Tooltip("The biome this slot belongs to. Used to validate placement.")]
     private BiomeManager.BiomeType parentBiome;
+    
+    [Header("Tier")]
+    [SerializeField, Tooltip("Minimum biome tier required to activate this slot. " +
+                             "Tier 1 slots are always active. Tier 2 slots start hidden.")]
+    private int requiredTier = 1;
 
     [Header("Placement Validation")]
+    [SerializeField, Tooltip("LayerMask for raycast checks when this slot is tapped." +
+                             "Should be set to the layer(s) that the player can interact with for placement.")]
+    private LayerMask interactableLayer;
     [SerializeField, Tooltip("Item type accepted by this slot. Only items of this type can be placed here.")]
     private ItemType validItemType = ItemType.Placeable;
     [SerializeField, Tooltip("Specific item names accepted by this slot. Leave empty to accept any name. " +
                              "If both lists are set, an item must pass both checks.")]
     private string[] validItemNames;
+
+    [Header("References")] 
+    [SerializeField, Tooltip("Collider for this plot. Disabled when occupied so the occupant can handle input.")]
+    private Collider2D col;
+    [SerializeField, Tooltip("SpriteRenderer for this plot. Disabled for higher tier slots until they are activated.")]
+    private SpriteRenderer spriteRenderer;
     
     private SlotState _state = SlotState.Empty;
     private GameObject _currentOccupant;
-    private Collider2D _collider;
     private SlotPlacementUI _placementUI;
     
+    #region Accessors
     public SlotState State => _state;
     public bool IsOccupied => _state == SlotState.Occupied;
     public GameObject CurrentOccupant => _currentOccupant;
     /// <summary>The biome this slot belongs to. Used by BiomeManager to track occupancy and apply biome effects.</summary>
     public BiomeManager.BiomeType HomeBiome => parentBiome;
+    /// <summary>
+    /// Returns false if this slot's required tier has not been met yet.
+    /// Used by BiomeManager.SetBiomeVisible to avoid re-enabling tier-locked renderers.
+    /// </summary>
+    public bool IsVisuallyActive => BiomeManager.Instance == null ||
+                                    BiomeManager.Instance.GetBiomeTier(parentBiome) >= requiredTier;
+    #endregion
 
     #region  Unity Lifecycle
     private void Awake()
     {
-        _collider = GetComponent<Collider2D>();
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        
+        if (col == null)
+            col = GetComponent<Collider2D>();
+        
         _placementUI = FindFirstObjectByType<SlotPlacementUI>();
+    }
+
+    private void Start()
+    {
+        // Higher tier slots start disabled until activated by biome tier.
+        if (requiredTier > 1)
+        {
+            col.enabled = false;
+            spriteRenderer.enabled = false;
+        }
     }
 
     private void OnEnable()
     {
-        BiomeManager.Instance?.RegisterOccupant(this);
-        
+        if (BiomeManager.Instance != null)
+        {
+            BiomeManager.Instance.RegisterOccupant(this);
+            BiomeManager.Instance.OnBiomeTierChanged += HandleBiomeTierChanged;
+        }
+
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap += HandleWorldTap;
     }
 
     private void OnDisable()
     {
+        if (BiomeManager.Instance != null)
+            BiomeManager.Instance.OnBiomeTierChanged -= HandleBiomeTierChanged;
+        
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap -= HandleWorldTap;
+    }
+
+    private void HandleBiomeTierChanged(BiomeManager.BiomeType biome, int tier)
+    {
+        if (biome != parentBiome) return;
+        if (tier < requiredTier) return;
+
+        if (!IsOccupied)
+        {
+            col.enabled = true;
+            spriteRenderer.enabled = true;
+        }
+
+        Debug.Log($"[Slot] {name} activated by biome tier {tier}.");
     }
 
     private void OnDestroy()
@@ -63,9 +121,9 @@ public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
     #region IHandler
     private void HandleWorldTap(Vector2 worldPos)
     {
-        if (!_collider.enabled) return;
+        if (!col.enabled) return;
 
-        RaycastHit2D hit = Physics2D.Raycast(worldPos, Vector2.zero, 0f);
+        RaycastHit2D hit = Physics2D.Raycast(worldPos, Vector2.zero, 0f, interactableLayer);
         if (hit.collider != null && hit.collider.gameObject == gameObject)
             OnTapped();
     }
@@ -165,19 +223,22 @@ public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
         }
 
         GameObject occupant = Instantiate(item.PlaceablePrefab, transform, true);
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.PlaceItem,
+            item.ItemName,
+            1
+        );
         occupant.transform.localPosition = Vector3.zero;
 
         _currentOccupant = occupant;
         _state = SlotState.Occupied;
-        _collider.enabled = false;
+        col.enabled = false;
+        spriteRenderer.enabled = false;
 
         // Notify FloraBase or StructureBase or FaunaBase on the occupant which slot it belongs
         // to so they can call slot.Clear() on their own destruction.
         var flora = occupant.GetComponent<FloraBase>();
         if (flora != null) flora.SetSlot(this);
-        
-        var fauna = occupant.GetComponent<FaunaBase>();
-        if (fauna != null) fauna.SetSlot(this);
 
         var structure = occupant.GetComponent<StructureBase>();
         if (structure != null) structure.SetSlot(this);
@@ -198,7 +259,8 @@ public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
         }
 
         _state = SlotState.Empty;
-        _collider.enabled = true;
+        col.enabled = true;
+        spriteRenderer.enabled = true;
 
         Debug.Log($"[Slot] {name} cleared and ready for placement.");
     }

@@ -13,6 +13,9 @@ public class ChoppingAxe : ToolBase
     [Header("Chop")]
     [SerializeField, Tooltip("Damage dealt to the tree per swing impact.")]
     private float chopDamage = 1f;
+    [SerializeField, Tooltip("How much the chop damage increases with each upgrade. " +
+                             "Upgrades are applied additively and capped at 10 damage.")]
+    private float chopDamageUpgrade = 2f;
 
     [Header("Swing Animation")]
     [SerializeField, Tooltip("Starting Z rotation of the swing arc (degrees). " +
@@ -25,6 +28,8 @@ public class ChoppingAxe : ToolBase
     private float swingDuration = 0.2f;
     
     private Coroutine _swingCoroutine;
+    
+    
 
     #region ToolBase Overrides
     /// <summary>
@@ -67,8 +72,14 @@ public class ChoppingAxe : ToolBase
     {
         CancelSwing();
     }
-    #endregion
 
+    public override void ApplyUpgrade(UpgradeDefinition upgrade)
+    {
+        chopDamage = Mathf.Clamp(chopDamage + chopDamageUpgrade, 0f, 10f);
+    }
+
+    #endregion
+    
     #region Swing
     /// <summary>Starts a fresh swing coroutine targeting the given tree.</summary>
     private void StartSwing(WoodTree tree)

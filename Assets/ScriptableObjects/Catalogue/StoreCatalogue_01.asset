@@ -12,17 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9cbc74aa736fbe4483619a730dfc68f, type: 3}
   m_Name: StoreCatalogue_01
   m_EditorClassIdentifier: Assembly-CSharp::StoreCatalogue
-  catalogueName: General Store
+  catalogueName: Tier 1
   entries:
-  - item: {fileID: 11400000, guid: d1e63f7b55a704943b0af3d8120a8273, type: 2}
-    startingStock: 8
-    maxStock: 8
   - item: {fileID: 11400000, guid: c7558b50ba8ec244d8994af3ca95ac42, type: 2}
-    startingStock: 3
-    maxStock: 10
-  - item: {fileID: 11400000, guid: 0aa0bb9d6cfcd2b43b504636437f9bf7, type: 2}
     startingStock: 10
     maxStock: 10
-  - item: {fileID: 11400000, guid: b70834e0715424567a58eec98a1e36e8, type: 2}
+  - item: {fileID: 11400000, guid: 8c76806c3eddb9a4d841f8874d98d4cb, type: 2}
+    startingStock: 8
+    maxStock: 8
+  - item: {fileID: 11400000, guid: 6033266f7a3d84603b18a4711dfcbf74, type: 2}
+    startingStock: 6
+    maxStock: 6
+  - item: {fileID: 11400000, guid: 09a74c4f6805a49a0838488417dd6e44, type: 2}
+    startingStock: 3
+    maxStock: 3
+  - item: {fileID: 11400000, guid: 234eb2f6677034d6ea8828d37d919035, type: 2}
     startingStock: 3
     maxStock: 3

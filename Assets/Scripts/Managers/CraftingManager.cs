@@ -13,18 +13,42 @@ public class CraftingManagerData
 }
 
 /// <summary>
+/// Tracks a single active crafting operation.
+/// </summary>
+[Serializable]
+public class ActiveCraft
+{
+    public RecipeDefinition recipe;
+    public float remainingTime;
+
+    public ActiveCraft(RecipeDefinition recipe)
+    {
+        this.recipe        = recipe;
+        this.remainingTime = recipe.CraftingDuration;
+    }
+}
+
+/// <summary>
 /// Manages which recipes the player has unlocked and handles crafting logic.
+/// Supports multiple concurrent crafting slots controlled by maxConcurrentCrafts.
 /// Recipes are unlocked permanently via UnlockRecipe.
-/// Crafting deducts ingredients from PlayerInventory and adds output after a timer.
+/// Crafting deducts ingredients immediately and adds output after a timer.
 /// </summary>
 public class CraftingManager : SaveableBehaviour<CraftingManagerData>
 {
     public static CraftingManager Instance { get; private set; }
-
+    
     [Header("References")]
-    [SerializeField, Tooltip("The master recipe database.")]
-    private RecipeBook recipeBook;
+    [SerializeField, Tooltip("Tier 1 recipe database.")]
+    private RecipeBook tier1RecipeBook;
+    [SerializeField, Tooltip("Tier 2 recipe database. Recipes become craftable once unlocked via storefront.")]
+    private RecipeBook tier2RecipeBook;
 
+    [Header("Crafting")]
+    [SerializeField, Tooltip("Maximum number of recipes that can be crafted simultaneously. " +
+                             "Increase via upgrade to unlock additional slots.")]
+    private int maxConcurrentCrafts = 1;
+    
     /// <summary>Fired when a new recipe is unlocked.</summary>
     public event Action<RecipeDefinition> OnRecipeUnlocked;
 
@@ -33,16 +57,31 @@ public class CraftingManager : SaveableBehaviour<CraftingManagerData>
 
     /// <summary>Fired when crafting completes.</summary>
     public event Action<RecipeDefinition> OnCraftingCompleted;
+
+    /// <summary>
+    /// Fired every frame for each active craft so UI can update timers.
+    /// Passes the recipe and remaining time.
+    /// </summary>
+    public event Action<RecipeDefinition, float> OnCraftingTick;
     
-    public float RemainingCraftTime { get; private set; }
+    private readonly HashSet<string>  _unlockedRecipes = new();
+    private readonly List<ActiveCraft> _activeCrafts   = new();
+    
+    /// <summary>True if all crafting slots are occupied.</summary>
+    public bool IsCrafting => _activeCrafts.Count >= maxConcurrentCrafts;
 
-    private readonly HashSet<string> _unlockedRecipes = new();
-    private bool _isCrafting;
+    /// <summary>Number of crafting slots currently in use.</summary>
+    public int ActiveCraftCount => _activeCrafts.Count;
 
-    #region SaveableBehaviour
+    /// <summary>Maximum number of simultaneous crafts.</summary>
+    public int MaxConcurrentCrafts => maxConcurrentCrafts;
 
-    public override string RecordType => "CraftingManager";
-    public override int LoadPriority => 5;
+    /// <summary>Read-only view of currently active crafts for UI display.</summary>
+    public IReadOnlyList<ActiveCraft> ActiveCrafts => _activeCrafts;
+    
+    #region ISaveable Methods
+    public override string RecordType  => "CraftingManager";
+    public override int    LoadPriority => 5;
 
     protected override CraftingManagerData BuildData()
     {
@@ -58,24 +97,17 @@ public class CraftingManager : SaveableBehaviour<CraftingManagerData>
         foreach (var name in data.unlockedRecipeNames)
             _unlockedRecipes.Add(name);
     }
-
     #endregion
-
-    #region Unity Lifecycle
-
+    
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
     }
-
-    #endregion
-
-    #region Public API
-
+    
+    #region Crafting Methods
     /// <summary>
-    /// Unlocks a recipe permanently for the player.
-    /// Safe to call multiple times — ignores if already unlocked.
+    /// Unlocks a recipe permanently. Safe to call multiple times.
     /// </summary>
     public void UnlockRecipe(RecipeDefinition recipe)
     {
@@ -87,9 +119,7 @@ public class CraftingManager : SaveableBehaviour<CraftingManagerData>
         Debug.Log($"[CraftingManager] Unlocked recipe: {recipe.RecipeName}");
     }
 
-    /// <summary>
-    /// Returns true if the player has unlocked the given recipe.
-    /// </summary>
+    /// <summary>Returns true if the player has unlocked the given recipe.</summary>
     public bool HasRecipe(RecipeDefinition recipe)
     {
         if (recipe == null) return false;
@@ -97,24 +127,25 @@ public class CraftingManager : SaveableBehaviour<CraftingManagerData>
     }
 
     /// <summary>
-    /// Returns all unlocked recipes from the recipe book.
+    /// Returns all unlocked recipes across both recipe books.
     /// </summary>
     public List<RecipeDefinition> GetUnlockedRecipes()
     {
         var result = new List<RecipeDefinition>();
-        if (recipeBook == null) return result;
-
-        foreach (var recipe in recipeBook.GetAllRecipes())
-        {
-            if (recipe != null && _unlockedRecipes.Contains(recipe.RecipeName))
-                result.Add(recipe);
-        }
+        SearchBook(tier1RecipeBook, result);
+        SearchBook(tier2RecipeBook, result);
         return result;
     }
 
-    /// <summary>
-    /// Returns true if the player has all required ingredients for the recipe.
-    /// </summary>
+    private void SearchBook(RecipeBook book, List<RecipeDefinition> result)
+    {
+        if (book == null) return;
+        foreach (var recipe in book.GetAllRecipes())
+            if (recipe != null && _unlockedRecipes.Contains(recipe.RecipeName))
+                result.Add(recipe);
+    }
+
+    /// <summary>Returns true if the player has all required ingredients.</summary>
     public bool CanCraft(RecipeDefinition recipe)
     {
         if (recipe == null) return false;
@@ -129,87 +160,100 @@ public class CraftingManager : SaveableBehaviour<CraftingManagerData>
     }
 
     /// <summary>
-    /// Starts crafting a recipe. Deducts ingredients immediately and adds
-    /// output to inventory after craftingDuration seconds.
-    /// Returns false if already crafting, recipe not unlocked, or missing ingredients.
+    /// Returns true if a slot is available and the recipe is not already being crafted.
+    /// </summary>
+    public bool CanStartCrafting(RecipeDefinition recipe)
+    {
+        if (recipe == null) return false;
+        if (_activeCrafts.Count >= maxConcurrentCrafts) return false;
+
+        // Prevent the same recipe running in two slots simultaneously.
+        foreach (var active in _activeCrafts)
+            if (active.recipe == recipe) return false;
+
+        return HasRecipe(recipe) && CanCraft(recipe);
+    }
+
+    /// <summary>
+    /// Starts crafting a recipe in the next available slot.
+    /// Deducts ingredients immediately and adds output after the timer.
+    /// Returns false if no slots available, already crafting this recipe,
+    /// recipe not unlocked, or missing ingredients.
     /// </summary>
     public bool StartCrafting(RecipeDefinition recipe)
     {
-        if (recipe == null) return false;
-
-        if (_isCrafting)
+        if (!CanStartCrafting(recipe))
         {
-            Debug.LogWarning("[CraftingManager] Already crafting.");
+            Debug.LogWarning($"[CraftingManager] Cannot start crafting '{recipe?.RecipeName}'.");
             return false;
         }
 
-        if (!HasRecipe(recipe))
-        {
-            Debug.LogWarning($"[CraftingManager] Recipe not unlocked: {recipe.RecipeName}");
-            return false;
-        }
-
-        if (!CanCraft(recipe))
-        {
-            Debug.LogWarning($"[CraftingManager] Missing ingredients for: {recipe.RecipeName}");
-            return false;
-        }
-
-        // Deduct ingredients
+        // Deduct ingredients immediately.
         foreach (var ingredient in recipe.Ingredients)
             PlayerInventory.Instance.Remove(ingredient.item, ingredient.quantity);
 
-        _isCrafting = true;
-        OnCraftingStarted?.Invoke(recipe, recipe.CraftingDuration);
-        StartCoroutine(CraftingRoutine(recipe));
+        var craft = new ActiveCraft(recipe);
+        _activeCrafts.Add(craft);
 
-        Debug.Log($"[CraftingManager] Started crafting: {recipe.RecipeName} ({recipe.CraftingDuration}s)");
+        OnCraftingStarted?.Invoke(recipe, recipe.CraftingDuration);
+        StartCoroutine(CraftingRoutine(craft));
+
+        Debug.Log($"[CraftingManager] Started crafting: {recipe.RecipeName} " +
+                  $"(slot {_activeCrafts.Count}/{maxConcurrentCrafts})");
         return true;
     }
 
-    public bool IsCrafting => _isCrafting;
-
-    #endregion
-
-    #region Crafting Routine
-
-    private IEnumerator CraftingRoutine(RecipeDefinition recipe)
+    /// <summary>
+    /// Increases the maximum concurrent crafting slots.
+    /// Called by the upgrade system when a crafting slot upgrade is purchased.
+    /// </summary>
+    public void UpgradeCraftingSlots(int newMax)
     {
-        RemainingCraftTime = recipe.CraftingDuration;
+        maxConcurrentCrafts = Mathf.Max(maxConcurrentCrafts, newMax);
+        Debug.Log($"[CraftingManager] Max concurrent crafts upgraded to {maxConcurrentCrafts}.");
+    }
     
-        while (RemainingCraftTime > 0f)
+    private IEnumerator CraftingRoutine(ActiveCraft craft)
+    {
+        while (craft.remainingTime > 0f)
         {
-            RemainingCraftTime -= Time.deltaTime;
+            craft.remainingTime -= Time.deltaTime;
+            OnCraftingTick?.Invoke(craft.recipe, Mathf.Max(0f, craft.remainingTime));
             yield return null;
         }
-    
-        RemainingCraftTime = 0f;
-        PlayerInventory.Instance.Add(recipe.OutputItem, recipe.OutputQuantity);
-        _isCrafting = false;
-        OnCraftingCompleted?.Invoke(recipe);
-    
-        Debug.Log($"[CraftingManager] Crafting complete: {recipe.RecipeName}. " +
-                  $"Added {recipe.OutputQuantity}x {recipe.OutputItem.ItemName}.");
+
+        craft.remainingTime = 0f;
+        PlayerInventory.Instance.Add(craft.recipe.OutputItem, craft.recipe.OutputQuantity);
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.CraftItem,
+            craft.recipe.OutputItem.ItemName,
+            craft.recipe.OutputQuantity
+        );
+        _activeCrafts.Remove(craft);
+        OnCraftingCompleted?.Invoke(craft.recipe);
+
+        Debug.Log($"[CraftingManager] Crafting complete: {craft.recipe.RecipeName}. " +
+                  $"Added {craft.recipe.OutputQuantity}x {craft.recipe.OutputItem.ItemName}.");
     }
-
-
     #endregion
 
-    #region Debug
-
+    #region Debug Methods
 #if UNITY_EDITOR
     [ContextMenu("Debug/Log Unlocked Recipes")]
     private void DebugLogUnlocked()
     {
-        if (_unlockedRecipes.Count == 0)
-        {
-            Debug.Log("[CraftingManager] No recipes unlocked.");
-            return;
-        }
+        if (_unlockedRecipes.Count == 0) { Debug.Log("[CraftingManager] No recipes unlocked."); return; }
         foreach (var name in _unlockedRecipes)
             Debug.Log($"[CraftingManager] Unlocked: {name}");
     }
-#endif
 
+    [ContextMenu("Debug/Log Active Crafts")]
+    private void DebugLogActive()
+    {
+        if (_activeCrafts.Count == 0) { Debug.Log("[CraftingManager] No active crafts."); return; }
+        foreach (var craft in _activeCrafts)
+            Debug.Log($"[CraftingManager] Crafting: {craft.recipe.RecipeName} — {craft.remainingTime:F1}s left");
+    }
+#endif
     #endregion
 }

@@ -13,6 +13,7 @@ using TMPro;
 public class SlotPlacementUI : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private TMP_FontAsset defaultFont;
     [SerializeField] private RectTransform panel;
     [SerializeField] private Transform gridContainer;
     [SerializeField] private GameObject biomePanel;
@@ -136,6 +137,7 @@ public class SlotPlacementUI : MonoBehaviour
             msgRect.offsetMax = Vector2.zero;
             var msgText = msgGO.GetComponent<TextMeshProUGUI>();
             msgText.text = "No valid items in inventory.";
+            msgText.font = defaultFont;
             msgText.fontSize = 24;
             msgText.color = new Color(1f, 0f, 0f);
             msgText.alignment = TextAlignmentOptions.Center;
@@ -186,6 +188,7 @@ public class SlotPlacementUI : MonoBehaviour
         nameRect.offsetMax = new Vector2(-4, 0);
         var nameText = nameGO.GetComponent<TextMeshProUGUI>();
         nameText.text = item.ItemName;
+        nameText.font = defaultFont;
         nameText.fontSize = 12;
         nameText.fontStyle = FontStyles.Bold;
         nameText.color = Color.white;
@@ -203,6 +206,7 @@ public class SlotPlacementUI : MonoBehaviour
         countRect.sizeDelta = new Vector2(50, 26);
         var countText = countGO.GetComponent<TextMeshProUGUI>();
         countText.text = $"x{count}";
+        countText.font = defaultFont;
         countText.fontSize = 16;
         countText.fontStyle = FontStyles.Bold;
         countText.color = Color.white;
@@ -227,6 +231,7 @@ public class SlotPlacementUI : MonoBehaviour
         btnTextRect.offsetMax = Vector2.zero;
         var btnText = btnTextGO.GetComponent<TextMeshProUGUI>();
         btnText.text = "Place";
+        btnText.font = defaultFont;
         btnText.fontSize = 12;
         btnText.fontStyle = FontStyles.Bold;
         btnText.color = Color.white;

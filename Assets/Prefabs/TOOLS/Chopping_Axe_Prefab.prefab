@@ -180,6 +180,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e832959be9a6a404994cb813a7612466, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChoppingAxe
+  parentBiome: 0
+  toolId: Chopping Axe
   interactableLayer:
     serializedVersion: 2
     m_Bits: 64

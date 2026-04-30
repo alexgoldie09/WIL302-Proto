@@ -11,7 +11,9 @@ GameObject:
   - component: {fileID: 2992205780008694931}
   - component: {fileID: 4744316874864046715}
   - component: {fileID: 3940544845838886786}
-  m_Layer: 6
+  - component: {fileID: -3422351848966480918}
+  - component: {fileID: 2796024284755505412}
+  m_Layer: 9
   m_Name: Egg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -78,8 +80,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 1664234825
-  m_SortingLayer: 1
+  m_SortingLayerID: -716127783
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 6267581331857406615, guid: 9a28649185646974083115fd0472fcb2, type: 3}
@@ -122,9 +124,64 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 15.5
+--- !u!50 &-3422351848966480918
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251852689355651796}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &2796024284755505412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251852689355651796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc46a011eb74d446698c16a12ffbc3ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DebugTappable
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  itemSO: {fileID: 11400000, guid: 15e1d659d9e24d14882ef2092fb54ccc, type: 2}
+  amountToAdd: 1
+  canMove: 0
+  moveSpeed: 4
+  startPoint: {fileID: 0}
+  endPoint: {fileID: 0}
+  canAlert: 0
+  debugAlertType: 0
+  alertOffset: {x: 0.75, y: 1}
+  minAlertInterval: 4
+  maxAlertInterval: 10
+  canDestroy: 1
+  destroyTime: 6
