@@ -11,6 +11,10 @@ public class FeedPanelUI : MonoBehaviour
     [SerializeField] private TMP_FontAsset defaultFont;
     [SerializeField] private RectTransform panel;
     [SerializeField] private Canvas rootCanvas;
+    [SerializeField] private GameObject biomePanel;
+    [SerializeField] private GameObject craftingPanel;
+    [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private Collider2D shopFrontCollider;
 
     [Header("Layout")]
     [SerializeField] private float panelWidth = 260f;
@@ -62,16 +66,24 @@ public class FeedPanelUI : MonoBehaviour
         var bg = panel.gameObject.AddComponent<Image>();
         bg.color = new Color(0.15f, 0.15f, 0.15f, 0.95f);
 
-        panel.sizeDelta = new Vector2(panelWidth, panelHeight);
+        panel.sizeDelta = new Vector2(panelWidth, 0f);
+
+        var panelLayout = panel.gameObject.AddComponent<VerticalLayoutGroup>();
+        panelLayout.childForceExpandHeight = false;
+        panelLayout.childControlHeight = true;
+        panelLayout.childControlWidth = true;
+        panelLayout.childForceExpandWidth = true;
+        panelLayout.spacing = 6f;
+        panelLayout.padding = new RectOffset(8, 8, 8, 8);
+
+        var panelFitter = panel.gameObject.AddComponent<ContentSizeFitter>();
+        panelFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
         // Grid container
         _gridContainer = new GameObject("GridContainer", typeof(RectTransform));
         _gridContainer.transform.SetParent(panel, false);
-        var gridRect = _gridContainer.GetComponent<RectTransform>();
-        gridRect.anchorMin = new Vector2(0, 0.25f);
-        gridRect.anchorMax = Vector2.one;
-        gridRect.offsetMin = new Vector2(8, 0);
-        gridRect.offsetMax = new Vector2(-8, -8);
+        var gridElement = _gridContainer.AddComponent<LayoutElement>();
+        gridElement.flexibleHeight = 1f;
 
         var grid = _gridContainer.AddComponent<GridLayoutGroup>();
         grid.cellSize = cellSize;
@@ -86,11 +98,9 @@ public class FeedPanelUI : MonoBehaviour
         // Confirm button
         var btnGO = new GameObject("ConfirmButton", typeof(Image), typeof(Button));
         btnGO.transform.SetParent(panel, false);
-        var btnRect = btnGO.GetComponent<RectTransform>();
-        btnRect.anchorMin = new Vector2(0, 0);
-        btnRect.anchorMax = new Vector2(1, 0.22f);
-        btnRect.offsetMin = new Vector2(8, 8);
-        btnRect.offsetMax = new Vector2(-8, -4);
+        var btnElement = btnGO.AddComponent<LayoutElement>();
+        btnElement.minHeight = 40f;
+        btnElement.preferredHeight = 40f;
 
         _confirmButtonImage = btnGO.GetComponent<Image>();
         _confirmButtonImage.color = _confirmInactiveColor;
@@ -126,10 +136,14 @@ public class FeedPanelUI : MonoBehaviour
         _selectedCellHighlight = null;
 
         RefreshGrid();
-        PositionPanel();
+        PositionPanel(worldPosition);
         UpdateConfirmButton();
 
         panel.gameObject.SetActive(true);
+        if (biomePanel != null) biomePanel.SetActive(false);
+        if (shopFrontCollider) shopFrontCollider.enabled = false;
+        if (craftingPanel) craftingPanel.GetComponent<CraftingUI>().ToggleButton.SetActive(false);
+        if (inventoryPanel) inventoryPanel.GetComponent<InventoryUI>().ToggleButton.SetActive(false);
         _isOpen = true;
     }
 
@@ -138,6 +152,10 @@ public class FeedPanelUI : MonoBehaviour
         _isOpen = false;
         _currentFauna = null;
         _selectedItem = null;
+        if (biomePanel != null) biomePanel.SetActive(true);
+        if (shopFrontCollider) shopFrontCollider.enabled = true;
+        if (craftingPanel) craftingPanel.GetComponent<CraftingUI>().ToggleButton.SetActive(true);
+        if (inventoryPanel) inventoryPanel.GetComponent<InventoryUI>().ToggleButton.SetActive(true);
         panel.gameObject.SetActive(false);
     }
 
@@ -259,6 +277,7 @@ public class FeedPanelUI : MonoBehaviour
         _selectedItem = item;
         _selectedCellHighlight = cardImage;
         cardImage.color = _selectedCellColor;
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
 
         UpdateConfirmButton();
     }
@@ -277,6 +296,7 @@ public class FeedPanelUI : MonoBehaviour
         if (_currentFauna == null || _selectedItem == null) return;
 
         _currentFauna.Feed(_selectedItem);
+        AudioManager.Instance?.PlaySFX("eat", 0.4f);
         Close();
     }
 
@@ -284,12 +304,36 @@ public class FeedPanelUI : MonoBehaviour
 
     #region Positioning
 
-    private void PositionPanel()
+    private void PositionPanel(Vector3 worldPosition)
     {
-        panel.anchorMin = new Vector2(0.5f, 1f);
-        panel.anchorMax = new Vector2(0.5f, 1f);
-        panel.pivot = new Vector2(0.5f, 1f);
-        panel.anchoredPosition = new Vector2(0, -47f);
+        Camera cam = Camera.main;
+        Vector3 viewport = cam.WorldToViewportPoint(worldPosition);
+
+        RectTransform canvasRect = rootCanvas.GetComponent<RectTransform>();
+        Vector2 canvasSize = canvasRect.sizeDelta;
+
+        panel.anchorMin = new Vector2(0.5f, 0.5f);
+        panel.anchorMax = new Vector2(0.5f, 0.5f);
+        panel.pivot     = new Vector2(0.5f, 0f);
+
+        float x = (viewport.x - 0.5f) * canvasSize.x;
+        float y = (viewport.y - 0.5f) * canvasSize.y;
+
+        // Offset above the animal
+        y += 60f;
+
+        // Get panel dimensions — force layout rebuild first so sizeDelta is current
+        Canvas.ForceUpdateCanvases();
+        float halfW = panel.rect.width  * 0.5f;
+        float halfH = panel.rect.height;
+        float halfCanvas_W = canvasSize.x * 0.5f;
+        float halfCanvas_H = canvasSize.y * 0.5f;
+
+        // Clamp so panel stays within canvas bounds
+        x = Mathf.Clamp(x, -halfCanvas_W + halfW, halfCanvas_W - halfW);
+        y = Mathf.Clamp(y, -halfCanvas_H, halfCanvas_H - halfH);
+
+        panel.anchoredPosition = new Vector2(x, y);
     }
 
     #endregion

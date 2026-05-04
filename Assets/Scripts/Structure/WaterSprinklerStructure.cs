@@ -159,4 +159,11 @@ public class WaterSprinklerStructure : StructureBase
         _floraToDisableBuffer.Clear();
     }
     #endregion
+    
+    #region Saveablebehaviour
+    
+    public override string RecordType  => "Water Sprinkler";
+    public override int    LoadPriority => 11;
+    
+    #endregion
 }

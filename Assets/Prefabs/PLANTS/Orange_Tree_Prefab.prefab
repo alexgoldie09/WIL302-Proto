@@ -468,21 +468,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WoodTree
   persistentGuid: 
   isStatic: 0
-  prefabKey: 
+  prefabKey: Orange Tree
   saveTransform: 1
   homeBiome: 3
   plantId: Orange Tree
   waterLevel: 1
-  waterDecayRate: 0.4
+  waterDecayRate: 0.1
   waterTickInterval: 10
   waterTickVariation: 2
   waterThreshold: 0.4
-  loseGracePeriod: 10
-  seedDuration: 10
-  sproutDuration: 10
-  matureDuration: 20
+  loseGracePeriod: 1800
+  seedDuration: 40
+  sproutDuration: 60
+  matureDuration: 120
   stage: 0
-  resetOnHarvest: 1
+  resetOnHarvest: 0
   harvestAmount: 1
   seedSprite: {fileID: 6727279194151376251, guid: 3d1b60ded99d34076a3507a8ab28ff19, type: 3}
   sproutSprite: {fileID: -3991700831086857965, guid: 3d1b60ded99d34076a3507a8ab28ff19, type: 3}

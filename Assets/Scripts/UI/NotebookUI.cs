@@ -15,10 +15,15 @@ public class NotebookUI : MonoBehaviour
 
     // ── Inspector ─────────────────────────────────────────────────────────────
     [Header("References")]
+    [SerializeField] private TMP_FontAsset defaultFont;
     [SerializeField] private Button        toggleButton;
     [SerializeField] private RectTransform panel;
     [SerializeField] private Transform     contentContainer;
     [SerializeField] private GameObject    biomePanel;
+    [SerializeField] private GameObject craftingPanel;
+    [SerializeField] private GameObject feedPanel;
+    [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private Collider2D shopFrontCollider;
 
     [Header("Slide")]
     [SerializeField] private float slideDuration = 0.3f;
@@ -49,7 +54,8 @@ public class NotebookUI : MonoBehaviour
 
         // Capture shown position, compute hidden position below screen.
         _shownPos  = panel.anchoredPosition;
-        _hiddenPos = new Vector2(_shownPos.x, _shownPos.y - panel.rect.height - 40f);
+        _hiddenPos = new Vector2(_shownPos.x, _shownPos.y - panel.rect.height - 120f);
+        panel.gameObject.SetActive(false);
 
         panel.anchoredPosition = _hiddenPos;
 
@@ -96,18 +102,28 @@ public class NotebookUI : MonoBehaviour
         if (_isOpen == open) return;
         _isOpen = open;
 
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
         if (open)
-        {
+        { 
+            panel.gameObject.SetActive(true);
             RefreshEntries();
             if (biomePanel != null) biomePanel.SetActive(false);
+            if (feedPanel != null) feedPanel.SetActive(false);
+            if (shopFrontCollider) shopFrontCollider.enabled = false;
+            if (craftingPanel) craftingPanel.GetComponent<CraftingUI>().ToggleButton.SetActive(false);
+            if (inventoryPanel) inventoryPanel.GetComponent<InventoryUI>().ToggleButton.SetActive(false);
+
         }
         else
         {
             if (biomePanel != null) biomePanel.SetActive(true);
+            if (shopFrontCollider) shopFrontCollider.enabled = true;
+            if (craftingPanel) craftingPanel.GetComponent<CraftingUI>().ToggleButton.SetActive(true);
+            if (inventoryPanel) inventoryPanel.GetComponent<InventoryUI>().ToggleButton.SetActive(true);
         }
 
         if (_anim != null) StopCoroutine(_anim);
-        _anim = StartCoroutine(SlideRoutine(open ? _shownPos : _hiddenPos));
+        _anim = StartCoroutine(SlideRoutine(open ? _shownPos : _hiddenPos, open));
     }
 
     // ── Entry Handling ────────────────────────────────────────────────────────
@@ -169,7 +185,7 @@ public class NotebookUI : MonoBehaviour
         cardLayout.childForceExpandHeight = false;
         cardLayout.childForceExpandWidth  = false;
         cardLayout.childControlHeight     = true;
-        cardLayout.childControlWidth      = false;
+        cardLayout.childControlWidth      = true;
         cardLayout.spacing                = 0f;
         cardLayout.padding                = new RectOffset(0, 0, 0, 0);
 
@@ -199,7 +215,9 @@ public class NotebookUI : MonoBehaviour
         );
 
         var contentElement = content.AddComponent<LayoutElement>();
-        contentElement.flexibleWidth = 1f;
+        contentElement.minWidth       = 360f;
+        contentElement.preferredWidth = 360f;
+        contentElement.flexibleWidth  = 0f;
 
         var contentCsf = content.AddComponent<ContentSizeFitter>();
         contentCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -223,6 +241,7 @@ public class NotebookUI : MonoBehaviour
         titleGO.transform.SetParent(header.transform, false);
         var titleTMP  = titleGO.GetComponent<TextMeshProUGUI>();
         titleTMP.text      = entry.title;
+        titleTMP.font = defaultFont;
         titleTMP.fontSize  = titleFontSize;
         titleTMP.fontStyle = FontStyles.Bold;
         titleTMP.color     = Color.white;
@@ -236,6 +255,7 @@ public class NotebookUI : MonoBehaviour
         tagGO.transform.SetParent(header.transform, false);
         var tagTMP = tagGO.GetComponent<TextMeshProUGUI>();
         tagTMP.text      = tagLabel;
+        tagTMP.font = defaultFont;
         tagTMP.fontSize  = tagFontSize;
         tagTMP.color     = accentColour;
         tagTMP.fontStyle = FontStyles.Bold;
@@ -249,6 +269,7 @@ public class NotebookUI : MonoBehaviour
         bodyGO.transform.SetParent(content.transform, false);
         var bodyTMP = bodyGO.GetComponent<TextMeshProUGUI>();
         bodyTMP.text         = entry.body;
+        bodyTMP.font = defaultFont;
         bodyTMP.fontSize     = bodyFontSize;
         bodyTMP.color        = new Color(0.85f, 0.85f, 0.85f);
         bodyTMP.textWrappingMode = TextWrappingModes.Normal;
@@ -260,7 +281,7 @@ public class NotebookUI : MonoBehaviour
     }
 
     // ── Slide ─────────────────────────────────────────────────────────────────
-    private IEnumerator SlideRoutine(Vector2 target)
+    private IEnumerator SlideRoutine(Vector2 target, bool isOpen)
     {
         Vector2 start   = panel.anchoredPosition;
         float   elapsed = 0f;
@@ -275,6 +296,8 @@ public class NotebookUI : MonoBehaviour
 
         panel.anchoredPosition = target;
         _anim = null;
+        if (!isOpen)
+            panel.gameObject.SetActive(false);
     }
     
 #if UNITY_EDITOR

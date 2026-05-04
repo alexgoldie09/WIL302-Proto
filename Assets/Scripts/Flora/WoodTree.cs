@@ -1,5 +1,17 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
+
+
+/// <summary>
+/// Serialisable save data for WoodTree — extends FloraData with chop health.
+/// </summary>
+[Serializable]
+public class WoodTreeData : FloraData
+{
+    public float chopHealth;
+}
 
 /// <summary>
 /// Concrete flora class representing a harvestable tree.
@@ -155,26 +167,34 @@ public class WoodTree : FloraBase
     #region SaveableBehaviour
     protected override FloraData BuildData()
     {
-        var data = base.BuildData();
-        // TODO: Persist chopHealth and outputItem via ItemRegistry when save
-        // system is fully implemented.
-        return data;
+        var b = base.BuildData();
+        return new WoodTreeData
+        {
+            waterLevel       = b.waterLevel,
+            stageTimer       = b.stageTimer,
+            stage            = b.stage,
+            gracePeriodTimer = b.gracePeriodTimer,
+            inGracePeriod    = b.inGracePeriod,
+            parentSlotGuid   = b.parentSlotGuid,
+            chopHealth       = _chopHealth
+        };
     }
 
     protected override void ApplyData(FloraData data, SaveContext context)
     {
         base.ApplyData(data, context);
-        ResetChopHealth();
-        // TODO: Restore outputItem reference from ItemRegistry using saved name.
+        _chopHealth = data is WoodTreeData treeData ? treeData.chopHealth : maxChopHealth;
     }
     
     public override string RecordType => treeType switch
     {
-        TreeType.Wood => "Wood",
-        TreeType.Apple => "Apple",
-        TreeType.Orange => "Orange",
-        _ => "Unknown"
+        TreeType.Wood   => "Wood Tree",
+        TreeType.Apple  => "Apple Tree",
+        TreeType.Orange => "Orange Tree",
+        _               => "Unknown"
     };
+
+    protected override FloraData DeserializeData(string json) => JsonUtility.FromJson<WoodTreeData>(json);
     #endregion
     
     #region Debug Methods

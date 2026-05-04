@@ -2,10 +2,21 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// Serialisable save data for PlayerInventory.
+/// </summary>
+[Serializable]
+public class PlayerInventoryData
+{
+    public List<string> itemNames  = new();
+    public List<int>    itemCounts = new();
+}
+
 /// <summary>
 /// Singleton that manages the player's item counts and notifies listeners on any change.
 /// </summary>
-public class PlayerInventory : MonoBehaviour
+public class PlayerInventory : SaveableBehaviour<PlayerInventoryData>
 {
     public static PlayerInventory Instance { get; private set; }
     
@@ -25,9 +36,15 @@ public class PlayerInventory : MonoBehaviour
     [Header("Starting Items")]
     [SerializeField, Tooltip("The list of starting items in the inventory for the player.")] 
     private List<StartingItem> startingItems = new();
+    
+    [Header("Save")]
+    [SerializeField, Tooltip("Registry used to resolve saved item names back to ItemDefinition assets.")]
+    private ItemRegistry itemRegistry;
 
     private readonly Dictionary<ItemDefinition, int> _inventory = new();
-    
+    private bool _wasRestored;
+
+    #region Unity Lifecycle
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -37,10 +54,14 @@ public class PlayerInventory : MonoBehaviour
     
     private void Start()
     {
+        if (_wasRestored) return;
+        
         foreach (var entry in startingItems)
             Add(entry.item, entry.amount);
     }
+    #endregion
     
+    #region Public API
     /// <summary>
     /// Adds an amount of the item to the inventory.
     /// For Lucille to plug in new items from the world, and for the storefront to add items bought by the player.
@@ -133,6 +154,42 @@ public class PlayerInventory : MonoBehaviour
         }
         return result;
     }
+    #endregion
+    
+    #region SaveableBehaviour
+
+    public override string RecordType  => "PlayerInventory";
+    public override int LoadPriority => 0;
+
+    protected override PlayerInventoryData BuildData()
+    {
+        var data = new PlayerInventoryData();
+        foreach (var kvp in _inventory)
+        {
+            data.itemNames.Add(kvp.Key.ItemName);
+            data.itemCounts.Add(kvp.Value);
+        }
+        return data;
+    }
+
+    protected override void ApplyData(PlayerInventoryData data, SaveContext context)
+    {
+        _wasRestored = true;
+        _inventory.Clear();
+
+        for (int i = 0; i < data.itemNames.Count; i++)
+        {
+            var item = itemRegistry != null ? itemRegistry.Find(data.itemNames[i]) : null;
+            if (item == null)
+            {
+                Debug.LogWarning($"[PlayerInventory] Item '{data.itemNames[i]}' not found in ItemRegistry - skipping.");
+                continue;
+            }
+            Add(item, data.itemCounts[i]);
+        }
+    }
+
+    #endregion
     
     #region Debug Methods
     /// <summary>

@@ -10,6 +10,8 @@ using UnityEngine;
 public class CraftingManagerData
 {
     public List<string> unlockedRecipeNames = new();
+    public List<string> activeCraftRecipeNames = new();
+    public List<float>  activeCraftRemainingTimes = new();
 }
 
 /// <summary>
@@ -23,7 +25,7 @@ public class ActiveCraft
 
     public ActiveCraft(RecipeDefinition recipe)
     {
-        this.recipe        = recipe;
+        this.recipe = recipe;
         this.remainingTime = recipe.CraftingDuration;
     }
 }
@@ -81,13 +83,18 @@ public class CraftingManager : SaveableBehaviour<CraftingManagerData>
     
     #region ISaveable Methods
     public override string RecordType  => "CraftingManager";
-    public override int    LoadPriority => 5;
+    public override int LoadPriority => 5;
 
     protected override CraftingManagerData BuildData()
     {
         var data = new CraftingManagerData();
         foreach (var name in _unlockedRecipes)
             data.unlockedRecipeNames.Add(name);
+        foreach (var craft in _activeCrafts)
+        {
+            data.activeCraftRecipeNames.Add(craft.recipe.RecipeName);
+            data.activeCraftRemainingTimes.Add(craft.remainingTime);
+        }
         return data;
     }
 
@@ -96,6 +103,47 @@ public class CraftingManager : SaveableBehaviour<CraftingManagerData>
         _unlockedRecipes.Clear();
         foreach (var name in data.unlockedRecipeNames)
             _unlockedRecipes.Add(name);
+        
+        _activeCrafts.Clear();
+        float elapsed = (float)context.Elapsed.TotalSeconds;
+
+        for (int i = 0; i < data.activeCraftRecipeNames.Count; i++)
+        {
+            var recipe = FindRecipeByName(data.activeCraftRecipeNames[i]);
+            if (recipe == null)
+            {
+                Debug.LogWarning($"[CraftingManager] Recipe '{data.activeCraftRecipeNames[i]}' not found — skipping active craft.");
+                continue;
+            }
+
+            float remaining = data.activeCraftRemainingTimes[i] - elapsed;
+
+            if (remaining <= 0f)
+            {
+                // Completed while offline — grant output immediately without a coroutine.
+                PlayerInventory.Instance?.Add(recipe.OutputItem, recipe.OutputQuantity);
+                QuestManager.Instance?.RecordProgress(
+                    QuestObjectiveType.CraftItem,
+                    recipe.OutputItem.ItemName,
+                    recipe.OutputQuantity
+                );
+                OnCraftingCompleted?.Invoke(recipe);
+                Debug.Log($"[CraftingManager] '{recipe.RecipeName}' finished offline.");
+                continue;
+            }
+
+            var craft = new ActiveCraft(recipe);
+            craft.remainingTime = remaining;
+            _activeCrafts.Add(craft);
+            StartCoroutine(CraftingRoutine(craft));
+            OnCraftingStarted?.Invoke(recipe, craft.remainingTime);
+        }
+    }
+
+    private RecipeDefinition FindRecipeByName(string recipeName)
+    {
+        return tier1RecipeBook?.GetRecipeByName(recipeName)
+               ?? tier2RecipeBook?.GetRecipeByName(recipeName);
     }
     #endregion
     

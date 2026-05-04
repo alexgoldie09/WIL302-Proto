@@ -1,5 +1,16 @@
+using System;
 using System.Collections;
 using UnityEngine;
+
+
+/// <summary>
+/// Serialisable save data for EggCollectorStructure.
+/// </summary>
+[Serializable]
+public class EggCollectorData : StructureData
+{
+    public int storedCount;
+}
 
 /// <summary>
 /// Structure that automatically collects duck egg pickups within its radius.
@@ -184,6 +195,33 @@ public class EggCollectorStructure : StructureBase
     {
         eggPile?.UpdateVisuals(_storedCount, capacity);
     }
+    #endregion
+    
+    #region SaveableBehaviour
+
+    public override string RecordType  => "Egg Coop";
+    public override int    LoadPriority => 11;
+    
+    protected override StructureData DeserializeData(string json) => JsonUtility.FromJson<EggCollectorData>(json);
+
+    protected override StructureData BuildData() => new EggCollectorData
+    {
+        stage             = (int)Stage,
+        constructionTimer = ConstructionTimer,
+        parentSlotGuid    = ParentSlotGuid,
+        storedCount       = _storedCount
+    };
+
+    protected override void ApplyData(StructureData data, SaveContext context)
+    {
+        base.ApplyData(data, context);
+        if (data is EggCollectorData eggData)
+        {
+            _storedCount = eggData.storedCount;
+            UpdateStorageVisuals();
+        }
+    }
+
     #endregion
 
     #region Debug Methods

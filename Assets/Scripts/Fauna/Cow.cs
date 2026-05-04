@@ -75,6 +75,7 @@ public class Cow : FaunaBase
 
     public override string RecordType => "Cow";
     public override int LoadPriority => 10;
+    protected override FaunaData DeserializeData(string json) => JsonUtility.FromJson<CowData>(json);
 
     protected override FaunaData BuildData() => new CowData
     {
@@ -109,6 +110,9 @@ public class Cow : FaunaBase
         OnHungerChanged    += HandleHungerChanged;
         OnHappinessChanged += HandleHappinessChanged;
         OnLost             += HandleLost;
+        
+        if (stage == FaunaGrowthStage.Baby)
+            AudioManager.Instance?.PlaySFX("cow_moo", 0.4f);
 
         if (stage == FaunaGrowthStage.Adult && !_hasMilkReady)
             StartMilkProduction();
@@ -157,6 +161,8 @@ public class Cow : FaunaBase
 
     public override void OnTapped()
     {
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
+        
         if (_hasMilkReady)
             CollectMilk();
         else if (FeedPanelUI.Instance != null)
@@ -185,6 +191,10 @@ public class Cow : FaunaBase
             happinessRestore *= favouriteFoodHappinessMultiplier;
 
         SetHappiness(happiness + happinessRestore);
+        
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.FeedAnimal, item.ItemName, 1, RecordType);
+        
         Debug.Log($"[Cow] Fed {item.ItemName}. Hunger: {hunger:F2} Happiness: {happiness:F2}");
     }
 
@@ -242,6 +252,7 @@ public class Cow : FaunaBase
         if (ready)
         {
             StartReadyShakeLoop();
+            AudioManager.Instance?.PlaySFX("cow_moo", 0.4f);
             AlertManager.Instance?.ShowAlert(gameObject, AlertType.ReadyToCollect, alertOffset, persistent: true);
         }
         else
@@ -261,6 +272,9 @@ public class Cow : FaunaBase
         }
 
         PlayerInventory.Instance.Add(milkItem, 1);
+        AudioManager.Instance?.PlaySFX("collect_sound", 0.4f);
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.CollectAnimalItem, milkItem.ItemName, 1, RecordType);
         SetMilkReady(false);
         StartMilkProduction();
         Debug.Log("[Cow] Milk collected.");

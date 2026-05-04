@@ -82,7 +82,8 @@ public class QuestNotificationUI : MonoBehaviour
         Enqueue(
             quest.Definition.questTitle,
             quest.Definition.questDescription,
-            questPickupColour
+            questPickupColour, 
+            quest.Definition.sendsQuestNotification
         );
     }
 
@@ -91,13 +92,17 @@ public class QuestNotificationUI : MonoBehaviour
         Enqueue(
             quest.Definition.questTitle,
             quest.Definition.rewardDialogue,
-            questCompleteColour
+            questCompleteColour,
+            quest.Definition.sendsQuestNotification
         );
     }
 
     // ── Queue ─────────────────────────────────────────────────────────────────
-    private void Enqueue(string title, string message, Color colour)
+    private void Enqueue(string title, string message, Color colour, bool isAllowed)
     {
+        if (!isAllowed)
+            return;
+        
         _queue.Enqueue((title, message, colour));
         if (!_isShowing)
             StartNextNotification();
@@ -125,6 +130,8 @@ public class QuestNotificationUI : MonoBehaviour
     // ── Display Routine ───────────────────────────────────────────────────────
     private IEnumerator DisplayRoutine()
     {
+        AudioManager.Instance?.PlaySFX("notification", 0.4f);
+        
         bannerRect.gameObject.SetActive(true);
 
         // Slide in.

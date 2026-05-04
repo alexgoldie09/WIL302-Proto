@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_Orange
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Orange
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 566c234c892aa4f078e1ffd8cfbbe9b4, type: 3}
   itemType: 1
   isAvailableForStorefront: 1
   baseSellValue: 6

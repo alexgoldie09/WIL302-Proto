@@ -4,6 +4,17 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
+
+/// <summary>
+/// Serialisable save data for BiomeManager.
+/// </summary>
+[Serializable]
+public class BiomeManagerData
+{
+    public List<int> biomeTiers = new(); // one int per biome, index matches BiomeType enum
+    public List<bool> biomeUnlocked = new(); // one bool per biome, index matches BiomeType enum
+}
+
 /// <summary>
 /// Manages all biomes — camera bounds, button wiring, upgrade tiers,
 /// and the persistent registry of active occupants (flora, fauna, structures, slots).
@@ -14,7 +25,7 @@ using UnityEngine.UI;
 /// keeps the occupant registry accurate at all times.
 /// 
 /// </summary>
-public class BiomeManager : MonoBehaviour
+public class BiomeManager : SaveableBehaviour<BiomeManagerData>
 {
     public static BiomeManager Instance { get; private set; }
     
@@ -37,6 +48,9 @@ public class BiomeManager : MonoBehaviour
 
         [Tooltip("Decoration / foreground Tilemap (optional).")]
         public Tilemap decorTilemap;
+
+        [Tooltip("Second decoration Tilemap for extra layering (optional).")]
+        public Tilemap decorTwoTilemap;
         
         [Tooltip("Tilemap for collisions.")]
         public Tilemap collisionTilemap;
@@ -60,7 +74,12 @@ public class BiomeManager : MonoBehaviour
         /// Higher tiers unlock capacity increases, new catalogue items,
         /// and improved structure behaviour.
         /// </summary>
-        [NonSerialized] public int upgradeTier = 1;
+        public int upgradeTier = 1;
+        
+        /// <summary>
+        /// Whether this biome is unlocked and can be switched to by the player.
+        /// </summary>
+        public bool isUnlocked  = false;
 
         /// <summary>
         /// All IBiomeOccupants currently registered to this biome.
@@ -92,6 +111,9 @@ public class BiomeManager : MonoBehaviour
     /// <summary>Fired when a biome's upgrade tier changes.</summary>
     public event Action<BiomeType, int> OnBiomeTierChanged;
     
+    /// <summary>Fired when a locked biome is unlocked for the first time.</summary>
+    public event Action<BiomeType> OnBiomeUnlocked;
+    
     private int _activeBiome = 0;
     
     /// <summary>Camera bounds of the currently active biome.</summary>
@@ -111,6 +133,13 @@ public class BiomeManager : MonoBehaviour
 
     private void Start()
     {
+        biomes[0].isUnlocked = true; // Farm always starts unlocked
+        for (int i = 1; i < biomes.Length; i++)
+        {
+            if (!biomes[i].isUnlocked) // skip if already restored by save system
+                biomes[i].rootObject?.SetActive(false);
+        }
+        
         for (int i = 0; i < biomes.Length; i++)
             SetBiomeVisible(i, i == _activeBiome);
 
@@ -158,6 +187,9 @@ public class BiomeManager : MonoBehaviour
 
         if (biome.decorTilemap != null)
             biome.decorTilemap.GetComponent<TilemapRenderer>().enabled = visible;
+        
+        if (biome.decorTwoTilemap != null)
+            biome.decorTwoTilemap.GetComponent<TilemapRenderer>().enabled = visible;
 
         // All SpriteRenderers under the biome root — flora, fauna, structures, slots
         foreach (var sr in biome.rootObject.GetComponentsInChildren<SpriteRenderer>(true))
@@ -181,6 +213,10 @@ public class BiomeManager : MonoBehaviour
                         sr.enabled = false;
                 }
             }
+            
+            // Re-hide quest icons the sweep re-enabled for already-picked-up quests.
+            foreach (var quest in biome.rootObject.GetComponentsInChildren<Quest>(true))
+                quest.RefreshIconVisibility();
         }
     }
     #endregion
@@ -199,6 +235,31 @@ public class BiomeManager : MonoBehaviour
         foreach (var biome in biomes)
             if (biome.biomeType == type) return biome;
         return null;
+    }
+    
+    /// <summary>Returns true if the given biome has been unlocked.</summary>
+    public bool IsBiomeUnlocked(BiomeType type)
+    {
+        var biome = GetBiomeByType(type);
+        return biome?.isUnlocked ?? false;
+    }
+
+    /// <summary>
+    /// Unlocks the given biome: enables its root GameObject, hides renderers
+    /// (the player is on a different biome), reveals its switch button, and
+    /// fires OnBiomeUnlocked so subscribers can react.
+    /// </summary>
+    public void UnlockBiome(BiomeType type)
+    {
+        var biome = GetBiomeByType(type);
+        if (biome == null || biome.isUnlocked) return;
+
+        biome.isUnlocked = true;
+        biome.rootObject?.SetActive(true);
+        SetBiomeVisible((int)type, false); // renderers hidden — player is on another biome
+        UpdateButtonVisuals(_activeBiome);
+        OnBiomeUnlocked?.Invoke(type);
+        Debug.Log($"[BiomeManager] Biome unlocked: {biome.label}");
     }
     #endregion
 
@@ -324,6 +385,15 @@ public class BiomeManager : MonoBehaviour
         for (int i = 0; i < biomes.Length; i++)
         {
             if (biomes[i].switchButton == null) continue;
+            
+            if (!biomes[i].isUnlocked)
+            {
+                biomes[i].switchButton.gameObject.SetActive(false);
+                continue;
+            }
+
+            biomes[i].switchButton.gameObject.SetActive(true);
+            
             var img = biomes[i].switchButton.GetComponent<Image>();
             if (img != null)
                 img.color = (i == activeIndex) ? biomes[i].activeColor : inactiveColor;
@@ -354,6 +424,43 @@ public class BiomeManager : MonoBehaviour
 
         ActiveBiomeBounds = new Bounds(center, size);
     }
+    #endregion
+    
+    #region SaveableBehaviour
+    public override string RecordType  => "BiomeManager";
+    public override int    LoadPriority => 1;
+
+    protected override BiomeManagerData BuildData()
+    {
+        var data = new BiomeManagerData();
+        foreach (var biome in biomes)
+        {
+            data.biomeTiers.Add(biome?.upgradeTier ?? 1);
+            data.biomeUnlocked.Add(biome?.isUnlocked ?? false);
+        }
+        return data;
+    }
+
+    protected override void ApplyData(BiomeManagerData data, SaveContext context)
+    {
+        for (int i = 0; i < data.biomeTiers.Count && i < biomes.Length; i++)
+        {
+            int tier = data.biomeTiers[i];
+            if (tier <= 1) continue; // tier 1 is default — skip to avoid unnecessary events
+            SetBiomeTier((BiomeType)i, tier);
+        }
+
+        // Farm (index 0) is always unlocked; restore others from saved data.
+        // Do not fire OnBiomeUnlocked — no event noise on load.
+        biomes[0].isUnlocked = true;
+        for (int i = 1; i < data.biomeUnlocked.Count && i < biomes.Length; i++)
+        {
+            if (!data.biomeUnlocked[i]) continue;
+            biomes[i].isUnlocked = true;
+            biomes[i].rootObject?.SetActive(true);
+        }
+    }
+
     #endregion
 
     #region Debug Methods

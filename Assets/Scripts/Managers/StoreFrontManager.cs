@@ -2,8 +2,23 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Serialisable save data for StoreFrontManager.
+/// </summary>
+[Serializable]
+public class StoreFrontManagerData
+{
+    public float coinBalance;
+    public List<string> stockItemNames    = new();
+    public List<int> stockItemCounts   = new();
+    public List<string> buybackItemNames  = new();
+    public List<int> buybackItemCounts = new();
+    public List<float>  buybackItemPrices = new();
+    public List<string> soldOutRecipeNames = new(); // recipes with stock == 0
+}
+
 [RequireComponent(typeof(Collider2D))]
-public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
+public class StoreFrontManager : SaveableBehaviour<StoreFrontManagerData>, IHandler, IBiomeOccupant
 {
     [Header("StoreFront Identity")]
     [Tooltip("The biome this storefront belongs to. Determines when tier 2 items/recipes are added to the store.")]
@@ -26,6 +41,10 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
     [Tooltip("The recipe book defining recipes available for purchase in this store at tier 2. " +
              "Recipes in this book are added to the store when the biome reaches tier 2.")]
     [SerializeField] private RecipeBook tier2RecipeBook;
+    
+    [Header("Save")]
+    [SerializeField, Tooltip("Registry used to resolve saved item names back to ItemDefinition assets.")]
+    private ItemRegistry itemRegistry;
 
     // Actions
     public event Action<float> OnBalanceChanged;
@@ -36,6 +55,7 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
 
     private float _coinBalance;
     private bool _isOpen;
+    private bool _wasRestored;
 
     // Runtime
     private readonly Dictionary<ItemDefinition, int> _stock = new();
@@ -77,13 +97,15 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
 
     private void Start()
     {
+        if (_wasRestored) return;
         SetBalance(startingCoinBalance);
         InitialiseStock();
         InitialiseRecipeStock();
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         BiomeManager.Instance?.RegisterOccupant(this);
 
         if (BiomeManager.Instance != null)
@@ -93,8 +115,9 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
             InputManager.Instance.OnWorldTap += HandleWorldTap;
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
         if (BiomeManager.Instance != null)
             BiomeManager.Instance.OnBiomeTierChanged -= HandleBiomeTierChanged;
 
@@ -195,6 +218,8 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
 
         SetBalance(_coinBalance + earned);
         AddToBuyback(item, amount, price);
+        
+        AudioManager.Instance?.PlaySFX("shop_alert", 0.4f);
 
         return true;
     }
@@ -220,6 +245,7 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
         SetStock(item, currentStock - amount);
         SpendCoins(cost);
         PlayerInventory.Instance.Add(item, amount);
+        AudioManager.Instance?.PlaySFX("shop_alert", 0.4f);
         QuestManager.Instance?.RecordProgress(
             QuestObjectiveType.BuyItem,
             item.ItemName,
@@ -250,6 +276,7 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
 
         SetRecipeStock(recipe, stock - 1);
         SpendCoins(recipe.BuyPrice);
+        AudioManager.Instance?.PlaySFX("shop_alert", 0.4f);
         CraftingManager.Instance.UnlockRecipe(recipe);
 
         return true;
@@ -329,6 +356,8 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
                 PlayerInventory.Instance.Remove(ingredient.item, ingredient.quantity);
             }
         }
+
+        AudioManager.Instance?.PlaySFX("shop_alert", 0.4f);
 
         // Apply the upgrade effect via UpgradeManager.
         return UpgradeManager.Instance.ApplyUpgrade(upgrade);
@@ -452,6 +481,87 @@ public class StoreFrontManager : MonoBehaviour, IHandler, IBiomeOccupant
         }
     }
 
+    #endregion
+    
+    #region SaveableBehaviour
+    public override string RecordType  => "StoreFrontManager";
+    public override int    LoadPriority => 5;
+
+    protected override StoreFrontManagerData BuildData()
+    {
+        var data = new StoreFrontManagerData { coinBalance = _coinBalance };
+
+        foreach (var kvp in _stock)
+        {
+            data.stockItemNames.Add(kvp.Key.ItemName);
+            data.stockItemCounts.Add(kvp.Value);
+        }
+
+        foreach (var kvp in _buyback)
+        {
+            data.buybackItemNames.Add(kvp.Key.ItemName);
+            data.buybackItemCounts.Add(kvp.Value.count);
+            data.buybackItemPrices.Add(kvp.Value.pricePerUnit);
+        }
+
+        foreach (var kvp in _recipeStock)
+        {
+            if (kvp.Value == 0)
+                data.soldOutRecipeNames.Add(kvp.Key.RecipeName);
+        }
+
+        return data;
+    }
+
+    protected override void ApplyData(StoreFrontManagerData data, SaveContext context)
+    {
+        _wasRestored = true;
+
+        // Balance
+        SetBalance(data.coinBalance);
+
+        // Stock — seed tier 1 defaults, then merge tier 2 if already unlocked,
+        // then override with saved counts. BiomeManager restores at priority 1
+        // so GetBiomeTier() returns the correct restored value here at priority 5.
+        InitialiseStock();
+        int currentTier = BiomeManager.Instance?.GetBiomeTier(parentBiome) ?? 1;
+        if (currentTier >= 2)
+            MergeTier2Catalogue();
+
+        for (int i = 0; i < data.stockItemNames.Count; i++)
+        {
+            var item = itemRegistry != null ? itemRegistry.Find(data.stockItemNames[i]) : null;
+            if (item == null || !_stock.ContainsKey(item)) continue;
+            SetStock(item, data.stockItemCounts[i]);
+        }
+
+        // Buyback — restore entirely from saved data (not seeded from any catalogue)
+        _buyback.Clear();
+        for (int i = 0; i < data.buybackItemNames.Count; i++)
+        {
+            var item = itemRegistry != null ? itemRegistry.Find(data.buybackItemNames[i]) : null;
+            if (item == null) continue;
+            _buyback[item] = new BuybackEntry
+            {
+                count = data.buybackItemCounts[i],
+                pricePerUnit = data.buybackItemPrices[i]
+            };
+        }
+
+        // Recipe stock — seed tier 1 defaults, merge tier 2 if unlocked,
+        // then zero out any sold-out recipes.
+        InitialiseRecipeStock();
+        if (currentTier >= 2)
+            MergeTier2RecipeBook();
+
+        foreach (var recipeName in data.soldOutRecipeNames)
+        {
+            var recipe = tier1RecipeBook?.GetRecipeByName(recipeName)
+                         ?? tier2RecipeBook?.GetRecipeByName(recipeName);
+            if (recipe != null && _recipeStock.ContainsKey(recipe))
+                SetRecipeStock(recipe, 0);
+        }
+    }
     #endregion
 
     #region Helpers

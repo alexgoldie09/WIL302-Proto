@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c217b77871f700489cc02283f779108, type: 3}
+  m_Name: Quest2
+  m_EditorClassIdentifier: Assembly-CSharp::QuestDefinition
+  questNumber: 2
+  questTitle: Grow Little Super
+  questDescription: Grab the can and give your carrot a water.
+  questIcon: {fileID: 21300000, guid: 0a8e17b5d946f4d339160df73a8322d2, type: 3}
+  objectiveType: 2
+  targetBiome: 0
+  targetItemName: Carrot
+  requiredAmount: 1
+  hasItemReward: 0
+  rewardItem: {fileID: 0}
+  rewardItemAmount: 1
+  rewardDialogue: Joel hates UniSuper!

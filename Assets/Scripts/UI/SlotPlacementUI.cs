@@ -17,7 +17,10 @@ public class SlotPlacementUI : MonoBehaviour
     [SerializeField] private RectTransform panel;
     [SerializeField] private Transform gridContainer;
     [SerializeField] private GameObject biomePanel;
-    [SerializeField] private InventoryUI inventoryUI; 
+    [SerializeField] private GameObject feedPanel;
+    [SerializeField] private GameObject craftingPanel;
+    [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private Collider2D shopFrontCollider;
     
     [Header("Slide Animation")]
     [SerializeField] private float slideDuration = 0.3f;
@@ -73,26 +76,23 @@ public class SlotPlacementUI : MonoBehaviour
         if (_isOpen == open) return;
         _isOpen = open;
 
-        biomePanel.SetActive(!_isOpen);
-
-        if (_isOpen && inventoryUI != null)
-        {
-            inventoryUI.SetOpen(false);
-            inventoryUI.ToggleButton.SetActive(false);
-        }
-        else
-        {
-            inventoryUI.ToggleButton.SetActive(true);
-        }
-
         if (_isOpen)
         {
             panel.gameObject.SetActive(true);
             gridContainer.gameObject.SetActive(true);
             RefreshGrid();
+            if (biomePanel != null) biomePanel.SetActive(false);
+            if (shopFrontCollider) shopFrontCollider.enabled = false;
+            if (inventoryPanel) inventoryPanel.GetComponent<InventoryUI>().ToggleButton.SetActive(false);
+            if (craftingPanel) craftingPanel.GetComponent<CraftingUI>().ToggleButton.SetActive(false);
+            if (feedPanel) feedPanel.SetActive(false);
         }
         else
         {
+            if (biomePanel != null) biomePanel.SetActive(true);
+            if (shopFrontCollider) shopFrontCollider.enabled = true;
+            if (inventoryPanel) inventoryPanel.GetComponent<InventoryUI>().ToggleButton.SetActive(true);
+            if (craftingPanel) craftingPanel.GetComponent<CraftingUI>().ToggleButton.SetActive(true);
             _targetSlot = null;
         }
 

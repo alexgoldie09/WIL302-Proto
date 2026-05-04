@@ -468,21 +468,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WoodTree
   persistentGuid: 
   isStatic: 0
-  prefabKey: 
+  prefabKey: Wood Tree
   saveTransform: 1
   homeBiome: 3
   plantId: Wood Tree
   waterLevel: 1
-  waterDecayRate: 0.4
+  waterDecayRate: 0.12
   waterTickInterval: 10
   waterTickVariation: 2
   waterThreshold: 0.4
-  loseGracePeriod: 10
-  seedDuration: 10
-  sproutDuration: 10
-  matureDuration: 20
+  loseGracePeriod: 1800
+  seedDuration: 60
+  sproutDuration: 120
+  matureDuration: 120
   stage: 0
-  resetOnHarvest: 1
+  resetOnHarvest: 0
   harvestAmount: 1
   seedSprite: {fileID: -1273548972756398532, guid: a2274de6c03a2b34492e3d8b96569194, type: 3}
   sproutSprite: {fileID: -6191587311320242067, guid: a2274de6c03a2b34492e3d8b96569194, type: 3}

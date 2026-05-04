@@ -181,35 +181,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Sheeb
   persistentGuid: 
   isStatic: 0
-  prefabKey: 
-  saveTransform: 0
+  prefabKey: Sheep
+  saveTransform: 1
   homeBiome: 0
   animalId: Sheep
   hunger: 1
   happiness: 1
   hungerDecayRate: 0.05
-  happinessDecayRate: 0.01
-  lowHappinessHungerMultiplier: 2
-  hungerTickInterval: 10
+  happinessDecayRate: 0.001
+  lowHappinessHungerMultiplier: 1.2
+  hungerTickInterval: 120
   hungerTickVariation: 2
-  loseGracePeriod: 30
+  loseGracePeriod: 1800
   stage: 0
   babySprite: {fileID: -3399071874064432069, guid: b0a11220fc8f81141b0a083b64f310ac, type: 3}
-  middleSprite: {fileID: 2752537192193941370, guid: b0a11220fc8f81141b0a083b64f310ac, type: 3}
-  adultSprite: {fileID: -8449107204132228288, guid: b0a11220fc8f81141b0a083b64f310ac, type: 3}
+  middleSprite: {fileID: -8449107204132228288, guid: b0a11220fc8f81141b0a083b64f310ac, type: 3}
+  adultSprite: {fileID: 2752537192193941370, guid: b0a11220fc8f81141b0a083b64f310ac, type: 3}
   spriteRenderer: {fileID: 7932868695235943660}
   interactableLayer:
     serializedVersion: 2
     m_Bits: 64
-  babyToMiddleDuration: 20
-  middleToAdultDuration: 40
+  babyToMiddleDuration: 80
+  middleToAdultDuration: 160
   happinessGrowthThreshold: 0.4
   baseHappinessRestore: 0.4
   happinessUpgradeAmountIncrease: 0.2
   favouriteFoodHappinessMultiplier: 2.5
   favouriteFoodItem: {fileID: 11400000, guid: 60013dbbce2ff45a18b1e7e35e87b77a, type: 2}
   woolItem: {fileID: 11400000, guid: a13e780dc18912b488564c0d46b2dc85, type: 2}
-  woolProductionInterval: 20
+  woolProductionInterval: 120
   woolProductionVariation: 15
   woolReadySprite: {fileID: -8449107204132228288, guid: b0a11220fc8f81141b0a083b64f310ac, type: 3}
   shavenSprite: {fileID: 134557098233314674, guid: b0a11220fc8f81141b0a083b64f310ac, type: 3}

@@ -1,0 +1,1173 @@
+fileFormatVersion: 2
+guid: 1bd356e67c7994f43bc5dd0613c31527
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8979805166314459916
+    second: Pond_Tile_Map_V3-1_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 480
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_0
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c031462c83dae9c70800000000000000
+      internalID: 8979805166314459916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_1
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd5957360fa2d48918386570671b81b9
+      internalID: -2030331572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_2
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24fbd478841804f7fbe04db918a6455e
+      internalID: -1384458672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_3
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3971b7e7b8a124028b8d7681448c25c2
+      internalID: 352693792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_4
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a346cd19951f54338b7d372e102ffbde
+      internalID: -786999766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_5
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdec0c1f5048647acb580cf5972dd3b7
+      internalID: -357926781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_6
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49eb19ccbafd04d28aa9d2bd76c1d47d
+      internalID: 93097512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_7
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cd1b6658fd8b4088b3bf587e08499a3
+      internalID: -1778728173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_8
+      rect:
+        serializedVersion: 2
+        x: 3472
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2d91949594a44af89a8c484dd9137ae
+      internalID: 1338026670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_9
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 070cb1eda54004867bb5eef7007d1c7f
+      internalID: 2099724497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_10
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc2d3fac932e242d1afc62683e1dd58c
+      internalID: -528563485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_11
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86fe0bc8a445040abb7335e838e0e8db
+      internalID: 812679982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_12
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b230fe6f7e0114836b9ed169aa5b2db1
+      internalID: 1700377132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_13
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cff42cd0beb0a4a17a0eb56fd41ee4c4
+      internalID: 1123119713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_14
+      rect:
+        serializedVersion: 2
+        x: 3472
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c79bf7130d6a84d8484cc81988f1b9a5
+      internalID: -1594535232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_15
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 162cc0b06e4c443878f2891f0b8c1c58
+      internalID: -1425991464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_16
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c12db734179b46fdb663c3a50c3bf54
+      internalID: -1796722312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_17
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52490a60b103f4f018bb838410f244e7
+      internalID: -964894314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_18
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2966e4785d9d44e7bc3a9198920caae
+      internalID: 2029223418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_19
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebfcffbbc02a44c23b6c88c6d50c0482
+      internalID: 238414336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_20
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f12db6168f1744a1589f5d81ce5c97b6
+      internalID: -1815764722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_21
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a980f1a797b214a509c33f80bf99da4a
+      internalID: -1255606328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_22
+      rect:
+        serializedVersion: 2
+        x: 3472
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1fcf469800f6a4937ad32891f5ca0403
+      internalID: 1468078329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_23
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d111b030b788a4c9292a0891be84a56e
+      internalID: 355809411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_24
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee31fade07b354e50b0030ede07bc0b7
+      internalID: 1043329288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_25
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c92325e2225954c49b8f54023f350f4c
+      internalID: 2146687472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_26
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60156c07c26b944da90e245e435a462b
+      internalID: -819311916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_27
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46f976e52e94049618cfac168e108206
+      internalID: -1284079973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_28
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1c3f3596c29f486ab78f53bde2f6afe
+      internalID: 681980696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_29
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4bd6cdbae781d42b4911a282e0d1d0af
+      internalID: 982634048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_30
+      rect:
+        serializedVersion: 2
+        x: 3472
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14c40231358124290a8a8123e3d5928a
+      internalID: -894771376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_31
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e01a43fa1a3a4c119cf264063ef49a6
+      internalID: 1033458637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_32
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 496
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2a3a16cd4e7c44e1a49867f7009e8ac
+      internalID: -1858713955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_33
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 496
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c2af70283e7046459bc6cf24fe35403
+      internalID: -68480267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_34
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 496
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b12843d6329dc45e7ab4f23bf1a8c1f9
+      internalID: -1835723024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_35
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 496
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e13d1a80628bd4297840fcd7c1add2a9
+      internalID: -656578073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_36
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 496
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f966487c5aa342c4a9f4b0679503d25
+      internalID: 468694072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_37
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 496
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15a7c6bb5760442a1a7a74a6956a1344
+      internalID: 494856076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_38
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 0
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27829c2243a23426b8eec248a68fcea8
+      internalID: 759978595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_39
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 0
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22b36bc4a8483471a978dec9eb5a862f
+      internalID: 1870131548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_40
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 0
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5236ce4d889f14af5b3a7089ae77eb12
+      internalID: 1547834250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_41
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 0
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22538eb06fc374d868e700626ddd2442
+      internalID: 1714381380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_42
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 0
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30e85e3946115458587a265bfaf0e730
+      internalID: -2137153579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pond_Tile_Map_V3-1_43
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 0
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4714d789240db4a14a38c92637670298
+      internalID: 898487601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 16e77c8e0f5314499906ddd5e29916f7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":496.0,"y":496.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Pond_Tile_Map_V3-1_0: 8979805166314459916
+      Pond_Tile_Map_V3-1_1: -2030331572
+      Pond_Tile_Map_V3-1_10: -528563485
+      Pond_Tile_Map_V3-1_11: 812679982
+      Pond_Tile_Map_V3-1_12: 1700377132
+      Pond_Tile_Map_V3-1_13: 1123119713
+      Pond_Tile_Map_V3-1_14: -1594535232
+      Pond_Tile_Map_V3-1_15: -1425991464
+      Pond_Tile_Map_V3-1_16: -1796722312
+      Pond_Tile_Map_V3-1_17: -964894314
+      Pond_Tile_Map_V3-1_18: 2029223418
+      Pond_Tile_Map_V3-1_19: 238414336
+      Pond_Tile_Map_V3-1_2: -1384458672
+      Pond_Tile_Map_V3-1_20: -1815764722
+      Pond_Tile_Map_V3-1_21: -1255606328
+      Pond_Tile_Map_V3-1_22: 1468078329
+      Pond_Tile_Map_V3-1_23: 355809411
+      Pond_Tile_Map_V3-1_24: 1043329288
+      Pond_Tile_Map_V3-1_25: 2146687472
+      Pond_Tile_Map_V3-1_26: -819311916
+      Pond_Tile_Map_V3-1_27: -1284079973
+      Pond_Tile_Map_V3-1_28: 681980696
+      Pond_Tile_Map_V3-1_29: 982634048
+      Pond_Tile_Map_V3-1_3: 352693792
+      Pond_Tile_Map_V3-1_30: -894771376
+      Pond_Tile_Map_V3-1_31: 1033458637
+      Pond_Tile_Map_V3-1_32: -1858713955
+      Pond_Tile_Map_V3-1_33: -68480267
+      Pond_Tile_Map_V3-1_34: -1835723024
+      Pond_Tile_Map_V3-1_35: -656578073
+      Pond_Tile_Map_V3-1_36: 468694072
+      Pond_Tile_Map_V3-1_37: 494856076
+      Pond_Tile_Map_V3-1_38: 759978595
+      Pond_Tile_Map_V3-1_39: 1870131548
+      Pond_Tile_Map_V3-1_4: -786999766
+      Pond_Tile_Map_V3-1_40: 1547834250
+      Pond_Tile_Map_V3-1_41: 1714381380
+      Pond_Tile_Map_V3-1_42: -2137153579
+      Pond_Tile_Map_V3-1_43: 898487601
+      Pond_Tile_Map_V3-1_5: -357926781
+      Pond_Tile_Map_V3-1_6: 93097512
+      Pond_Tile_Map_V3-1_7: -1778728173
+      Pond_Tile_Map_V3-1_8: 1338026670
+      Pond_Tile_Map_V3-1_9: 2099724497
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

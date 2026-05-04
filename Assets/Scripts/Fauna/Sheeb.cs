@@ -81,6 +81,8 @@ public class Sheeb : FaunaBase
 
     public override string RecordType => "Sheep";
     public override int LoadPriority => 10;
+    
+    protected override FaunaData DeserializeData(string json) => JsonUtility.FromJson<SheebData>(json);
 
     protected override FaunaData BuildData() => new SheebData
     {
@@ -119,6 +121,9 @@ public class Sheeb : FaunaBase
         OnHungerChanged    += HandleHungerChanged;
         OnHappinessChanged += HandleHappinessChanged;
         OnLost             += HandleLost;
+        
+        if (stage == FaunaGrowthStage.Baby)
+            AudioManager.Instance?.PlaySFX("sheep_bah", 0.4f);
 
         if (stage == FaunaGrowthStage.Adult && !_hasWoolReady)
             StartWoolProduction();
@@ -167,6 +172,8 @@ public class Sheeb : FaunaBase
 
     public override void OnTapped()
     {
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
+        
         if (_hasWoolReady)
             CollectWool();
         else if (FeedPanelUI.Instance != null)
@@ -193,6 +200,9 @@ public class Sheeb : FaunaBase
         float happinessRestore = baseHappinessRestore;
         if (favouriteFoodItem != null && item == favouriteFoodItem)
             happinessRestore *= favouriteFoodHappinessMultiplier;
+        
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.FeedAnimal, item.ItemName, 1, RecordType);
 
         SetHappiness(happiness + happinessRestore);
         Debug.Log($"[Sheep] Fed {item.ItemName}. Hunger: {hunger:F2} Happiness: {happiness:F2}");
@@ -253,6 +263,7 @@ public class Sheeb : FaunaBase
         {
             ApplyWoolReadySprite();
             StartReadyShakeLoop();
+            AudioManager.Instance?.PlaySFX("sheep_bah", 0.4f);
             AlertManager.Instance?.ShowAlert(gameObject, AlertType.ReadyToCollect, alertOffset, persistent: true);
         }
         else
@@ -273,6 +284,9 @@ public class Sheeb : FaunaBase
         }
 
         PlayerInventory.Instance.Add(woolItem, 1);
+        AudioManager.Instance?.PlaySFX("collect_sound", 0.4f);
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.CollectAnimalItem, woolItem.ItemName, 1, RecordType);
         SetWoolReady(false);
 
         _isShaven = true;

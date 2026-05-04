@@ -468,21 +468,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WoodTree
   persistentGuid: 
   isStatic: 0
-  prefabKey: 
+  prefabKey: Apple Tree
   saveTransform: 1
   homeBiome: 3
   plantId: Apple Tree
   waterLevel: 1
-  waterDecayRate: 0.4
+  waterDecayRate: 0.1
   waterTickInterval: 10
   waterTickVariation: 2
   waterThreshold: 0.4
-  loseGracePeriod: 10
-  seedDuration: 10
-  sproutDuration: 10
-  matureDuration: 20
+  loseGracePeriod: 1800
+  seedDuration: 40
+  sproutDuration: 60
+  matureDuration: 120
   stage: 0
-  resetOnHarvest: 1
+  resetOnHarvest: 0
   harvestAmount: 1
   seedSprite: {fileID: 2401168431393047426, guid: 46b828bdfa0be4cf192ab5ba2b3b8a6e, type: 3}
   sproutSprite: {fileID: 8148798283203628850, guid: 46b828bdfa0be4cf192ab5ba2b3b8a6e, type: 3}

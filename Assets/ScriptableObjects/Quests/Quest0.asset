@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Quest0
   m_EditorClassIdentifier: Assembly-CSharp::QuestDefinition
   questNumber: 0
-  questTitle: Start with the foundations
-  questDescription: You must go to the shop to buy carrot seeds.
+  questTitle: Start On Foundations
+  questDescription: Time to start your journey! Get some carrot seeds.
   questIcon: {fileID: 21300000, guid: 0a8e17b5d946f4d339160df73a8322d2, type: 3}
   objectiveType: 0
+  targetBiome: 0
   targetItemName: Carrot Seeds
   requiredAmount: 1
   hasItemReward: 1

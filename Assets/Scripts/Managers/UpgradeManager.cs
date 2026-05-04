@@ -3,6 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
+/// Serialisable save data for UpgradeManager.
+/// </summary>
+[Serializable]
+public class UpgradeManagerData
+{
+    public List<string> appliedUpgradeNames = new();
+}
+
+/// <summary>
 /// Manages upgrade application and tracks which upgrades have been applied.
 ///
 /// Responsibilities:
@@ -11,7 +20,7 @@ using UnityEngine;
 ///   - Tracks which upgrades have been permanently applied.
 ///   - Fires OnUpgradeApplied for UI to react.
 /// </summary>
-public class UpgradeManager : MonoBehaviour
+public class UpgradeManager : SaveableBehaviour<UpgradeManagerData>
 {
     public static UpgradeManager Instance { get; private set; }
 
@@ -67,6 +76,10 @@ public class UpgradeManager : MonoBehaviour
     {
         if (upgrade == null) return false;
         if (IsUpgradeApplied(upgrade)) return false;
+        
+        if (BiomeManager.Instance != null &&
+            !BiomeManager.Instance.IsBiomeUnlocked(upgrade.TargetBiome))
+            return false;
 
         int currentTier = BiomeManager.Instance?.GetBiomeTier(upgrade.TargetBiome) ?? 1;
         return currentTier >= upgrade.RequiredBiomeTier;
@@ -168,6 +181,30 @@ public class UpgradeManager : MonoBehaviour
 
         Debug.Log($"[UpgradeManager] Applied '{upgrade.UpgradeName}' to " +
                   $"{count} instance(s) of type '{upgrade.UpgradeTypeId}'.");
+    }
+
+    #endregion
+    
+    #region SaveableBehaviour
+
+    public override string RecordType => "UpgradeManager";
+    public override int LoadPriority => 4;
+
+    protected override UpgradeManagerData BuildData()
+    {
+        var data = new UpgradeManagerData();
+        foreach (var name in _appliedUpgrades)
+            data.appliedUpgradeNames.Add(name);
+        return data;
+    }
+
+    protected override void ApplyData(UpgradeManagerData data, SaveContext context)
+    {
+        // Repopulate the flag set only - do not re-run ApplyUpgrade().
+        // Each system (BiomeManager, FaunaBase, etc.) restores its own state independently.
+        _appliedUpgrades.Clear();
+        foreach (var name in data.appliedUpgradeNames)
+            _appliedUpgrades.Add(name);
     }
 
     #endregion

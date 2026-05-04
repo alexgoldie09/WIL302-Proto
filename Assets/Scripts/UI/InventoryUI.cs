@@ -11,7 +11,10 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private Button toggleButton;
     [SerializeField] private RectTransform panel;
     [SerializeField] private Transform gridContainer;
+    [SerializeField] private GameObject craftingPanel;
     [SerializeField] private GameObject biomePanel;
+    [SerializeField] private GameObject feedPanel;
+    [SerializeField] private Collider2D shopFrontCollider;
 
     [Header("Slide Animation")]
     [SerializeField] private float slideDuration = 0.3f;
@@ -57,14 +60,24 @@ public class InventoryUI : MonoBehaviour
     {
         if (_isOpen == open) return;
         _isOpen = open;
-
-        biomePanel.SetActive(!_isOpen);
+        
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
+        
         ToggleButton.SetActive(!_isOpen);
         
         if (_isOpen)
         {
+            if (craftingPanel) craftingPanel.GetComponent<CraftingUI>().SetOpen(false);
+            if (biomePanel) biomePanel.SetActive(false);
+            if (feedPanel) feedPanel.SetActive(false);
+            if (shopFrontCollider) shopFrontCollider.enabled = false;
             gridContainer.gameObject.SetActive(true);
             RefreshGrid();
+        }
+        else
+        {
+            if (biomePanel) biomePanel.SetActive(true);
+            if (shopFrontCollider) shopFrontCollider.enabled = true;
         }
 
         if (_anim != null) StopCoroutine(_anim);

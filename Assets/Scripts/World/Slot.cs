@@ -2,13 +2,23 @@ using System;
 using UnityEngine;
 
 /// <summary>
+/// Serialisable save data for Slot.
+/// </summary>
+[Serializable]
+public class SlotData
+{
+    public bool   isOccupied;
+    public string occupantGuid;
+}
+
+/// <summary>
 /// A fixed scene container that holds a single occupant — a crop, stationary animal,
 /// plant, or building. When empty the slot's collider handles tap input to open the
 /// placement UI. When occupied the collider is deactivated and the occupant's own
 /// collider takes over for interaction.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
-public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
+public class Slot : SaveableBehaviour<SlotData>, IHandler, IBiomeOccupant
 {
     public enum SlotState { Empty, Occupied }
 
@@ -69,16 +79,19 @@ public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
 
     private void Start()
     {
-        // Higher tier slots start disabled until activated by biome tier.
-        if (requiredTier > 1)
+        // Higher tier slots start hidden, but skip if the biome tier was already
+        // restored by the save system before Start() ran.
+        if (requiredTier > 1 && !IsVisuallyActive)
         {
             col.enabled = false;
             spriteRenderer.enabled = false;
         }
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+        
         if (BiomeManager.Instance != null)
         {
             BiomeManager.Instance.RegisterOccupant(this);
@@ -89,8 +102,10 @@ public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
             InputManager.Instance.OnWorldTap += HandleWorldTap;
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
+        
         if (BiomeManager.Instance != null)
             BiomeManager.Instance.OnBiomeTierChanged -= HandleBiomeTierChanged;
         
@@ -137,6 +152,8 @@ public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
                 Debug.LogWarning("[Slot] No SlotPlacementUI found in scene.");
                 return;
             }
+            
+            AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
 
             _placementUI.Open(this);
         }
@@ -222,7 +239,7 @@ public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
             return;
         }
 
-        GameObject occupant = Instantiate(item.PlaceablePrefab, transform, true);
+        GameObject occupant = Instantiate(item.PlaceablePrefab, transform, false);
         QuestManager.Instance?.RecordProgress(
             QuestObjectiveType.PlaceItem,
             item.ItemName,
@@ -238,10 +255,18 @@ public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
         // Notify FloraBase or StructureBase or FaunaBase on the occupant which slot it belongs
         // to so they can call slot.Clear() on their own destruction.
         var flora = occupant.GetComponent<FloraBase>();
-        if (flora != null) flora.SetSlot(this);
+        if (flora != null)
+        {
+            flora.SetSlot(this);
+            AudioManager.Instance?.PlaySFX("plant", 0.4f);
+        }
 
         var structure = occupant.GetComponent<StructureBase>();
-        if (structure != null) structure.SetSlot(this);
+        if (structure != null)
+        {
+            structure.SetSlot(this);
+            AudioManager.Instance?.PlaySFX("build", 0.4f);
+        }
 
         Debug.Log($"[Slot] {name} occupied by {item.ItemName}.");
     }
@@ -264,6 +289,45 @@ public class Slot : MonoBehaviour, IHandler, IBiomeOccupant
 
         Debug.Log($"[Slot] {name} cleared and ready for placement.");
     }
+    #endregion
+    
+    #region SaveableBehaviour
+
+    public override string RecordType  => "Slot";
+    public override int LoadPriority => 6;
+
+    protected override SlotData BuildData()
+    {
+        string occupantGuid = string.Empty;
+        if (_currentOccupant != null)
+        {
+            var saveable = _currentOccupant.GetComponent<ISaveable>();
+            if (saveable != null)
+                occupantGuid = saveable.PersistentGuid ?? string.Empty;
+        }
+        return new SlotData
+        {
+            isOccupied   = _state == SlotState.Occupied,
+            occupantGuid = occupantGuid
+        };
+    }
+
+    protected override void ApplyData(SlotData data, SaveContext context)
+    {
+        if (!data.isOccupied) return;
+
+        _state = SlotState.Occupied;
+        if (col != null)           col.enabled = false;
+        if (spriteRenderer != null) spriteRenderer.enabled = false;
+
+        if (!string.IsNullOrEmpty(data.occupantGuid))
+        {
+            var saveable = context.ResolveById(data.occupantGuid);
+            if (saveable is Component component)
+                _currentOccupant = component.gameObject;
+        }
+    }
+
     #endregion
     
     #region Debug Methods

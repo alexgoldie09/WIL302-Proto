@@ -107,18 +107,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Clam
   persistentGuid: 
   isStatic: 0
-  prefabKey: 
-  saveTransform: 0
+  prefabKey: Clam
+  saveTransform: 1
   homeBiome: 2
   animalId: Clam
   hunger: 1
   happiness: 1
   hungerDecayRate: 0.05
-  happinessDecayRate: 0.01
-  lowHappinessHungerMultiplier: 2
-  hungerTickInterval: 10
+  happinessDecayRate: 0.001
+  lowHappinessHungerMultiplier: 1.2
+  hungerTickInterval: 120
   hungerTickVariation: 2
-  loseGracePeriod: 30
+  loseGracePeriod: 1800
   stage: 0
   babySprite: {fileID: -5115517349966317889, guid: 3a2f49a80637b0b47aacf9b3dd4fc962, type: 3}
   middleSprite: {fileID: -8584370647786301038, guid: 3a2f49a80637b0b47aacf9b3dd4fc962, type: 3}
@@ -127,15 +127,15 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 64
-  babyToMiddleDuration: 20
-  middleToAdultDuration: 40
+  babyToMiddleDuration: 80
+  middleToAdultDuration: 120
   happinessGrowthThreshold: 0.4
   baseHappinessRestore: 0.4
   happinessUpgradeAmountIncrease: 0.2
   planktonHappinessMultiplier: 2.5
   planktonItem: {fileID: 11400000, guid: 2a47f10f84abad243983dbe02ae344b9, type: 2}
   pearlItem: {fileID: 11400000, guid: e540a8837ea670648b22a7cfb37f7b2c, type: 2}
-  pearlProductionInterval: 20
+  pearlProductionInterval: 120
   pearlProductionVariation: 15
   clamAdultSprite: {fileID: -2045120480244694613, guid: 3a2f49a80637b0b47aacf9b3dd4fc962, type: 3}
   pearlReadySprite: {fileID: 1815783318, guid: 3a2f49a80637b0b47aacf9b3dd4fc962, type: 3}

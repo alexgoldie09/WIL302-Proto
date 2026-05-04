@@ -346,19 +346,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Crop
   persistentGuid: 
   isStatic: 0
-  prefabKey: 
+  prefabKey: Carrot
   saveTransform: 1
   homeBiome: 0
   plantId: Carrot
   waterLevel: 1
-  waterDecayRate: 0.4
+  waterDecayRate: 0.05
   waterTickInterval: 10
   waterTickVariation: 2
   waterThreshold: 0.4
-  loseGracePeriod: 10
-  seedDuration: 10
-  sproutDuration: 10
-  matureDuration: 10
+  loseGracePeriod: 1800
+  seedDuration: 20
+  sproutDuration: 20
+  matureDuration: 20
   stage: 0
   resetOnHarvest: 1
   harvestAmount: 1
@@ -382,6 +382,7 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 128
+  cropType: 0
   outputItem: {fileID: 11400000, guid: 9a7b6061086eb415c9b30e7c99a473da, type: 2}
   harvestAmountIncrease: 1
 --- !u!61 &4089805303563430681

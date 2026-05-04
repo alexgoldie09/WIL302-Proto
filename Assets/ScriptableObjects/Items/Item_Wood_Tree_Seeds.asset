@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_Wood_Tree_Seeds
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Wood Tree Seeds
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 73f79ab407c684fb88fb9fcc9337798c, type: 3}
   itemType: 3
   isAvailableForStorefront: 1
   baseSellValue: 5

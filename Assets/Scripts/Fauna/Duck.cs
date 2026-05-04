@@ -84,6 +84,8 @@ public class Duck : FaunaBase
 
     public override string RecordType => "Duck";
     public override int LoadPriority => 10;
+    
+    protected override FaunaData DeserializeData(string json) => JsonUtility.FromJson<DuckData>(json);
 
     protected override FaunaData BuildData() => new DuckData
     {
@@ -114,6 +116,9 @@ public class Duck : FaunaBase
         OnHungerChanged += HandleHungerChanged;
         OnHappinessChanged += HandleHappinessChanged;
         OnLost += HandleLost;
+        
+        if (stage == FaunaGrowthStage.Baby)
+            AudioManager.Instance?.PlaySFX("duck_quack", 0.4f);
 
         if (stage == FaunaGrowthStage.Adult)
             StartEggProduction();
@@ -170,6 +175,8 @@ public class Duck : FaunaBase
 
     public override void OnTapped()
     {
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
+        
         if (FeedPanelUI.Instance != null)
             FeedPanelUI.Instance.Open(this, transform.position);
     }
@@ -196,6 +203,9 @@ public class Duck : FaunaBase
             happinessRestore *= breadHappinessMultiplier;
 
         SetHappiness(happiness + happinessRestore);
+        
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.FeedAnimal, item.ItemName, 1, RecordType);
 
         Debug.Log($"[Duck] Fed {item.ItemName}. Hunger: {hunger:F2} Happiness: {happiness:F2}");
     }
@@ -235,6 +245,8 @@ public class Duck : FaunaBase
 
         if (eggPrefab != null)
             SpawnEggInWorld();
+        
+        AudioManager.Instance?.PlaySFX("duck_quack", 0.4f);
 
         // Show ready to collect alert briefly
         if (AlertManager.Instance != null)

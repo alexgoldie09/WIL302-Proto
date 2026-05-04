@@ -87,6 +87,13 @@ public abstract class SaveableBehaviour<TData> : MonoBehaviour, ISaveable
 
     /// <summary>Apply a previously built payload back onto this saveable.</summary>
     protected abstract void ApplyData(TData data, SaveContext context);
+    
+    /// <summary>
+    /// Override to return the persistent GUID of this object's parent saveable
+    /// (e.g. the Slot that contains this flora or structure). Used by SaveManager
+    /// to re-parent spawned objects into the correct hierarchy on load.
+    /// </summary>
+    protected virtual string GetParentGuid() => string.Empty;
 
     /// <summary>
     /// Captures common save fields and serializes the derived payload into JSON.
@@ -97,11 +104,12 @@ public abstract class SaveableBehaviour<TData> : MonoBehaviour, ISaveable
 
         return new SaveRecord
         {
-            id = PersistentGuid,
-            type = RecordType,
-            prefabKey = prefabKey,
-            transform = saveTransform ? TransformData.FromTransform(transform) : null,
-            jsonData = JsonUtility.ToJson(data)
+            id         = PersistentGuid,
+            type       = RecordType,
+            prefabKey  = prefabKey,
+            parentGuid = GetParentGuid(),
+            transform  = saveTransform ? TransformData.FromTransform(transform) : null,
+            jsonData   = JsonUtility.ToJson(data)
         };
     }
 
@@ -124,9 +132,16 @@ public abstract class SaveableBehaviour<TData> : MonoBehaviour, ISaveable
         // Apply payload
         if (!string.IsNullOrWhiteSpace(record.jsonData))
         {
-            var data = JsonUtility.FromJson<TData>(record.jsonData);
+            var data = DeserializeData(record.jsonData);
             ApplyData(data, context);
         }
     }
+    
+    /// <summary>
+    /// Override in concrete subclasses whose data model extends TData (e.g. DuckData : FaunaData)
+    /// so the deserialized object has the correct runtime type and "data is SubclassData"
+    /// checks in ApplyData succeed.
+    /// </summary>
+    protected virtual TData DeserializeData(string json) => JsonUtility.FromJson<TData>(json);
     #endregion
 }

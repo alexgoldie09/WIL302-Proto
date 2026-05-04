@@ -108,18 +108,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Duck
   persistentGuid: 
   isStatic: 0
-  prefabKey: 
-  saveTransform: 0
+  prefabKey: Duck
+  saveTransform: 1
   homeBiome: 1
   animalId: Duck
   hunger: 1
   happiness: 1
   hungerDecayRate: 0.05
-  happinessDecayRate: 0.01
-  lowHappinessHungerMultiplier: 2
-  hungerTickInterval: 10
+  happinessDecayRate: 0.001
+  lowHappinessHungerMultiplier: 1.2
+  hungerTickInterval: 120
   hungerTickVariation: 2
-  loseGracePeriod: 30
+  loseGracePeriod: 1800
   stage: 0
   babySprite: {fileID: 2538422950228181533, guid: 9a28649185646974083115fd0472fcb2, type: 3}
   middleSprite: {fileID: -4150317701730581287, guid: 9a28649185646974083115fd0472fcb2, type: 3}
@@ -128,7 +128,7 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 64
-  babyToMiddleDuration: 20
+  babyToMiddleDuration: 30
   middleToAdultDuration: 40
   happinessGrowthThreshold: 0.4
   baseHappinessRestore: 0.4
@@ -137,7 +137,7 @@ MonoBehaviour:
   breadItem: {fileID: 11400000, guid: 0dfcc0a65cec8c645b3062f1a61037e7, type: 2}
   eggItem: {fileID: 11400000, guid: 15e1d659d9e24d14882ef2092fb54ccc, type: 2}
   eggPrefab: {fileID: 251852689355651796, guid: 957d71447c536de4295e93327195504a, type: 3}
-  eggProductionInterval: 20
+  eggProductionInterval: 40
   eggProductionVariation: 10
   eggSpawnRadius: 2
   pondTilemap: {fileID: 0}

@@ -1,0 +1,1656 @@
+fileFormatVersion: 2
+guid: b065f6e6fc0c0468bb9e64c10a1aae76
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1800436169780613206
+    second: Tree_Nursery_Tile_Map_V3-1_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 480
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_0
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 3968
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aaf267bb7d09307e0800000000000000
+      internalID: -1800436169780613206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_1
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 3968
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d95a34cf028c49c0809ea7e972a8dda
+      internalID: 1491093245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_2
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 3968
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 183e02644a72f46fe8aa3e460d5faa4d
+      internalID: -1817251441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_3
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 3968
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9963629a5d7b045779808a05b5d0703a
+      internalID: -1233643840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_4
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 3968
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab4be1bd62e53420d9321f51e53587e8
+      internalID: -1691875109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_5
+      rect:
+        serializedVersion: 2
+        x: 3472
+        y: 3968
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 634ab28aef7904560bbd3fef2800eee3
+      internalID: 239328434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3472
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bcd5f759b66824289ab4306858f8eadb
+      internalID: 114971612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_7
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 3472
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cdd3df782f7f41f4a756895cddbf52a
+      internalID: -986309346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_8
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 3472
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4a15d661d32f4300a3270cdec5d6587
+      internalID: 585336913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_9
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 3472
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9dd457f3c65b4523baaf5e5495c402a
+      internalID: -494940589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_10
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 3472
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 856f8c883f77143ec8f5c5822e44906f
+      internalID: -1741285563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_11
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 3472
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 021eb2925fc8a421b92c578c2550aa0d
+      internalID: -1130344304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_12
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 3472
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6441a73c324648a7bd4bba4bf1bc48f
+      internalID: -1392920726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_13
+      rect:
+        serializedVersion: 2
+        x: 3472
+        y: 3472
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 752d39095664b4a1184ddba5a5edaba2
+      internalID: -423358575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_14
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 3472
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8837eb8f911749d3ae6d3e54f934a2f
+      internalID: -1006171465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_15
+      rect:
+        serializedVersion: 2
+        x: 4464
+        y: 3472
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a73b283bfad4c48c291f5be25561a999
+      internalID: -2019903686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6404090d07e94fdba6d59921fceb614
+      internalID: -574447518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_17
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f8cfe2b402894655b39d0ecc3984aeb
+      internalID: -890412728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_18
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c2d1d5cce5bd41f4a7e80530fbd3169
+      internalID: -346628167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_19
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd1175a2ccb8f4bae986832f076ed8f8
+      internalID: 1338636182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_20
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcce315ce345743279618c276d2bdc02
+      internalID: 1866253408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_21
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebb59b7009693413987ccb016b546000
+      internalID: -1820263427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_22
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99580095eaf944009baf9b7c5ebafe0d
+      internalID: 1058171195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_23
+      rect:
+        serializedVersion: 2
+        x: 3472
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 940407d8bb719469b96c531aae40247c
+      internalID: -708498269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_24
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8be6d2512551462abd3bee86726228e
+      internalID: -153170506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_25
+      rect:
+        serializedVersion: 2
+        x: 4464
+        y: 2976
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b111a3c4b2a2043dfaac72ebcf106737
+      internalID: -1526921421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_26
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93faae3b572884a75a8346c23dc4a5d2
+      internalID: 1143667362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_27
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 048d5286c7cff43ea89ce95d2ca0a6fe
+      internalID: 1271113228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_28
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e6b72678cdc24720bae59f88b51b49b
+      internalID: -563650744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_29
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bd0d4ce3ff4040d3be094ccf0617bac
+      internalID: -465840570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_30
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fc6820f3194144d38a65732e4cdda80
+      internalID: -757227817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_31
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc9ecdabee95b4a0b92c459b09664c64
+      internalID: 1260468142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_32
+      rect:
+        serializedVersion: 2
+        x: 3472
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18ba9576b918840b3b2adeb246fdaaf4
+      internalID: -1956944211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_33
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c058adb96c323441cbc7128dc100c1d8
+      internalID: 1571709514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_34
+      rect:
+        serializedVersion: 2
+        x: 4464
+        y: 2480
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab36bd9d7ddfa483b811c02c9707a971
+      internalID: -1141877733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_35
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05c7a83b504f34a32ab10c394525e4d8
+      internalID: 716818499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_36
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc341658fb4a8405382b1ce03a848cd7
+      internalID: -1860466409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_37
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fa96c80dff7f4a33ad727d1a864baf3
+      internalID: 1702108222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_38
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a1c3d93dbe354da783b8a354474d777
+      internalID: 742219246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_39
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0118bd9c0f234427cadf56b9ecc7f8bb
+      internalID: 385434450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_40
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8daf98975e5e04891b68f315b311df9c
+      internalID: 1742745491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_41
+      rect:
+        serializedVersion: 2
+        x: 3472
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71c7fe6fa9616435ab0a28e27746a97d
+      internalID: 1343756908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_42
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d518a178e77a542b7af37700d3aabf07
+      internalID: -1621238607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_43
+      rect:
+        serializedVersion: 2
+        x: 4464
+        y: 1984
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e392658d60a094618823587a81b2069a
+      internalID: -380963056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_44
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aefe05149577c41489cb5b72367d3921
+      internalID: 1857656280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_45
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1340581680b54d349a185acd4fc72e2
+      internalID: -1620972599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_46
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5183b86750a53435e899b3cc3b1ba74e
+      internalID: 236350513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_47
+      rect:
+        serializedVersion: 2
+        x: 1984
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2dd9f6c26250d4c90b50cca0824b0960
+      internalID: -1056999532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_48
+      rect:
+        serializedVersion: 2
+        x: 2480
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 106f487f73cd44927968c7a25fdce945
+      internalID: 740236756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_49
+      rect:
+        serializedVersion: 2
+        x: 2976
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 048c4f90d128449579ccab81422b5be3
+      internalID: 1547563250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_50
+      rect:
+        serializedVersion: 2
+        x: 3472
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eff7b2721cfd64992ae9a75863386ad7
+      internalID: -601077069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_51
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acf31d0fbcd6f4d079fec434488999dd
+      internalID: -1755149058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_52
+      rect:
+        serializedVersion: 2
+        x: 4464
+        y: 1488
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 056a98aa32d274d13ad2b8b36a0b37bb
+      internalID: 517210754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_53
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfaa3e391ca7a407989215c13af87be2
+      internalID: -1266641792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_54
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd18d36aacde84953a918d58fb69cff1
+      internalID: 1808059537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_55
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d9cef87d51d942d790692d51ee9795d
+      internalID: -1076217328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_56
+      rect:
+        serializedVersion: 2
+        x: 4464
+        y: 992
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8887d09ce86943aab81197c390f7d34
+      internalID: 1504104987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_57
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 496
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 793812b64c20848c8a884bfaf773f27b
+      internalID: -547993232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_58
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 496
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cc3b2ad6e54949f19e38f63a11ff589
+      internalID: -595064142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_59
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 496
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1ee9cd639d384b048745f6beb0900bf
+      internalID: -1776720880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_60
+      rect:
+        serializedVersion: 2
+        x: 4464
+        y: 496
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af745c675d2934195b237afa37d442bf
+      internalID: -485275707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_61
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4caaaa2fa537444fe80469b8623b1308
+      internalID: 999215198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_62
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 0
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e59b0e8a1a5b4abaa93aa52423fa53c
+      internalID: 1483561416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_63
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 0
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1c6d987e2a0c4110b3a6cfff9415013
+      internalID: -311581369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_Nursery_Tile_Map_V3-1_64
+      rect:
+        serializedVersion: 2
+        x: 4464
+        y: 0
+        width: 496
+        height: 496
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41a06fe92d59a420094be2f6a640535e
+      internalID: 1716687772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: b6f2028c51a4e418987940ce49415829
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":10.0,"y":10.0},"gridSpriteSize":{"x":496.0,"y":496.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Tree_Nursery_Tile_Map_V3-1_0: -1800436169780613206
+      Tree_Nursery_Tile_Map_V3-1_1: 1491093245
+      Tree_Nursery_Tile_Map_V3-1_10: -1741285563
+      Tree_Nursery_Tile_Map_V3-1_11: -1130344304
+      Tree_Nursery_Tile_Map_V3-1_12: -1392920726
+      Tree_Nursery_Tile_Map_V3-1_13: -423358575
+      Tree_Nursery_Tile_Map_V3-1_14: -1006171465
+      Tree_Nursery_Tile_Map_V3-1_15: -2019903686
+      Tree_Nursery_Tile_Map_V3-1_16: -574447518
+      Tree_Nursery_Tile_Map_V3-1_17: -890412728
+      Tree_Nursery_Tile_Map_V3-1_18: -346628167
+      Tree_Nursery_Tile_Map_V3-1_19: 1338636182
+      Tree_Nursery_Tile_Map_V3-1_2: -1817251441
+      Tree_Nursery_Tile_Map_V3-1_20: 1866253408
+      Tree_Nursery_Tile_Map_V3-1_21: -1820263427
+      Tree_Nursery_Tile_Map_V3-1_22: 1058171195
+      Tree_Nursery_Tile_Map_V3-1_23: -708498269
+      Tree_Nursery_Tile_Map_V3-1_24: -153170506
+      Tree_Nursery_Tile_Map_V3-1_25: -1526921421
+      Tree_Nursery_Tile_Map_V3-1_26: 1143667362
+      Tree_Nursery_Tile_Map_V3-1_27: 1271113228
+      Tree_Nursery_Tile_Map_V3-1_28: -563650744
+      Tree_Nursery_Tile_Map_V3-1_29: -465840570
+      Tree_Nursery_Tile_Map_V3-1_3: -1233643840
+      Tree_Nursery_Tile_Map_V3-1_30: -757227817
+      Tree_Nursery_Tile_Map_V3-1_31: 1260468142
+      Tree_Nursery_Tile_Map_V3-1_32: -1956944211
+      Tree_Nursery_Tile_Map_V3-1_33: 1571709514
+      Tree_Nursery_Tile_Map_V3-1_34: -1141877733
+      Tree_Nursery_Tile_Map_V3-1_35: 716818499
+      Tree_Nursery_Tile_Map_V3-1_36: -1860466409
+      Tree_Nursery_Tile_Map_V3-1_37: 1702108222
+      Tree_Nursery_Tile_Map_V3-1_38: 742219246
+      Tree_Nursery_Tile_Map_V3-1_39: 385434450
+      Tree_Nursery_Tile_Map_V3-1_4: -1691875109
+      Tree_Nursery_Tile_Map_V3-1_40: 1742745491
+      Tree_Nursery_Tile_Map_V3-1_41: 1343756908
+      Tree_Nursery_Tile_Map_V3-1_42: -1621238607
+      Tree_Nursery_Tile_Map_V3-1_43: -380963056
+      Tree_Nursery_Tile_Map_V3-1_44: 1857656280
+      Tree_Nursery_Tile_Map_V3-1_45: -1620972599
+      Tree_Nursery_Tile_Map_V3-1_46: 236350513
+      Tree_Nursery_Tile_Map_V3-1_47: -1056999532
+      Tree_Nursery_Tile_Map_V3-1_48: 740236756
+      Tree_Nursery_Tile_Map_V3-1_49: 1547563250
+      Tree_Nursery_Tile_Map_V3-1_5: 239328434
+      Tree_Nursery_Tile_Map_V3-1_50: -601077069
+      Tree_Nursery_Tile_Map_V3-1_51: -1755149058
+      Tree_Nursery_Tile_Map_V3-1_52: 517210754
+      Tree_Nursery_Tile_Map_V3-1_53: -1266641792
+      Tree_Nursery_Tile_Map_V3-1_54: 1808059537
+      Tree_Nursery_Tile_Map_V3-1_55: -1076217328
+      Tree_Nursery_Tile_Map_V3-1_56: 1504104987
+      Tree_Nursery_Tile_Map_V3-1_57: -547993232
+      Tree_Nursery_Tile_Map_V3-1_58: -595064142
+      Tree_Nursery_Tile_Map_V3-1_59: -1776720880
+      Tree_Nursery_Tile_Map_V3-1_6: 114971612
+      Tree_Nursery_Tile_Map_V3-1_60: -485275707
+      Tree_Nursery_Tile_Map_V3-1_61: 999215198
+      Tree_Nursery_Tile_Map_V3-1_62: 1483561416
+      Tree_Nursery_Tile_Map_V3-1_63: -311581369
+      Tree_Nursery_Tile_Map_V3-1_64: 1716687772
+      Tree_Nursery_Tile_Map_V3-1_7: -986309346
+      Tree_Nursery_Tile_Map_V3-1_8: 585336913
+      Tree_Nursery_Tile_Map_V3-1_9: -494940589
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// World-space quest object. Sits in a biome until the player taps it to pick up the quest.
@@ -44,6 +46,13 @@ public class Quest : MonoBehaviour, IHandler, IBiomeOccupant
     {
         if (questDefinition != null && iconRenderer != null)
             iconRenderer.sprite = questDefinition.questIcon;
+    }
+
+    private void Start()
+    {
+        if(IsPickedUp)
+            if(iconRenderer != null)
+                iconRenderer.enabled = false;
     }
 
     private void OnEnable()
@@ -96,6 +105,8 @@ public class Quest : MonoBehaviour, IHandler, IBiomeOccupant
     public void OnTapped()
     {
         if (IsPickedUp) return;
+        
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
         QuestManager.Instance?.PickUpQuest(this);
     }
 
@@ -130,6 +141,16 @@ public class Quest : MonoBehaviour, IHandler, IBiomeOccupant
         if (col != null) col.enabled = false;
 
         gameObject.SetActive(false);
+    }
+    
+    /// <summary>
+    /// Re-applies the hidden state after a broad SpriteRenderer sweep (e.g. biome switch).
+    /// Keeps the icon off if the quest has already been picked up.
+    /// </summary>
+    public void RefreshIconVisibility()
+    {
+        if (!IsPickedUp) return;
+        if (iconRenderer != null) iconRenderer.enabled = false;
     }
 
     // ── Debug ─────────────────────────────────────────────────────────────────

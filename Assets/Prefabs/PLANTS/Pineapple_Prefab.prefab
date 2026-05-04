@@ -346,23 +346,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Crop
   persistentGuid: 
   isStatic: 0
-  prefabKey: 
+  prefabKey: Pineapple
   saveTransform: 1
   homeBiome: 0
-  plantId: Carrot
+  plantId: Pineapple
   waterLevel: 1
-  waterDecayRate: 0.4
+  waterDecayRate: 0.08
   waterTickInterval: 10
   waterTickVariation: 2
   waterThreshold: 0.4
-  loseGracePeriod: 10
-  seedDuration: 10
-  sproutDuration: 10
-  matureDuration: 10
+  loseGracePeriod: 1800
+  seedDuration: 30
+  sproutDuration: 40
+  matureDuration: 50
   stage: 0
   resetOnHarvest: 0
   harvestAmount: 1
-  seedSprite: {fileID: -2515412583196860514, guid: a910ea365870d4c2a87787f876ca406d, type: 3}
+  seedSprite: {fileID: -2983524666688346338, guid: f4ec05c447148df41b71cee9c1c8cd64, type: 3}
   sproutSprite: {fileID: 4345069020956639783, guid: a910ea365870d4c2a87787f876ca406d, type: 3}
   matureSprite: {fileID: 6376384303909755662, guid: a910ea365870d4c2a87787f876ca406d, type: 3}
   harvestableSprite: {fileID: -1609899190226196912, guid: a910ea365870d4c2a87787f876ca406d, type: 3}

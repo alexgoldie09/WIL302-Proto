@@ -23,6 +23,7 @@ public class SaveRecord
     public string type;       // "Plot", "Crop", etc.
     public string prefabKey;  // used for spawning missing objects later
     public TransformData transform; // transform information
+    public string parentGuid; // GUID of parent saveable (e.g. Slot for flora/structures, empty for fauna)
     public string jsonData;   // type-specific payload serialized as JSON
 }
 

@@ -100,6 +100,8 @@ public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler, IBiome
 
     protected virtual void Start()
     {
+        EnsurePersistentGuid();
+        
         StartCoroutine(HungerTickLoop());
         UpdateSprite();
         CheckAndApplySelfUpgrade(animalId);
@@ -177,7 +179,7 @@ public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler, IBiome
         if (!_inGracePeriod) return;
 
         _gracePeriodTimer -= Time.deltaTime;
-        Debug.Log($"[{gameObject.name}] Grace period: {_gracePeriodTimer:F1}s remaining.");
+        // Debug.Log($"[{gameObject.name}] Grace period: {_gracePeriodTimer:F1}s remaining.");
 
         if (_gracePeriodTimer <= 0f)
             LoseFauna();
@@ -284,11 +286,50 @@ public abstract class FaunaBase : SaveableBehaviour<FaunaData>, IHandler, IBiome
 
     protected override void ApplyData(FaunaData data, SaveContext context)
     {
-        SetHunger(data.hunger);
-        SetHappiness(data.happiness);
-        SetStage(data.stage);
-        _gracePeriodTimer = data.gracePeriodTimer;
-        _inGracePeriod = data.inGracePeriod;
+        float computedHunger    = data.hunger;
+        float computedHappiness = data.happiness;
+        float computedGrace     = data.gracePeriodTimer;
+        bool  computedInGrace   = data.inGracePeriod;
+
+        float elapsed = (float)context.Elapsed.TotalSeconds;
+
+        if (elapsed > 0f)
+        {
+            // 1. Happiness decays continuously per second.
+            computedHappiness = Mathf.Clamp01(computedHappiness - happinessDecayRate * elapsed);
+
+            // 2. Hunger decays per tick, scaled by happiness frozen at save time.
+            float happinessMultiplier = Mathf.Lerp(lowHappinessHungerMultiplier, 1f, data.happiness);
+            int   hungerTicks         = Mathf.Max(0, (int)(elapsed / Mathf.Max(1f, hungerTickInterval)));
+            computedHunger = Mathf.Clamp01(computedHunger - hungerTicks * hungerDecayRate * happinessMultiplier);
+
+            // 3. Start grace period if hunger hit 0 offline for the first time.
+            if (computedHunger <= 0f && !computedInGrace)
+            {
+                computedInGrace = true;
+                computedGrace   = loseGracePeriod;
+            }
+
+            // 4. Advance grace-period countdown — animal may have died while away.
+            if (computedInGrace)
+            {
+                computedGrace -= elapsed;
+                if (computedGrace <= 0f)
+                {
+                    LoseFauna();
+                    return;
+                }
+            }
+        }
+
+        // Set raw grace fields before calling setters so EnterGracePeriod is a no-op
+        // when the grace period was already entered above.
+        _gracePeriodTimer = computedGrace;
+        _inGracePeriod    = computedInGrace;
+
+        SetHunger(computedHunger);       // fires OnHungerChanged, enter/exit grace
+        SetHappiness(computedHappiness); // fires OnHappinessChanged
+        SetStage(data.stage);            // fires OnStageChanged, UpdateSprite
     }
 
     #endregion

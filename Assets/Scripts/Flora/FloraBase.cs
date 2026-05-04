@@ -26,6 +26,7 @@ public class FloraData
     public FloraGrowthStage stage;
     public float gracePeriodTimer;
     public bool inGracePeriod;
+    public string parentSlotGuid;
 }
 
 /// <summary>
@@ -202,16 +203,18 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
     #endregion
 
     #region Unity Lifecycle
-
-    private void Awake()
-    {
-        InitialiseStatBars();
-    }
-
     protected virtual void Start()
     {
+        InitialiseStatBars();
+        
+        EnsurePersistentGuid();
+        
         if (wateringFxPrefab == null)
             wateringFxPrefab = GetComponentInChildren<ParticleSystem>(includeInactive: true);
+        
+        if (removeFxPrefab == null)
+            removeFxPrefab = GetComponentInChildren<ParticleSystem>(includeInactive: true);
+        
         StartCoroutine(WaterTickLoop());
         UpdateSprite();
         CheckAndApplySelfUpgrade(plantId);
@@ -447,6 +450,7 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
         }
 
         PlayerInventory.Instance.Add(output, harvestAmount);
+        AudioManager.Instance?.PlaySFX("harvest", 0.4f);
         QuestManager.Instance?.RecordProgress(
             QuestObjectiveType.HarvestItem,
             GetOutputItem()?.ItemName,
@@ -584,23 +588,98 @@ public abstract class FloraBase : SaveableBehaviour<FloraData>, IHandler, IBiome
 
     public override abstract string RecordType { get; }
     public override int LoadPriority => 10;
+    
+    protected override string GetParentGuid() => _parentSlot?.PersistentGuid ?? string.Empty;
 
     protected override FloraData BuildData() => new FloraData
     {
-        waterLevel = waterLevel,
-        stageTimer = _stageTimer,
-        stage = stage,
+        waterLevel       = waterLevel,
+        stageTimer       = _stageTimer,
+        stage            = stage,
         gracePeriodTimer = _gracePeriodTimer,
-        inGracePeriod = _inGracePeriod
+        inGracePeriod = _inGracePeriod,
+        parentSlotGuid   = _parentSlot?.PersistentGuid ?? string.Empty
     };
 
     protected override void ApplyData(FloraData data, SaveContext context)
     {
-        SetWaterLevel(data.waterLevel);
-        _stageTimer = data.stageTimer;
-        SetStage(data.stage);
-        _gracePeriodTimer = data.gracePeriodTimer;
-        _inGracePeriod = data.inGracePeriod;
+        // Resolve and assign parent slot so hierarchy is correct after spawn.
+        if (!string.IsNullOrEmpty(data.parentSlotGuid))
+        {
+            var saveable = context.ResolveById(data.parentSlotGuid);
+            if (saveable is Slot slot)
+                SetSlot(slot);
+        }
+
+        // Work in local copies so we can compute offline changes before touching live state.
+        float computedWater = data.waterLevel;
+        FloraGrowthStage computedStage = data.stage;
+        float computedTimer = data.stageTimer;
+        float computedGrace  = data.gracePeriodTimer;
+        bool computedInGrace = data.inGracePeriod;
+
+        float elapsed = (float)context.Elapsed.TotalSeconds;
+
+        if (elapsed > 0f)
+        {
+            // Helper to get the stage duration without touching the stage field.
+            float StageDur(FloraGrowthStage s) => s switch
+            {
+                FloraGrowthStage.Seed    => seedDuration,
+                FloraGrowthStage.Sprout  => sproutDuration,
+                FloraGrowthStage.Mature  => matureDuration,
+                _                        => float.MaxValue
+            };
+
+            // 1. Apply water decay for the number of ticks that would have fired.
+            if (computedStage != FloraGrowthStage.Harvestable)
+            {
+                int ticks = Mathf.Max(0, (int)(elapsed / Mathf.Max(1f, waterTickInterval)));
+                computedWater = Mathf.Clamp01(computedWater - ticks * waterDecayRate);
+            }
+
+            // 2. If water just hit zero offline for the first time, start a fresh grace period.
+            if (computedWater <= 0f && !computedInGrace)
+            {
+                computedInGrace = true;
+                computedGrace = loseGracePeriod;
+            }
+
+            // 3. Advance the grace-period countdown — plant may have died while away.
+            if (computedInGrace)
+            {
+                computedGrace -= elapsed;
+                if (computedGrace <= 0f)
+                {
+                    LoseFlora();
+                    return;
+                }
+            }
+
+            // 4. Advance growth stages while watered above the threshold.
+            if (computedStage != FloraGrowthStage.Harvestable && computedWater >= waterThreshold)
+            {
+                computedTimer += elapsed;
+                float dur = StageDur(computedStage);
+                while (computedTimer >= dur && computedStage < FloraGrowthStage.Harvestable)
+                {
+                    computedTimer -= dur;
+                    computedStage  = (FloraGrowthStage)((int)computedStage + 1);
+                    dur = StageDur(computedStage);
+                }
+                if (computedStage == FloraGrowthStage.Harvestable)
+                    computedTimer = 0f;
+            }
+        }
+
+        // Apply computed state — set raw grace fields before calling setters so
+        // EnterGracePeriod() inside SetWaterLevel becomes a no-op when already entered.
+        _gracePeriodTimer = computedGrace;
+        _inGracePeriod = computedInGrace;
+
+        SetWaterLevel(computedWater); // fires OnWaterChanged, water alerts, enter/exit grace
+        SetStage(computedStage);      // fires OnStageChanged, UpdateSprite, harvest alert
+        _stageTimer = computedTimer;  // restore computed timer — SetStage may have reset it to 0
     }
 
     #endregion

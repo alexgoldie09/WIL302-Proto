@@ -73,6 +73,21 @@ public class FaunaSpawner : MonoBehaviour, IBiomeOccupant
         for (int i = 0; i < faunaPrefabs.Count; i++)
             _activeByType[i] = new List<FaunaBase>();
 
+        // Register fauna already in the scene (restored by SaveManager) so
+        // SpawnToCapacity does not spawn duplicates on top of them.
+        RegisterRestoredFauna();
+        SpawnToCapacity();
+
+        // Fauna that died offline have Destroy() called during Load() (Awake-phase),
+        // but Unity defers the destruction to end-of-frame. SpawnToCapacity above
+        // therefore counts them as still alive. Re-check one frame later once pending
+        // destructions have resolved so we respawn up to quota if any were lost.
+        StartCoroutine(LateCapacityCheck());
+    }
+
+    private IEnumerator LateCapacityCheck()
+    {
+        yield return null;
         SpawnToCapacity();
     }
     #endregion
@@ -219,6 +234,38 @@ public class FaunaSpawner : MonoBehaviour, IBiomeOccupant
     #endregion
 
     #region Helper Methods
+    /// <summary>
+    /// Scans the biome's registered occupants for FaunaBase instances that were
+    /// spawned by SaveManager during load. Adds them to _activeByType so the
+    /// existing population is counted before fresh spawning begins.
+    /// </summary>
+    private void RegisterRestoredFauna()
+    {
+        if (BiomeManager.Instance == null) return;
+
+        // Map each prefab's RecordType → its type index in our list.
+        var typeMap = new Dictionary<string, int>();
+        for (int i = 0; i < faunaPrefabs.Count; i++)
+        {
+            if (faunaPrefabs[i] == null) continue;
+            var proto = faunaPrefabs[i].GetComponent<FaunaBase>();
+            if (proto != null && !typeMap.ContainsKey(proto.RecordType))
+                typeMap[proto.RecordType] = i;
+        }
+
+        var occupants = BiomeManager.Instance.GetOccupantsOfType<FaunaBase>(homeBiome);
+        foreach (var fauna in occupants)
+        {
+            if (!typeMap.TryGetValue(fauna.RecordType, out int typeIndex)) continue;
+            if (_activeByType[typeIndex].Contains(fauna)) continue;
+
+            _activeByType[typeIndex].Add(fauna);
+            // Restored fauna are not at a fixed spawn point; pass null so the
+            // occupied-points set is not affected.
+            fauna.OnLost += () => HandleFaunaLost(fauna, typeIndex, null);
+        }
+    }
+    
     /// <summary>
     /// Effective cap = min(BiomeData.maxFauna, spawnPoints.Count).
     /// Spawn points are the hard ceiling — each holds at most one fauna.

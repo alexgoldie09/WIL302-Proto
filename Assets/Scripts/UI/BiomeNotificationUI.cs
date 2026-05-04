@@ -120,6 +120,7 @@ public class BiomeNotificationUI : MonoBehaviour
     #region Animations
     private IEnumerator DisplayRoutine()
     {
+        AudioManager.Instance?.PlaySFX("notification", 0.4f);
         _isShowing = true;
         bannerRect.gameObject.SetActive(true);
 

@@ -19,6 +19,9 @@ public class CraftingUI : MonoBehaviour
     [SerializeField] private RectTransform panel;
     [SerializeField] private Transform gridContainer;
     [SerializeField] private GameObject biomePanel;
+    [SerializeField] private GameObject feedPanel;
+    [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private Collider2D shopFrontCollider;
 
     [Header("Slide Animation")]
     [SerializeField] private float slideDuration = 0.3f;
@@ -49,6 +52,7 @@ public class CraftingUI : MonoBehaviour
     private readonly Color _craftingColor     = new Color(0.2f, 0.2f, 0.2f, 1f);
     private readonly Color _craftedColor      = new Color(0.1f, 0.7f, 0.2f, 1f);
 
+    public GameObject ToggleButton => toggleButton.gameObject;
     #region Unity Lifecycle
     private void Awake()
     {
@@ -311,6 +315,7 @@ public class CraftingUI : MonoBehaviour
         _selectedRecipe    = recipe;
         _selectedCardImage = cardImage;
         cardImage.color    = _selectedCardColor;
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
 
         UpdateCraftButton();
     }
@@ -347,6 +352,7 @@ public class CraftingUI : MonoBehaviour
 
         if (CraftingManager.Instance.StartCrafting(recipe))
         {
+            AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
             UpdateCraftButton();
             RefreshGrid(); // refresh ingredient counts
         }
@@ -429,16 +435,27 @@ public class CraftingUI : MonoBehaviour
     {
         if (_isOpen == open) return;
         _isOpen = open;
-
-        if (biomePanel) biomePanel.SetActive(!_isOpen);
-
+        
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
+        
+        toggleButton.gameObject.SetActive(!_isOpen);
+        
         if (_isOpen)
         {
+            if (inventoryPanel) inventoryPanel.GetComponent<InventoryUI>().SetOpen(false);
+            if (shopFrontCollider) shopFrontCollider.enabled = false;
+            if (biomePanel) biomePanel.SetActive(false);
+            if (feedPanel) feedPanel.SetActive(false);
             gridContainer.gameObject.SetActive(true);
             RebuildSlotTimers(); // rebuild to reflect any slot upgrades
             RefreshGrid();
             RefreshSlotTimers();
             UpdateCraftButton();
+        }
+        else
+        {
+            if (biomePanel) biomePanel.SetActive(true);
+            if (shopFrontCollider) shopFrontCollider.enabled = true;
         }
 
         if (_anim != null) StopCoroutine(_anim);

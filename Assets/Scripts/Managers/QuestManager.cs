@@ -11,6 +11,7 @@ public class QuestManagerData
 {
     public int activeQuestIndex;
     public int currentProgress;
+    public bool activeQuestPickedUp;
     public List<int> completedQuestNumbers = new List<int>();
 }
 
@@ -83,12 +84,20 @@ public class QuestManager : SaveableBehaviour<QuestManagerData>
         if (quest == null) return;
 
         quest.gameObject.SetActive(true);
-        _currentProgress = 0;
+        if (!_restoringFromSave)
+            _currentProgress = 0;
 
         Debug.Log($"[QuestManager] Activated quest {_activeQuestIndex}: {quest.Definition?.questTitle}");
 
         // ReopenApp — auto-complete immediately if restoring from save with this quest active.
         if (_restoringFromSave && quest.Definition?.objectiveType == QuestObjectiveType.ReopenApp)
+        {
+            quest.MarkPickedUp();
+            CompleteQuest();
+        }
+        
+        // UnlockBiome — completes instantly on pickup; no separate player action required.
+        if (quest.Definition?.objectiveType == QuestObjectiveType.UnlockBiome && !quest.IsCompleted)
         {
             quest.MarkPickedUp();
             CompleteQuest();
@@ -105,21 +114,23 @@ public class QuestManager : SaveableBehaviour<QuestManagerData>
         }
 
         if (quest.IsPickedUp) return;
-
+        
         quest.MarkPickedUp();
         OnQuestPickedUp?.Invoke(quest);
 
         NotebookManager.Instance?.AddEntry(
             quest.Definition.questTitle,
             quest.Definition.questDescription,
-            isReward: false
+            isReward: false,
+            quest.Definition.sendsNotebookNotification
         );
 
         Debug.Log($"[QuestManager] Quest picked up: {quest.Definition.questTitle}");
     }
 
     // ── Progress ──────────────────────────────────────────────────────────────
-    public void RecordProgress(QuestObjectiveType type, string itemName, int amount)
+    public void RecordProgress(QuestObjectiveType type, string itemName, int amount,
+        string animalType = "")
     {
         Quest quest = ActiveQuest;
         if (quest == null)                          return;
@@ -132,6 +143,15 @@ public class QuestManager : SaveableBehaviour<QuestManagerData>
         if (!string.IsNullOrEmpty(target) &&
             !string.Equals(target, itemName, StringComparison.OrdinalIgnoreCase))
             return;
+        
+        // For FeedAnimal and CollectAnimalItem, also filter by animal type when specified.
+        if (type == QuestObjectiveType.FeedAnimal || type == QuestObjectiveType.CollectAnimalItem)
+        {
+            string targetAnimal = quest.Definition.targetAnimalType;
+            if (!string.IsNullOrEmpty(targetAnimal) &&
+                !string.Equals(targetAnimal, animalType, StringComparison.OrdinalIgnoreCase))
+                return;
+        }
 
         _currentProgress += amount;
         OnQuestProgressUpdated?.Invoke(quest, _currentProgress);
@@ -174,9 +194,13 @@ public class QuestManager : SaveableBehaviour<QuestManagerData>
         NotebookManager.Instance?.AddEntry(
             quest.Definition.questTitle,
             quest.Definition.rewardDialogue,
-            isReward: true
+            isReward: true,
+            quest.Definition.sendsNotebookNotification
         );
 
+        if (quest.Definition.objectiveType == QuestObjectiveType.UnlockBiome)
+            BiomeManager.Instance?.UnlockBiome(quest.Definition.targetBiome);
+        
         OnQuestCompleted?.Invoke(quest);
         Debug.Log($"[QuestManager] Quest completed: {quest.Definition.questTitle}");
 
@@ -216,6 +240,7 @@ public class QuestManager : SaveableBehaviour<QuestManagerData>
         {
             activeQuestIndex      = _activeQuestIndex,
             currentProgress       = _currentProgress,
+            activeQuestPickedUp   = ActiveQuest != null && ActiveQuest.IsPickedUp,
             completedQuestNumbers = completed
         };
     }
@@ -235,6 +260,9 @@ public class QuestManager : SaveableBehaviour<QuestManagerData>
         _restoringFromSave = true;
         ActivateCurrentQuest();
         _restoringFromSave = false;
+        
+        if (data.activeQuestPickedUp && ActiveQuest != null)
+            ActiveQuest.MarkPickedUp();
     }
 
     // ── Debug ─────────────────────────────────────────────────────────────────

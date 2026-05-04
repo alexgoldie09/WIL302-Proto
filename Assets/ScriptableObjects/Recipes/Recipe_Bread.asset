@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RecipeDefinition
   recipeName: Bread
   icon: {fileID: -7516772517063754986, guid: 240d9fb39dd4e426ca97b36c66fa3f00, type: 3}
-  description: 
+  description: Creates bread.
   ingredients:
   - item: {fileID: 11400000, guid: 15e1d659d9e24d14882ef2092fb54ccc, type: 2}
     quantity: 1
@@ -22,6 +22,6 @@ MonoBehaviour:
     quantity: 2
   outputItem: {fileID: 11400000, guid: 0dfcc0a65cec8c645b3062f1a61037e7, type: 2}
   outputQuantity: 1
-  craftingDuration: 5
+  craftingDuration: 30
   isAvailableInStore: 1
   buyPrice: 10

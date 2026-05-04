@@ -181,18 +181,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Cow
   persistentGuid: 
   isStatic: 0
-  prefabKey: 
-  saveTransform: 0
+  prefabKey: Cow
+  saveTransform: 1
   homeBiome: 0
   animalId: Cow
   hunger: 1
   happiness: 1
   hungerDecayRate: 0.05
-  happinessDecayRate: 0.01
-  lowHappinessHungerMultiplier: 2
-  hungerTickInterval: 10
+  happinessDecayRate: 0.001
+  lowHappinessHungerMultiplier: 1.2
+  hungerTickInterval: 120
   hungerTickVariation: 2
-  loseGracePeriod: 30
+  loseGracePeriod: 1800
   stage: 0
   babySprite: {fileID: 6168083732550661486, guid: 05b221db98958e9428dbd3fe5973fba2, type: 3}
   middleSprite: {fileID: 4976267290766913063, guid: 05b221db98958e9428dbd3fe5973fba2, type: 3}
@@ -201,15 +201,15 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 64
-  babyToMiddleDuration: 20
-  middleToAdultDuration: 40
+  babyToMiddleDuration: 40
+  middleToAdultDuration: 60
   happinessGrowthThreshold: 0.4
   baseHappinessRestore: 0.3
   happinessUpgradeAmountIncrease: 0.2
   favouriteFoodHappinessMultiplier: 2.5
   favouriteFoodItem: {fileID: 11400000, guid: 9a7b6061086eb415c9b30e7c99a473da, type: 2}
   milkItem: {fileID: 11400000, guid: c7558b50ba8ec244d8994af3ca95ac42, type: 2}
-  milkProductionInterval: 25
+  milkProductionInterval: 30
   milkProductionVariation: 15
   shakeAngle: 6
   shakeDuration: 0.5

@@ -30,6 +30,8 @@ public class SaveManager : MonoBehaviour
     private bool autoSaveOnQuit = true;
     [SerializeField, Tooltip("If true, automatically saves when the application loses focus (mobile/home button).")]
     private bool autoSaveOnFocusLost = true;
+    [SerializeField, Tooltip("How often in seconds the game auto-saves while running. Set to 0 to disable.")] 
+    private float autoSaveInterval = 600f;
 
     [Header("Spawn Registry")]
     [SerializeField, Tooltip("Spawnable prefabs for records that are missing in-scene (prefabKey -> prefab).")]
@@ -51,6 +53,8 @@ public class SaveManager : MonoBehaviour
 
     private bool hasQuit = false;
     private Dictionary<string, GameObject> spawnLookup;
+    private float _lastSaveTime = -1f;
+    private const float SaveCooldown = 2f;
     private string SavePath => Path.Combine(Application.persistentDataPath, saveFileName);
 
     #region Unity Lifecycle
@@ -78,14 +82,33 @@ public class SaveManager : MonoBehaviour
         if (autoLoadOnStart)
             Load();
     }
+    
+    private void Start()
+    {
+        if (autoSaveInterval > 0f)
+            StartCoroutine(AutoSaveLoop());
+    }
 
     /// <summary>
     /// Saves data on application quit when the auto-save option is enabled.
     /// </summary>
     private void OnApplicationQuit()
     {
-        if (autoSaveOnQuit)
+        if (autoSaveOnQuit && CanSave())
             Save();
+    }
+    
+    /// <summary>
+    /// Saves data when the application is paused (mobile/home button), supporting mobile workflows.
+    /// </summary>
+    /// <param name="paused"></param>
+    private void OnApplicationPause(bool paused)
+    {
+        if (paused && CanSave())
+        {
+            Save();
+            Debug.Log("[SaveManager] Save triggered by app pause.");
+        }
     }
 
     /// <summary>
@@ -96,8 +119,31 @@ public class SaveManager : MonoBehaviour
         if (!autoSaveOnFocusLost)
             return;
 
-        if (!hasFocus)
+        if (!hasFocus && CanSave())
+        {
             Save();
+            Debug.Log("[SaveManager] Save triggered by focus loss.");
+        }
+    }
+    
+    private IEnumerator AutoSaveLoop()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(autoSaveInterval);
+            if (CanSave())
+            {
+                Save();
+                Debug.Log("[SaveManager] Auto-save triggered.");
+            }
+        }
+    }
+
+    private bool CanSave()
+    {
+        if (Time.unscaledTime - _lastSaveTime < SaveCooldown) return false;
+        _lastSaveTime = Time.unscaledTime;
+        return true;
     }
     #endregion
 
@@ -192,6 +238,8 @@ public class SaveManager : MonoBehaviour
         {
             Debug.LogError($"[SaveManager] Failed to write save file at {SavePath}\n{ex}");
         }
+        
+        // FlushToDisk();
     }
 
     /// <summary>
@@ -256,7 +304,7 @@ public class SaveManager : MonoBehaviour
             if (saveableLookup.ContainsKey(record.id))
                 continue;
 
-            var spawned = SpawnFromRecord(record);
+            var spawned = SpawnFromRecord(record, saveableLookup);
             if (spawned != null && !string.IsNullOrWhiteSpace(spawned.PersistentGuid))
             {
                 saveableLookup[spawned.PersistentGuid] = spawned;
@@ -392,7 +440,7 @@ public class SaveManager : MonoBehaviour
     /// stamps the persistent GUID onto the spawned ISaveable, and returns it.
     /// Returns null if the record has no prefabKey or the prefab is not in the spawn registry.
     /// </summary>
-    private ISaveable SpawnFromRecord(SaveRecord record)
+    private ISaveable SpawnFromRecord(SaveRecord record, Dictionary<string, ISaveable> saveableLookup)
     {
         if (record == null)
             return null;
@@ -407,11 +455,33 @@ public class SaveManager : MonoBehaviour
         if (!spawnLookup.TryGetValue(record.prefabKey, out var prefab) || prefab == null)
             return null;
 
-        // Instantiate and apply saved transform.
+        // Instantiate without a parent first, then apply correct hierarchy below.
         var go = Instantiate(prefab);
 
         if (record.transform != null)
             record.transform.ApplyTo(go.transform);
+
+        // Slot-bound objects (structures, flora) — parent to the slot's transform and centre on it.
+        if (!string.IsNullOrWhiteSpace(record.parentGuid) &&
+            saveableLookup != null &&
+            saveableLookup.TryGetValue(record.parentGuid, out var parentSaveable) &&
+            parentSaveable is Slot slot)
+        {
+            go.transform.SetParent(slot.transform, worldPositionStays: false);
+            go.transform.localPosition = Vector3.zero;
+        }
+        // Free-standing dynamic objects (fauna) — parent to the biome root so renderers
+        // are toggled correctly when the player switches biomes.
+        else if (BiomeManager.Instance != null)
+        {
+            var occupant = go.GetComponent<IBiomeOccupant>();
+            if (occupant != null)
+            {
+                var biomeData = BiomeManager.Instance.GetBiomeByType(occupant.HomeBiome);
+                if (biomeData?.rootObject != null)
+                    go.transform.SetParent(biomeData.rootObject.transform, worldPositionStays: true);
+            }
+        }
 
         // Retrieve the ISaveable component and stamp the GUID so it can be matched to its record.
         var saveable = go.GetComponent<ISaveable>();
@@ -426,6 +496,18 @@ public class SaveManager : MonoBehaviour
 
         return saveable;
     }
+    
+    private void FlushToDisk()
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        SyncFilesystem();
+#endif
+    }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void SyncFilesystem();
+#endif
     #endregion
 
     #region Debug Functions

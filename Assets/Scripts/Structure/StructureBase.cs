@@ -3,6 +3,18 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+/// <summary>
+/// Serialisable save data for StructureBase.
+/// </summary>
+[Serializable]
+public class StructureData
+{
+    public int stage;             // 0 = UnderConstruction, 1 = Built
+    public float constructionTimer;
+    public string parentSlotGuid;
+}
+
 /// <summary>
 /// Base class for all placeable structures (functional and aesthetic).
 /// 
@@ -17,7 +29,7 @@ using UnityEngine.UI;
 /// Functional structures override OnBuilt() and OnTapped() to implement behaviour.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
-public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant, IUpgradeable
+public abstract class StructureBase : SaveableBehaviour<StructureData>, IHandler, IBiomeOccupant, IUpgradeable
 {
     public enum StructureStage { UnderConstruction, Built }
     
@@ -52,18 +64,25 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant, I
     private float _constructionTimer;
     private Coroutine _hideStatsCoroutine;
     private Slot _parentSlot;
+    private bool _wasRestored;
     
     #region Accessors
     /// <summary>Fired when construction completes and the structure becomes active.</summary>
     public event Action OnConstructionComplete;
     
-    public StructureStage Stage       => _stage;
-    public bool IsBuilt               => _stage == StructureStage.Built;
+    public StructureStage Stage => _stage;
+    public bool IsBuilt  => _stage == StructureStage.Built;
 
     /// <summary>0-1 progress through the construction timer. Always 1 when built.</summary>
     public float ConstructionProgress => _stage == StructureStage.Built
         ? 1f
         : Mathf.Clamp01(_constructionTimer / constructionDuration);
+    
+    /// <summary>Exposes the raw construction timer to subclasses for save data building.</summary>
+    protected float ConstructionTimer => _constructionTimer;
+    
+    /// <summary>Exposes the parent slot GUID to subclasses for save data building.</summary>
+    protected string ParentSlotGuid => _parentSlot?.PersistentGuid ?? string.Empty;
 
     /// <summary>The biome this structure belongs to. Used by BiomeManager to track occupancy and apply biome effects.</summary>
     public BiomeManager.BiomeType HomeBiome => homeBiome;
@@ -74,25 +93,39 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant, I
     #region Unity Lifecycle
     protected virtual void Start()
     {
+        EnsurePersistentGuid();
+        
         UpdateSprite();
         CheckAndApplySelfUpgrade(structureId);
         if (statBarsRoot != null)
             statBarsRoot.SetActive(false);
         if (_collider2D == null)
             _collider2D = GetComponent<Collider2D>();
-        StartCoroutine(ConstructionRoutine());
+        
+        if (_wasRestored && _stage == StructureStage.Built)
+            CompleteConstruction();
+        else
+        {
+            if (!_wasRestored)
+                _constructionTimer = 0f;
+            StartCoroutine(ConstructionRoutine());
+        }
     }
 
-    protected virtual void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+        
         BiomeManager.Instance?.RegisterOccupant(this);
 
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap += HandleWorldTap;
     }
 
-    protected virtual void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
+        
         if (InputManager.Instance != null)
             InputManager.Instance.OnWorldTap -= HandleWorldTap;
     }
@@ -145,7 +178,6 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant, I
     /// </summary>
     private IEnumerator ConstructionRoutine()
     {
-        _constructionTimer = 0f;
         _stage = StructureStage.UnderConstruction;
         UpdateSprite();
 
@@ -286,6 +318,36 @@ public abstract class StructureBase : MonoBehaviour, IHandler, IBiomeOccupant, I
             }
         }
     }
+    #endregion
+    
+    #region SaveableBehaviour
+
+    public override string RecordType  => "Structure";
+    public override int LoadPriority => 8;
+
+    protected override string GetParentGuid() => ParentSlotGuid;
+
+    protected override StructureData BuildData() => new StructureData
+    {
+        stage             = (int)_stage,
+        constructionTimer = _constructionTimer,
+        parentSlotGuid    = ParentSlotGuid
+    };
+
+    protected override void ApplyData(StructureData data, SaveContext context)
+    {
+        _wasRestored       = true;
+        _stage             = (StructureStage)data.stage;
+        _constructionTimer = data.constructionTimer;
+
+        if (!string.IsNullOrEmpty(data.parentSlotGuid))
+        {
+            var saveable = context.ResolveById(data.parentSlotGuid);
+            if (saveable is Slot slot)
+                SetSlot(slot);
+        }
+    }
+
     #endregion
 
     #region Debug Method

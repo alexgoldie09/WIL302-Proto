@@ -22,6 +22,6 @@ MonoBehaviour:
     quantity: 1
   outputItem: {fileID: 11400000, guid: 5b285a1ced05d47b1b826976d2a54029, type: 2}
   outputQuantity: 1
-  craftingDuration: 5
+  craftingDuration: 60
   isAvailableInStore: 1
   buyPrice: 20

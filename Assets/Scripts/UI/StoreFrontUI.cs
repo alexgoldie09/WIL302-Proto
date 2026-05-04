@@ -12,6 +12,8 @@ public class StoreFrontUI : MonoBehaviour
     [SerializeField] private StoreFrontManager storeFrontManager;
     [SerializeField] private RectTransform panel;
     [SerializeField] private GameObject biomePanel;
+    [SerializeField] private GameObject craftingPanel;
+    [SerializeField] private GameObject inventoryPanel;
 
     [Header("Header")]
     [SerializeField] private TextMeshProUGUI coinDisplay;
@@ -100,18 +102,23 @@ public class StoreFrontUI : MonoBehaviour
     {
         if (_isOpen == open) return;
         _isOpen = open;
-
+        
         biomePanel.SetActive(!_isOpen);
-
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
+        
         if (_isOpen)
         {
             panel.gameObject.SetActive(true);
             UpdateCoinDisplay(storeFrontManager.CoinBalance);
             RefreshCurrentPage();
+            if (craftingPanel) craftingPanel.GetComponent<CraftingUI>().ToggleButton.SetActive(false);
+            if (inventoryPanel) inventoryPanel.GetComponent<InventoryUI>().ToggleButton.SetActive(false);
         }
         else
         {
             _sellBasket.Clear();
+            if (craftingPanel) craftingPanel.GetComponent<CraftingUI>().ToggleButton.SetActive(true);
+            if (inventoryPanel) inventoryPanel.GetComponent<InventoryUI>().ToggleButton.SetActive(true);
         }
 
         if (_anim != null) StopCoroutine(_anim);
@@ -121,6 +128,8 @@ public class StoreFrontUI : MonoBehaviour
     private void SetPage(StorePage page)
     {
         _currentPage = page;
+        
+        AudioManager.Instance?.PlaySFX("menu_click", 0.4f);
 
         buyPage.SetActive(page == StorePage.Buy);
         sellPage.SetActive(page == StorePage.Sell);
@@ -154,7 +163,7 @@ public class StoreFrontUI : MonoBehaviour
     {
         foreach (Transform child in buyGridContainer)
             Destroy(child.gameObject);
-
+        
         BuildItemsSection();
         BuildRecipesSection();
     }
@@ -475,6 +484,7 @@ public class StoreFrontUI : MonoBehaviour
         RefreshSellInventoryGrid();
         RefreshBuybackGrid();
         UpdateSellSummary();
+        
     }
 
     private void RefreshSellInventoryGrid()
@@ -718,6 +728,7 @@ public class StoreFrontUI : MonoBehaviour
     {
         foreach (Transform child in upgradeGridContainer)
             Destroy(child.gameObject);
+        
 
         if (UpgradeManager.Instance == null) return;
 

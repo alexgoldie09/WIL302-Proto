@@ -11,6 +11,11 @@ public class DebugTappable : MonoBehaviour, IHandler
     [SerializeField] private float moveSpeed = 4f;
     [SerializeField] private Transform startPoint;
     [SerializeField] private Transform endPoint;
+    
+    [Header("Quest Reporting")]
+    [SerializeField] private bool reportQuestProgress = false;
+    [SerializeField] private QuestObjectiveType collectQuestType = QuestObjectiveType.CollectAnimalItem;
+    [SerializeField] private string questAnimalType = "";
 
     [Header("Alert Debug")]
     [SerializeField] private bool canAlert = false;
@@ -84,8 +89,14 @@ public class DebugTappable : MonoBehaviour, IHandler
             Debug.LogWarning("[DebugTappable] No PlayerInventory instance found in scene!");
             return;
         }
+        
+        AudioManager.Instance?.PlaySFX("collect_sound", 0.4f);
 
         PlayerInventory.Instance.Add(itemSO, amountToAdd);
+        
+        if (reportQuestProgress)
+            QuestManager.Instance?.RecordProgress(
+                collectQuestType, itemSO.ItemName, amountToAdd, questAnimalType);
 
         Debug.Log($"[DebugTappable] Picked up {amountToAdd}x {itemSO.ItemName}. " +
                   $"Total now: {PlayerInventory.Instance.GetCount(itemSO)}");

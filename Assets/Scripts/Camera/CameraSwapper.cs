@@ -48,6 +48,13 @@ public class CameraSwapper : MonoBehaviour
             Debug.LogError($"[CameraSwapper] Biome index {index} is out of range.");
             return;
         }
+        
+        if (BiomeManager.Instance != null &&
+            !BiomeManager.Instance.IsBiomeUnlocked((BiomeManager.BiomeType)index))
+        {
+            Debug.Log($"[CameraSwapper] Biome {index} is locked.");
+            return;
+        }
 
         if (index == _currentBiome) return;
 
@@ -73,6 +80,14 @@ public class CameraSwapper : MonoBehaviour
     public void SnapToBiome(int index)
     {
         if (index < 0 || index >= biomeAnchors.Length) return;
+        
+        if (BiomeManager.Instance != null &&
+            !BiomeManager.Instance.IsBiomeUnlocked((BiomeManager.BiomeType)index))
+        {
+            Debug.Log($"[CameraSwapper] Biome {index} is locked.");
+            return;
+        }
+        
         if (_cam == null) _cam = Camera.main;
 
         Transform anchor = biomeAnchors[index];

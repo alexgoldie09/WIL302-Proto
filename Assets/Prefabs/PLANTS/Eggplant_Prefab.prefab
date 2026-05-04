@@ -346,23 +346,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Crop
   persistentGuid: 
   isStatic: 0
-  prefabKey: 
+  prefabKey: Eggplant
   saveTransform: 1
   homeBiome: 0
-  plantId: Carrot
+  plantId: Eggplant
   waterLevel: 1
-  waterDecayRate: 0.4
+  waterDecayRate: 0.06
   waterTickInterval: 10
   waterTickVariation: 2
   waterThreshold: 0.4
-  loseGracePeriod: 10
-  seedDuration: 10
-  sproutDuration: 10
-  matureDuration: 10
+  loseGracePeriod: 1800
+  seedDuration: 30
+  sproutDuration: 30
+  matureDuration: 30
   stage: 0
   resetOnHarvest: 1
   harvestAmount: 1
-  seedSprite: {fileID: -1942338540525371293, guid: 98172625edc414f9ca9d193aa069702d, type: 3}
+  seedSprite: {fileID: -2983524666688346338, guid: f4ec05c447148df41b71cee9c1c8cd64, type: 3}
   sproutSprite: {fileID: -7301289357989933431, guid: 98172625edc414f9ca9d193aa069702d, type: 3}
   matureSprite: {fileID: -760401297012040314, guid: 98172625edc414f9ca9d193aa069702d, type: 3}
   harvestableSprite: {fileID: -5284958943759832453, guid: 98172625edc414f9ca9d193aa069702d, type: 3}

@@ -57,8 +57,11 @@ public class NotebookManager : SaveableBehaviour<NotebookManagerData>
 
     // ── Public API ────────────────────────────────────────────────────────────
     /// <summary>Creates a new entry, stores it, and fires OnEntryAdded.</summary>
-    public void AddEntry(string title, string body, bool isReward)
+    public void AddEntry(string title, string body, bool isReward, bool isAllowed)
     {
+        if (!isAllowed)
+            return;
+        
         var entry = new NotebookEntry(title, body, isReward);
         _entries.Add(entry);
         OnEntryAdded?.Invoke(entry);

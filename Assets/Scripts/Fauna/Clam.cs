@@ -91,6 +91,8 @@ public class Clam : FaunaBase
 
     public override string RecordType => "Clam";
     public override int LoadPriority => 10;
+    
+    protected override FaunaData DeserializeData(string json) => JsonUtility.FromJson<ClamData>(json);
 
     protected override FaunaData BuildData() => new ClamData
     {
@@ -125,6 +127,9 @@ public class Clam : FaunaBase
         OnHungerChanged += HandleHungerChanged;
         OnHappinessChanged += HandleHappinessChanged;
         OnLost += HandleLost;
+        
+        if (stage == FaunaGrowthStage.Baby)
+            AudioManager.Instance?.PlaySFX("clam_splash", 0.4f);
 
         if (stage == FaunaGrowthStage.Adult)
             StartPearlProduction();
@@ -209,6 +214,9 @@ public class Clam : FaunaBase
             happinessRestore *= planktonHappinessMultiplier;
 
         SetHappiness(happiness + happinessRestore);
+        
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.FeedAnimal, item.ItemName, 1, RecordType);
 
         Debug.Log($"[Clam] Fed {item.ItemName}. Hunger: {hunger:F2} Happiness: {happiness:F2}");
     }
@@ -269,6 +277,8 @@ public class Clam : FaunaBase
         {
             if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
             _pulseCoroutine = StartCoroutine(PulseLoop());
+            
+            AudioManager.Instance?.PlaySFX("clam_splash", 0.4f);
 
             if (AlertManager.Instance != null)
                 AlertManager.Instance.ShowAlert(gameObject, AlertType.ReadyToCollect, alertOffset, persistent: true);
@@ -297,6 +307,9 @@ public class Clam : FaunaBase
         }
 
         PlayerInventory.Instance.Add(pearlItem, 1);
+        AudioManager.Instance?.PlaySFX("pearl_ready", 0.4f);
+        QuestManager.Instance?.RecordProgress(
+            QuestObjectiveType.CollectAnimalItem, pearlItem.ItemName, 1, RecordType);
         SetPearlReady(false);
         StartPearlProduction();
 

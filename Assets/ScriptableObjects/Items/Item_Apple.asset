@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_Apple
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
   itemName: Apple
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 6beab4b4d57284884989cbe28de4781e, type: 3}
   itemType: 1
   isAvailableForStorefront: 1
   baseSellValue: 8
